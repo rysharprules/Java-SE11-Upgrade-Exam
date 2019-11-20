@@ -1,6 +1,5 @@
-# Java-SE8-Upgrade-Exam
+# Java-SE11-Upgrade-Exam
 Examples and notes to aid revision for the Oracle Certified Professional (OCP) Upgrade Exam for Java SE 8 to 11 (1Z0-817).
-
 
 - Duration:	180 Minutes
 - Number of Questions:	80
