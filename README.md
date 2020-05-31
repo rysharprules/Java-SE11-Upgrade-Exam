@@ -2,8 +2,8 @@
 Examples and notes to aid revision for the Oracle Certified Professional (OCP) Upgrade Exam for Java SE 8 to 11 (1Z0-817).
 
 - Duration:	180 Minutes
-- Number of Questions:	80
-- Passing Score:	61%
+- Number of Questions: 80
+- Passing Score: 61%
 
 <a href="https://education.oracle.com/upgrade-java-se-7-to-java-se-8-ocp-programmer/pexam_1Z0-810" ><img src="https://raw.githubusercontent.com/rysharprules/Java-SE8-Upgrade-Exam/master/ocp_logo.gif" /></a>
 
