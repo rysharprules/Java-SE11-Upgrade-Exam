@@ -10,49 +10,49 @@ Examples and notes to aid revision for the Oracle Certified Professional (OCP) U
 ## Exam Topics
 
 ### 1. [Understanding Modules](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/tree/master/src/ocp/study/part01)
-- Describe the Modular JDK
-- Declare modules and enable access between modules
-- Describe how a modular project is compiled and run
+- 1.1 - Describe the Modular JDK
+- 1.2 - Declare modules and enable access between modules
+- 1.3 - Describe how a modular project is compiled and run
 
 ### 2. [Services in a Modular Application](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/tree/master/src/ocp/study/part02)
-- Describe the components of Services including directives
-- Design a service type, load the services using ServiceLoader, check for dependencies of the services including consumer module and provider module
+- 2.1 - Describe the components of Services including directives
+- 2.2 - Design a service type, load the services using ServiceLoader, check for dependencies of the services including consumer module and provider module
 
 ### 3. [Java Interfaces](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/tree/master/src/ocp/study/part03)
 - 3.1 - Create and use methods in interfaces
 - 3.2 - Define and write functional interfaces
 
 ### 4. [Lambda Operations on Streams](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/tree/master/src/ocp/study/part04)
-- Extract stream data using map, peek and flatMap methods
-- Search stream data using search findFirst, findAny, anyMatch, allMatch and noneMatch methods
-- Use the Optional class
-- Perform calculations using count, max, min, average and sum stream operations
-- Sort a collection using lambda expressions
-- Use Collectors with streams, including the groupingBy and partitioningBy operation
+- 4.1 - Extract stream data using map, peek and flatMap methods
+- 4.2 - Search stream data using search findFirst, findAny, anyMatch, allMatch and noneMatch methods
+- 4.3 - Use the Optional class
+- 4.4 - Perform calculations using count, max, min, average and sum stream operations
+- 4.5 - Sort a collection using lambda expressions
+- 4.6 - Use Collectors with streams, including the groupingBy and partitioningBy operation
 
 ### 5. [Java File I/O (NIO.2)](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/tree/master/src/ocp/study/part05)
-- Use Path interface to operate on file and directory paths
-- Use Files class to check, delete, copy or move a file or directory
-- Use Stream API with Files
+- 5.1 - Use Path interface to operate on file and directory paths
+- 5.2 - Use Files class to check, delete, copy or move a file or directory
+- 5.3 - Use Stream API with Files
 
 ### 6. [Migration to a Modular Application](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/tree/master/src/ocp/study/part06)
-- Migrate the application developed using a Java version prior to SE 9 to SE 11 including top-down and bottom-up migration, splitting a Java SE 8 application into modules for migration
-- Use jdeps to determine dependencies and identify way to address the cyclic dependencies
+- 6.1 - Migrate the application developed using a Java version prior to SE 9 to SE 11 including top-down and bottom-up migration, splitting a Java SE 8 application into modules for migration
+- 6.2 - Use jdeps to determine dependencies and identify way to address the cyclic dependencies
 
 ### 7. [Local-Variable Type Inference](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/tree/master/src/ocp/study/part07)
-- Use local-variable type inference
-- Create and use lambda expressions with local-variable type inferred parameters
+- 7.1 - Use local-variable type inference
+- 7.2 - Create and use lambda expressions with local-variable type inferred parameters
 
 ### 8. [Lambda Expressions](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/tree/master/src/ocp/study/part08)
-- Create and use lambda expressions
-- Use lambda expressions and method references
-- Use built-in functional interfaces including Predicate, Consumer, Function, and Supplier
-- Use primitive and binary variations of base interfaces of java.util.function package
+- 8.1 - Create and use lambda expressions
+- 8.2 - Use lambda expressions and method references
+- 8.3 - Use built-in functional interfaces including Predicate, Consumer, Function, and Supplier
+- 8.4 - Use primitive and binary variations of base interfaces of java.util.function package
 
 ### 9. [Parallel Streams](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/tree/master/src/ocp/study/part09)
-- Develop the code that use parallel streams
-- Implement decomposition and reduction with streams
+- 9.1 - Develop code that uses parallel streams
+- 9.2 - Implement decomposition and reduction with streams
 
 ### 10 [Language Enhancements](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/tree/master/src/ocp/study/part10)
-- Use try-with-resources construct
-- Develop code that handles multiple Exception types in a single catch block
+- 10.1 - Use try-with-resources construct
+- 10.2 - Develop code that handles multiple Exception types in a single catch block
