@@ -3,7 +3,7 @@
 
 ## <a name="3-1"></a>3.1 Create and use methods in interfaces
 
-As you may recall, an interface is an abstract data type, similar to a class that defines a
+An interface is an abstract data type, similar to a class that defines a
 list of public abstract methods that any class implementing the interface must provide. An
 interface may also include constant public static final variables, default methods, and
 static methods. The following is an example of an interface and a class that implements it:
@@ -32,10 +32,10 @@ public class Eagle implements Fly {
 
 In this example, the first method of the interface, `getWingSpan()`, declares an exception
 in the interface. Due to the rules of method overriding, this does not require the exception
-to be declared in the overridden method in the Eagle class. The second declaration,
+to be declared in the overridden method in the `Eagle` class. The second declaration,
 `MAX_SPEED`, is a constant static variable available anywhere within our application.
 The next method, `land()`, is a default method that has been optionally overridden in
-the Eagle class. Finally, the method `calculateSpeed()` is a static member and, like
+the `Eagle` class. Finally, the method `calculateSpeed()` is a static member and, like
 `MAX_SPEED`, it is available without an instance of the interface.
 
 An interface may extend another interface, and in doing so it inherits all of the abstract
@@ -63,7 +63,7 @@ public class Lion implements Run {
 }
 ````
 
-In this example, the interface Run extends Walk and inherits all of the abstract methods
+In this example, the interface `Run` extends `Walk` and inherits all of the abstract methods
 of the parent interface. Notice that modifiers used in the methods `isQuadruped()`,
 `getMaxSpeed()`, and `canHuntWhileRunning()` are different between the class and
 interface definitions, such as public and abstract. The compiler automatically adds
@@ -72,22 +72,22 @@ methods, if the developer does not provide them. By contrast, the class implemen
 interface must provide the proper modifiers. For example, the code would not compile if
 `getMaxSpeed()` was not marked public in the Lion class.
 
-Since the Lion class implements Run, and Run extends Walk, the Lion class must provide
+Since the `Lion` class implements `Run`, and `Run` extends `Walk`, the `Lion` class must provide
 concrete implementations of all inherited abstract methods. As shown in this example
 with `getMaxSpeed()`, interface method definitions may be duplicated in a child interface
 without issue.
 
 Remember that an interface cannot extend a class, nor can a class extend an interface.
 For these reasons, none of the following definitions using our previous Walk interface and
-Lion class will compile:
+`Lion` class will compile:
 
 ````
 public interface Sleep extends Lion {} // DOES NOT COMPILE
 public class Tiger extends Walk {} // DOES NOT COMPILE
 ````
 
-In the first definition, the interface Sleep cannot extend Lion, since Lion is a class.
-Likewise, the class Tiger cannot extend the interface Walk.
+In the first definition, the interface `Sleep` cannot extend `Lion`, since Lion is a class.
+Likewise, the class `Tiger` cannot extend the interface Walk.
 
 Interfaces also serve to provide limited support for multiple inheritance within the
 Java language, as a class may implement multiple interfaces, such as in the following
