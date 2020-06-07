@@ -32,6 +32,7 @@ public class Album {
   }
 
   public static class Track {
+
     public String name;
     public int rating;
 

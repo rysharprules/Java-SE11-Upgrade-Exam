@@ -1,6 +1,7 @@
 package ocp.study;
 
 public class Employee implements Comparable {
+
   public final String name;
   private final Department dept;
 

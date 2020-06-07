@@ -1,13 +1,12 @@
 - [1.1 - Describe the Modular JDK](#1-1)
 - [1.2 - Declare modules and enable access between modules](#1-2)
 - [1.3 - Describe how a modular project is compiled and run](#1-3)
-- [Quizzes](#q)
+- [Quiz](#q)
 
 ## <a name="1-1"></a>1.1 - Describe the Modular JDK
 
-In JDK 9, the monolithic JDK is broken into several modules. It now consists of about 90 modules.
-Every module is a well defined piece of functionality of the JDK. All the various framewokrs that were
-part of the prior release of tJDK are now broken down into a bunch of modules, e.g. Logging, Swing.
+In JDK 9, the monolithic JDK is broken into modules. Every module is a well defined piece of functionality of the JDK. All the various frameworks that were
+part of the prior release of the JDK are now broken down into a bunch of modules, e.g. Logging, Swing, Instrumentation.
 
 The modular JDK makes it more scalable to small devices. It improves security and maintainability and improves application performance.
 
@@ -343,7 +342,7 @@ Running Hello World example
 
 Note: `-p` is shortened term for `--module-path` and `-m` is shortened term for `-module`.
 
-## <a name="q"></a>Quizzes
+## <a name="q"></a>Quiz
 
 1. In Java SE 9, which namespace contains modules that are not defined in the JDK in Java SE 9 platform specification but are instead specific to the JDK?
     - `jdk.*`

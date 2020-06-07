@@ -1,6 +1,7 @@
 package ocp.study;
 
 public class Department {
+
   String dept;
 
   public String getDept() {
@@ -17,9 +18,9 @@ public class Department {
 
   @Override
   public boolean equals(Object obj) {
-      if (obj == null || obj.getClass() != Department.class) {
-          return false;
-      }
+    if (obj == null || obj.getClass() != Department.class) {
+      return false;
+    }
     return dept.endsWith(((Department) obj).dept);
   }
 
