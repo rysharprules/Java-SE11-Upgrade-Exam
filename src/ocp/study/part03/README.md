@@ -70,7 +70,7 @@ interface definitions, such as public and abstract. The compiler automatically a
 public to all interface methods and abstract to all non‐static and non‐default
 methods, if the developer does not provide them. By contrast, the class implementing the
 interface must provide the proper modifiers. For example, the code would not compile if
-`getMaxSpeed()` was not marked public in the Lion class.
+`getMaxSpeed()` was not marked public in the `Lion` class.
 
 Since the `Lion` class implements `Run`, and `Run` extends `Walk`, the `Lion` class must provide
 concrete implementations of all inherited abstract methods. As shown in this example
@@ -86,7 +86,7 @@ public interface Sleep extends Lion {} // DOES NOT COMPILE
 public class Tiger extends Walk {} // DOES NOT COMPILE
 ````
 
-In the first definition, the interface `Sleep` cannot extend `Lion`, since Lion is a class.
+In the first definition, the interface `Sleep` cannot extend `Lion`, since `Lion` is a class.
 Likewise, the class `Tiger` cannot extend the interface Walk.
 
 Interfaces also serve to provide limited support for multiple inheritance within the
@@ -102,11 +102,11 @@ public class Frog implements Swim, Hop {
 }
 ````
 
-In this example, the Frog class implements both the Swim and Hop interfaces.
-An instance of Frog may be passed to any method that accepts Swim, Hop, Frog, or
-java.lang.Object as an input parameter. As shown in this example, you can also
+In this example, the `Frog` class implements both the `Swim` and `Hop` interfaces.
+An instance of `Frog` may be passed to any method that accepts `Swim`, `Hop`, `Frog`, or
+`java.lang.Object` as an input parameter. As shown in this example, you can also
 construct interfaces that have neither methods nor class members, traditionally referred
-to as marker interfaces. The java.io.Serializable
+to as marker interfaces. The `java.io.Serializable`
 interface, which contains no methods, is an example of a marker interface.
 
 There are numerous rules associated with implementing interfaces that you should know
@@ -149,17 +149,17 @@ public interface Skip extends Sprint {
 }
 ```
 
-The answer? All three are valid functional interfaces! The first interface, Run, defines no
-new methods, but since it extends Sprint, which defines a single abstract method, it is also
-a functional interface. The second interface, SprintFaster, extends Sprint and defines
-an abstract method, but this is an override of the parent sprint() method; therefore, the
+The answer? All three are valid functional interfaces! The first interface, `Run`, defines no
+new methods, but since it extends `Sprint`, which defines a single abstract method, it is also
+a functional interface. The second interface, `SprintFaster`, extends `Sprint` and defines
+an abstract method, but this is an override of the parent `sprint()` method; therefore, the
 resulting interface has only one abstract method, and it is considered a functional interface.
-The third interface, Skip, extends Sprint and defines a static method and a default
+The third interface, `Skip`, extends `Sprint` and defines a static method and a default
 method, each with an implementation. Since neither of these methods is abstract, the resulting
 interface has only one abstract method and is a functional interface.
 
 Now that you’ve seen some variations of valid functional interfaces, let’s look at some
-invalid ones using our previous Sprint functional interface definition:
+invalid ones using our previous `Sprint` functional interface definition:
 
 ```
 public interface Walk {}
@@ -173,9 +173,9 @@ public interface Crawl {
 ```
            
 Although all three of these interfaces will compile, none of them are considered functional interfaces. The Walk interface neither extends any functional interface classes
-nor defines any methods, so it is not a functional interface. The Dance method extends
- Sprint, which already includes a single abstract method, bringing the total to two abstract
- methods; therefore, Dance is not a functional interface. Finally, the Crawl method defines
+nor defines any methods, so it is not a functional interface. The `dance` method extends
+ `Sprint`, which already includes a single abstract method, bringing the total to two abstract
+ methods; therefore, `dance` is not a functional interface. Finally, the `crawl` method defines
  two abstract methods; therefore it cannot be a functional interface.
  
  In these examples, applying the `@FunctionalInterface` annotation to any of these
@@ -197,7 +197,7 @@ a functional interface. If you later modify the interface to have other abstract
 suddenly their code will break since it will no longer be a functional interface.
 
 Therefore, it is recommend that you explicitly mark the interface with the
-@FunctionalInterface annotation so that other developers know which interfaces they
+`@FunctionalInterface` annotation so that other developers know which interfaces they
 can safely apply lambdas to without the possibility that they may stop being functional
 interfaces down the road.
 

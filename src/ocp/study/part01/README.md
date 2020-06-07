@@ -1,7 +1,291 @@
 - [1.1 - Describe the Modular JDK](#1-1)
 - [1.2 - Declare modules and enable access between modules](#1-2)
 - [1.3 - Describe how a modular project is compiled and run](#1-3)
+- [Quizzes](#q)
 
 ## <a name="1-1"></a>1.1 - Describe the Modular JDK
+
+Modules are a fundamental new kind of Java programming component. The module system:
+
+- Supports programming in the "large"
+- Is built into the Java language
+- Is usable at all levels:
+    - Applications
+    - Libraries
+    - The JDK itself
+- Addresses reliability, maintainability, and security
+- Supports creation of applications that can be scaled for small computing devices
+
+### JAR Files and Distribution Issues
+
+Jar files are:
+    
+- Typically used for packaging the class files for:
+    - The application
+    - The libraries
+- Composed of a set of packages with some additional meta data, e.g. main class to run, class path entries, multi-release flags
+- Added to the class path in order that their contents (classes) to be made available to the JDK for compilation and 
+running - some applications may have hundreds of JAR files in the class path
+
+![Figure 1.1](img/figure1-1.png)
+
+#### Class Path Problems
+
+- JARs in the class path can have duplicate classes and/or packages
+- Java runtime tries to load each class as it finds it:
+    - It uses the first class it finds in class path, even if another similarly named class exists
+    - The first class could be the wrong class if several versions of the library exists in the class path
+    - Problems may occur only under specific operational conditions that require a particular class
+    
+![Figure 1.1](img/figure1-2.png)
+
+#### JAR Dependency Problems
+
+Class path permits many versions of a library, including duplicated files.
+- There are no explicit dependencies
+- There is no proscription on split packages
+- There is no proscription on cyclic dependencies
+- All public classes in the JAR file are accessible
+
+### Accessibility
+
+| JDK 1 - JDK 8 | JDK 9 and later |
+| --- | --- |
+| public<br />protected<br />< package ><br />private | public to everyone<br />public but only to specific modules<br />public only within a module<br />protected<br />< package ><br />private | 
+
+![Figure 1.1](img/figure1-3.png)
+
+"public" no longer means accessible to everyone.
+
+![Figure 1.1](img/figure1-4.png)
+
+You must edit the `module-info` classes to specify how modules read from each other.
+
+### Module System: Advantages
+
+- Addresses the following issues at the unit of distribution/reuse level:
+    - Dependencies
+    - Encapsulation
+    - Interfaces
+- The unit of reuse is the module.
+    - It is a full-fledged Java component
+    - It explicitly declares:
+        - Dependencies on other modules
+        - What packages it makes available to other modules
+            - Only the public interfaces in those available packages are visible outside that module
+           
+Therefore, Java modular applications have the followings traits:
+- No missing dependencies
+- No cyclic dependencies
+- No split packages
+
 ## <a name="1-2"></a>1.2 - Declare modules and enable access between modules
+
+### What is a Module
+
+A module contains one or more packages and other resources such as images or xml files. It is defined in its module
+descriptor (`module-info.class`), which is stored in the module's root folder.
+
+The module descriptor must contain the module name. Additionally, the module descriptor can contain details of:
+- Required module dependencies (other modules this module depends on)
+- Packages that this module exports, making them available to other modules (otherwise all packages in the module are implicitly unavailable to other modules)
+- Permissions to open content of this module to other modules via the use of reflection
+- Services this module offers to other modules
+- Services this module consumes
+
+### Module Dependencies with `requires`
+
+A module defines that it needs another module using the `requires` directive. `requires` specifies a normal module dependency
+(this module needs access to some content provided by another module). `requires transitive` specifies a module dependency
+and makes the module depended on available to other modules. `requires static` indicates module dependency at compile time,
+but not at the runtime.
+
+### Module Package Availability with `exports`
+
+A modules defines what content it makes available for other modules using the `exports` directive. Exporting a package makes all
+of its public types available to other modules. There are two directives to specify packages to export:
+1. The `exports <package_name>` directive specifies a package whose public types are accessible to all other modules
+1. The `exports <package_name> to` directive restricts the availability of an exported package to a list of specific modules. It accepts a comma separated list of module names after the `to` keyword 
+
+![Figure 1.1](img/figure1-5.png)
+
+![Figure 1.1](img/figure1-6.png)
+
+### Access to Types via Reflection
+
+A module may set up to allow runtime-only access to a package by using the `opens` directive. The `opens` directive makes a package 
+available to all other modules at run-time but not at compile time. The `opens ... to` directive makes a package available
+to a list of specific modules at run-time but not compile time. Using `opens` for a package is similar to using `exports`,
+but it also makes all of its non-public types available via reflection. Modules that contain injectable code should use the
+`opens` directive, because injections work via reflection. All packages in a module can be made available to access via reflection
+by using the `open` directive before the module directive.
+
+![Figure 1.1](img/figure1-7.png)
+
+### Example Hello World Modular Application Code
+
+![Figure 1.1](img/figure1-8.png)
+
+![Figure 1.1](img/figure1-9.png)
+
+### Summary of Keywords
+
+| Keywords and Syntax | Description |
+| --- | --- |
+| `export <package>` | Declares which package is eligible to be read |
+| `export <package> to <module` | Declares which package is eligible to be read by a specific module |
+| `requires <module>` | Specifies another module to read from |
+| `requires transitive <module>` | Specifies another module to read from. The relationship is transitive in that indirect access is given to modules requiring the current module |
+
+- These are restricted keywords
+- Their creation won't break existing code
+- They're only available in the context of the `module-info` class
+
 ## <a name="1-3"></a>1.3 - Describe how a modular project is compiled and run
+
+Single module compilation:
+
+`javac -d <output folder> <list of source code file paths including module-info>`
+
+Multi-module compilation:
+
+````
+javac -d <output folder>
+    --module-source-path <root directory of the module source> \
+    <list of source code file paths>
+````
+
+Get description of the compiled module:
+
+````
+java --module-path <path to the compiled module> \
+    --describe-module <module name>
+````
+
+#### Creating a Modular JAR
+
+Use the `jar` command to crete a modular JAR:
+
+````
+jar --create -f <path and name of JAR file> \
+    --main-class <package name>.<main class name> \
+    -C <path to compiled module code> .
+````
+
+Hello World application example:
+
+````
+jar --create -f jars/world.jar -C mods/world .
+jar --create -f jars/hello.jar --main-class greeting.Hello -C mods/greeting/ .
+````
+
+### Run a Modular Application
+
+Running an unpackaged module application:
+
+````
+java --module-path <path to compiled module or modules> \
+    --module <module name>\<package name>.<main class name>
+````
+
+Running an application packaged into modular JARs (assuming main class specified when creating JARs):
+
+`java --module-path <path to JARs> --module <module name>`
+
+Running Hello World example
+
+`java -p jars -m greeting`
+
+Note: `-p` is shortened term for `--module-path` and `-m` is shortened term for `-module`.
+
+## <a name="q"></a>Quizzes
+
+1. Which statement is true about JARs in the classpath?
+    - All teh classes in the JAR file are accessible
+    - JRE continues to search for the last class within the JARs in the classpath if another similarly named class exists
+    - JARs in the classpath can have duplicate classes and/or packages (A)
+1. A module can contain:
+    - only resources and a module descriptor
+    - packages, resources, and a module descriptor (A)
+    - only packages and resources
+1. Which statements are true about the module system (Choose two)
+    - It supports only small computing devices
+    - It addresses reliability, maintainability, and security requirements (A)
+    - It supports reusability (A)
+    - It addresses the need for enhanced networking support
+1. What two things would you change about this code to set up a `requires` relationship directly from `main` to `gameapi`?
+    ![questionFigure 1.1](img/questionFigure1-1.png)
+    (A): Remove transative keyword from `requires transative` from `competition` module and add `requires gameapi` to `main` module.
+1. The `main` module contains a class, which instantiates an object defined in `competition` module. `competition` exports its
+packages. `main` requires `competition`. Will this code still compile if the `requires` statement is commented out?
+    ````
+    module main {
+        //requires competion
+    }
+    ````
+    - Yes
+    - No (A) - exporting (with `exports`) packages only specify what material could be read from a module. One more step is required to specify that one module requires another - `requires`
+1. You want the `gameapi` module to export the `game` package to both the `competition` and `basketball` modules. Which code example shows how this can be done?
+    - A)
+        ````
+      module gameapi {
+            exports game to competition;
+            exports game to basketball;
+      }
+      ````
+    - B) (A) - You can separate the modules you export to with comma
+        ````
+      module gameapi {
+            exports game to competition, basketball;
+      }
+      ````
+1. Which statement is true about a module descriptor?
+    - A module descriptor can contain details of required module dependencies (A)
+    - A module descriptor file must be named module-descriptor.java
+    - A module descriptor must be stored in the classpath
+    - A module descriptor does not contain details of services offered by the module owned by it
+1. Given "order" module contains "Order.java" and "product" module contains "Product.java", which is valid module descriptor file content?
+    <br />Order.java
+    ````
+    package p1;
+    import p2.Product;
+    public class Order {
+        Product product;
+    }
+    ````
+    Product.java
+    ````
+    package p2;
+    public class Product {}
+    ````
+    - A)
+        ````
+        module order {
+            exports Product;
+        }
+        module product {
+            requires Order;
+        }
+        ````
+    - B) (A)
+        ````
+        module order {
+            requires product;
+        }
+        module product {
+            exports p2;
+        }
+        ````
+    - C)
+        ````
+        module order {
+            requires p2.Product;
+        }
+        module p2.Product{}
+        ````
+1. Which directive makes a package available to all other modules at run time but not at compile time?
+    - requires
+    - exports
+    - opens ... to
+    - opens (A) 
+
