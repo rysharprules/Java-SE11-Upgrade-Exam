@@ -1,7 +1,7 @@
-- [10.1 - Use try-with-resources construct](#10-1)
+- [10.1 - Use `try-with-resources` construct](#10-1)
 - [10.2 - Develop code that handles multiple Exception types in a single catch block](#10-2)
 
-## <a name="10-1"></a> 10.1 - Use try-with-resources construct
+## <a name="10-1"></a> 10.1 - Use `try-with-resources` construct
 
 Multi-catch allows you to write code without duplication. Another problem arises with duplication
 in finally blocks. It is important to close resources
@@ -27,8 +27,7 @@ to the try-catch statements.
 ````
 
 That’s twelve lines of code to do something quite simple, and we don’t even deal with
-catching the exception. The sidebar, “Ensuring Resources Are Closed,” explains why so
-much code is needed to do something so simple. Switching to the try-with-resources syntax
+catching the exception. Switching to the `try-with-resources` syntax
 introduced in Java 7, it can be rewritten as follows:
 
 ````
@@ -41,25 +40,25 @@ introduced in Java 7, it can be rewritten as follows:
 ````
 
 The new version has half as many lines! There is no longer code just to close resources.
-The new try-with-resources statement automatically closes all resources opened in the
+The new `try-with-resources` statement automatically closes all resources opened in the
 try clause. This feature is also known as automatic resource management, because Java
 automatically takes care of the closing.
 
-In the following sections, we will look at the try-with-resources syntax and how to
+In the following sections, we will look at the `try-with-resources` syntax and how to
 indicate a resource can be automatically closed. We will introduce suppressed exceptions.
 
-### Try-With-Resources Basics
+### `try-with-resources` Basics
 
-You might have noticed that there is no finally block in the try-with-resources code. For the
+You might have noticed that there is no finally block in the `try-with-resources` code. For the
 OCA exam, you learned that a try statement must have one or more catch blocks or a finally
 block. This is still true. The finally clause exists implicitly. You just don’t have to type it.
 
-Figure 6.4 shows what a try-with-resources statement looks like. Notice that one or
+Figure 6.4 shows what a `try-with-resources` statement looks like. Notice that one or
 more resources can be opened in the try clause. Also, notice that parentheses are used to
 list those resources and semicolons are used to separate the declarations. This works just
-like declaring multiple indexes in a for loop.
+like declaring multiple indexes in a `for` loop.
 
-**FIGURE 6.4** - The syntax of a basic try-with-resources
+**FIGURE 6.4** - The syntax of a basic `try-with-resources`
 ````
 try (BufferedReader r = Files.newBufferedReader(path1); // Any resources that should automatically be closed within try
 BufferedWriter w = Files.newBufferedWriter(path2)) {
@@ -67,11 +66,11 @@ BufferedWriter w = Files.newBufferedWriter(path2)) {
 } // Resources are closed at this point
 ````
 
-Figure 6.5 shows that a try-with-resources statement is still allowed to have catch and/
+Figure 6.5 shows that a `try-with-resources` statement is still allowed to have catch and/
 or finally blocks. They are run in addition to the implicit one. The implicit finally block
 runs before any programmer-coded ones.
 
-**FIGURE 6.5** - The syntax of try-with-resources including catch /finally
+**FIGURE 6.5** - The syntax of `try-with-resources` including catch /finally
 
 ````
 try (BufferedReader r = Files.newBufferedReader(path1); // Any resources that should automatically be closed
@@ -95,7 +94,7 @@ TABLE 6.4 - Legal vs. illegal configurations with a traditional try statement
 | 0 catch blocks | Not legal | Legal | Not legal |
 | 1 or more catch blocks | Legal | Legal | Not legal |
 
-TABLE 6.5 - Legal vs. illegal configurations with a try-with-resources statement
+TABLE 6.5 - Legal vs. illegal configurations with a `try-with-resources` statement
 
 |  | 0 finally blocks | 1 finally block | 2 or more finally blocks |
 | --- | --- | --- | --- |
@@ -126,25 +125,27 @@ inviting you to call it by accident.
 
 ### AutoCloseable
 
-You can’t just put any random class in a try-with-resources statement. Java commits to
+You can’t just put any random class in a `try-with-resources` statement. Java commits to
 closing automatically any resources opened in the try clause. Here we tell Java to try to
 close the Turkey class when we are finished with it:
 
+````
 public class Turkey {
-public static void main(String[] args) {
-try (Turkey t = new Turkey()) { // DOES NOT COMPILE
-System.out.println(t);
+    public static void main(String[] args) {
+        try (Turkey t = new Turkey()) { // DOES NOT COMPILE
+            System.out.println(t);
+        }
+    }
 }
-}
-}
+````
 
-Java doesn’t allow this. It has no idea how to close a Turkey. Java informs us of this fact
+Java doesn’t allow this. It has no idea how to close a `Turkey`. Java informs us of this fact
 with a compiler error:
 
 `The resource type Turkey does not implement java.lang.AutoCloseable`
 
-In order for a class to be created in the try clause, Java requires it to implement an interface
-called AutoCloseable. TurkeyCage does implement this interface:
+In order for a class to be created in the `try` clause, Java requires it to implement an interface
+called `AutoCloseable`. `TurkeyCage` does implement this interface:
 
 ````
 1: public class TurkeyCage implements AutoCloseable {
@@ -160,17 +161,17 @@ called AutoCloseable. TurkeyCage does implement this interface:
 ````
 
 That’s much better. Line 1 declares that the class implements the AutoCloseable interface.
-This interface requires a close() method to be implemented, which is done on lines
-2–4. Now, line 6 is allowed. Java does know how to close a TurkeyCage object. All Java has
-to do is to call the close() method.
+This interface requires a `close()` method to be implemented, which is done on lines
+2–4. Now, line 6 is allowed. Java does know how to close a `TurkeyCage` object. All Java has
+to do is to call the `close()` method.
 
-The AutoCloseable interface has only one method to implement:
+The `AutoCloseable` interface has only one method to implement:
 
 `public void close() throws Exception;`
 
-Wait—TurkeyCage didn’t throw an Exception. That’s OK because an overriding method
+Wait—`TurkeyCage` didn’t throw an `Exception`. That’s OK because an overriding method
 is allowed to declare more specific exceptions than the parent or even none at all. By declaring
-Exception, the AutoCloseable interface is saying that implementers may throw any
+`Exception`, the `AutoCloseable` interface is saying that implementers may throw any
 exceptions they choose.
 
 The following shows what happens when an exception is thrown. Do you see any problems
@@ -189,13 +190,13 @@ public class StuckTurkeyCage implements AutoCloseable {
 }
 ````
 
-The try-with-resources statement throws a checked exception. And you know that
+The `try-with-resources` statement throws a checked exception. And you know that
 checked exceptions need to be handled or declared. Tricky isn’t it? This is something that
-you need to watch for on the exam. If the main() method declared an Exception, this code
+you need to watch for on the exam. If the `main()` method declared an `Exception`, this code
 would compile.
 
-Java strongly recommends that close() not actually throw Exception. It is better to
-throw a more specific exception. Java also recommends to make the close() method
+Java strongly recommends that `close()` not actually throw `Exception`. It is better to
+throw a more specific exception. Java also recommends to make the `close()` method
 idempotent. Idempotent means that the method can called be multiple times without any
 side effects or undesirable behavior on subsequent runs. For example, it shouldn’t throw
 an exception the second time or change state or the like. Both these negative practices are
@@ -222,25 +223,25 @@ class ExampleThree implements AutoCloseable {
 }
 ````
 
-ExampleOne is the best implementation. ExampleTwo throws Exception rather than
-a more specific subclass, which is not recommended. ExampleThree has a side effect. It
+`ExampleOne` is the best implementation. `ExampleTwo` throws `Exception` rather than
+a more specific subclass, which is not recommended. `ExampleThree` has a side effect. It
 changes the state of a variable. Side effects are not recommended.
 
-#### Real World Scenario - AutoCloseable vs. Closeable
+#### Real World Scenario - `AutoCloseable` vs. `Closeable`
 
-The AutoCloseable interface was introduced in Java 7. Before that, another interface
-existed called Closeable. It was similar to what the language designers wanted, with the
+The `AutoCloseable` interface was introduced in Java 7. Before that, another interface
+existed called `Closeable`. It was similar to what the language designers wanted, with the
 following exceptions:
 
-- Closeable restricts the type of exception thrown to IOException.
-- Closeable requires implementations to be idempotent.
+- `Closeable` restricts the type of exception thrown to `IOException`.
+- `Closeable` requires implementations to be idempotent.
 
 The language designers emphasize backward compatibility. Since changing the existing
-interface was undesirable, they made a new one called AutoCloseable. This new
-interface is less strict than Closeable. Since Closeable meets the requirements for
-AutoCloseable, it started implementing AutoCloseable when the latter was introduced.
+interface was undesirable, they made a new one called `AutoCloseable`. This new
+interface is less strict than `Closeable`. Since `Closeable` meets the requirements for
+`AutoCloseable`, it started implementing `AutoCloseable` when the latter was introduced.
 
-## <a name="10-2"></a> 10.2 - Develop code that handles multiple Exception types in a single catch block
+## <a name="10-2"></a> 10.2 - Develop code that handles multiple `Exception` types in a single catch block
 
 When something goes wrong in a program, it is common to log the error and convert it to a
 different exception type. In this example, we print the stack trace rather than write to a log.
@@ -262,16 +263,14 @@ Next, we throw a runtime exception:
 14:     } }
 ````
 
-Lines 4 and 5 read a text file into a String. We cover this in Chapter 9, “NIO.2.” For now,
-it does what it sounds like and throws an IOException if the operation fails. Line 6 converts
-that String to a LocalDate. You saw in Chapter 5, “Dates, Strings, and Localization,” that
-this throws a DateTimeParseException on failure. The two catch blocks on lines 8–14 print
-a stack trace and then wrap the exception in a RuntimeException.
+Lines 4 and 5 read a text file into a `String`. It throws an `IOException` if the operation fails. Line 6 converts
+that `String` to a `LocalDate`. This throws a `DateTimeParseException` on failure. The two catch blocks on lines 8–14 print
+a stack trace and then wrap the exception in a `RuntimeException`.
 
 This works. However, duplicating code is bad. Think about what happens if we decide
 that we want to change the code to write to a log file instead of printing the stack trace. We
 have to be sure to change the code in two places. Before Java 7, there were two approaches
-to deal with this problem. One was to catch Exception instead of the specific types:
+to deal with this problem. One was to catch `Exception` instead of the specific types:
 
 ````
 public static void main(String[] args) {
@@ -288,7 +287,7 @@ public static void main(String[] args) {
 
 The duplicate code is gone. However, this isn’t a good approach because it catches
 other exceptions too. For example, suppose that we had incorrect code that threw a
-NullPointerException. The catch block would catch it, which was never the intent.
+`NullPointerException`. The catch block would catch it, which was never the intent.
 The other approach is to extract the duplicate code into a helper method:
 
 ````
@@ -311,7 +310,7 @@ private static void handleException(Exception e) {
 ````
 
 The duplicate code is mostly gone now. We still have a little duplication in that the code
-calls handleException() in two places. The code also is longer and a bit harder to read.
+calls `handleException()` in two places. The code also is longer and a bit harder to read.
 
 The Java language designers recognized that this situation is an undesirable tradeoff. In
 Java 7, they introduced the ability to catch multiple exceptions in the same catch block,
@@ -337,7 +336,7 @@ Figure 6.3 shows the syntax of multi-catch. It’s like a regular catch clause, 
 or more exception types are specified separated by a pipe. The pipe is also used as the “or”
 operator, making it easy to remember that you can use either/or of the exception types.
 Notice how there is only one variable name in the catch clause. Java is saying that the
-variable named e can be of type Exception1 or Exception2.
+variable named e can be of type `Exception1` or `Exception2`.
 
 FIGURE 6.3 - The syntax of multi-catch
 ````
@@ -415,7 +414,7 @@ their subclasses. While this doesn’t have anything to do with multi-catch, you
 - Line 17 cannot catch FileNotFoundException because that exception was already
 caught on line 15. You can’t list the same exception type more than once in the same
 try statement, just like with “regular” catch blocks.
-- Line 16 cannot catch SQLException because nothing in the try statement can
+- Line 16 cannot catch `SQLException` because nothing in the try statement can
 potentially throw one. Again, just like “regular” catch blocks, any runtime exception
 may be caught. However, only checked exceptions that have the potential to be thrown
 are allowed to be caught.
@@ -446,9 +445,9 @@ try {
 ````
 
 With multi-catch, we no longer have a specific type of exception. Java uses the common
-Exception superclass for the variable internally. However, the intent isn’t really to have any
-old random exception in there. It wouldn’t make sense to shove an IllegalStateException
-in e. That would just make the code more complicated. Imagine that you wanted to rethrow
+`Exception` superclass for the variable internally. However, the intent isn’t really to have any
+old random exception in there. It wouldn’t make sense to shove an `IllegalStateException`
+in `e`. That would just make the code more complicated. Imagine that you wanted to rethrow
 the exception and it could be any old type. To avoid these problems and complexity, Java
 forbids reassigning the exception variable in a multi-catch situation.
 

@@ -121,7 +121,7 @@ own implementation.
 Let’s take a look at an example of a functional interface and a class that implements it:
 
 ```
-@FunctionalInterface
+`@FunctionalInterface`
 public interface Sprint {
     public void sprint(Animal animal);
 }
@@ -182,12 +182,12 @@ nor defines any methods, so it is not a functional interface. The `dance` method
  interfaces would result in a compiler error, as would attempting to use them implicitly as
  functional interfaces in a lambda expression.
 
-### Applying the @FunctionalInterface Annotation
+### Applying the `@FunctionalInterface` Annotation
 
-While it is a good practice to mark a functional interface with the @FunctionalInterface
+While it is a good practice to mark a functional interface with the `@FunctionalInterface`
 annotation for clarity, it is not required with functional programming. The Java compiler
 implicitly assumes that any interface that contains exactly one abstract method is
-a functional interface. Conversely, if a class marked with the @FunctionalInterface
+a functional interface. Conversely, if a class marked with the `@FunctionalInterface`
 annotation contains more than one abstract method, or no abstract methods at all, then
 the compiler will detect this error and not compile.
 

@@ -5,6 +5,151 @@
 
 ## <a name="1-1"></a>1.1 - Describe the Modular JDK
 
+In JDK 9, the monolithic JDK is broken into several modules. It now consists of about 90 modules.
+Every module is a well defined piece of functionality of the JDK. All the various framewokrs that were
+part of the prior release of tJDK are now broken down into a bunch of modules, e.g. Logging, Swing.
+
+The modular JDK makes it more scalable to small devices. It improves security and maintainability and improves application performance.
+
+### Java SE Modules
+
+The `java.se` module doesn't contain any code but has only dependencies declared in the module descriptor:
+
+````
+module java.se {
+    requires transitive java.desktop;
+    requires transitive java.sql;
+    requires transitive java.xml;
+    requires transitive java.prefs;
+    // ... many more
+}
+````
+
+In the module descriptor, a `requires transitive` clause is listed for every single module that is part of the Java SE specification. When you say requires `java.se` in a module, all these modules will be available to you.
+
+These modules are classified into two categories:
+
+1. Standard modules (`java.*` prefix for module names) that are part of the Java SE specification, e.g. `java.sql` for database connectivity, `java.xml` for XML processing and `java.logging` for logging.
+1. Modules not defined in the Java SE 9 platform (`jdk.*` prefix) are specific to the JDK, e.g. `jdk.jshell`, `jdk.policytool`, `jdk.httpserver`
+
+### The Base Module
+
+The base module is `java.base`. Every module depends on `java.base`, but this module doesn't depend on any other modules.
+The base module exports all of the platform's core packages.
+
+![Figure 1.10](img/figure1-10.png)
+
+#### Finding the right platform module
+
+You can get a list of the packages a platform module contains with the `--describe-module` switch:
+
+![Figure 1.11](img/figure1-11.png)
+
+#### Location of some tools in JDK 9
+
+| Tool | Module |
+| --- | --- |
+| `javac` | `jdk.compiler` |
+| `java` | `jdk.base` |
+| `jshell` | `jdk.shell` |
+| `jdeps` | `jdk.jdeps` |
+| `jlink` | `jdk.jlink` | 
+
+### Java EE Modules
+
+There are various technologies of Java EE that are shipped with JDK.
+The list of Java EE modules present in JDK 9:
+
+1. `java.corba`
+1. `java.activation`
+1. `java.annotations.common`
+1. `java.transaction`
+1. `java.xml.bind`
+1. `java.xml.ws`
+
+These modules are deprecated for removal in JDK 9 release. Because of this, they are disabled by default.
+
+#### Resolving Java EE modules in JDK 9
+
+Java EE modules are not resolved by default when you compile or run code on the class path.
+Code on the class path with references to classes APIs will fail with `NoDefClassFoundError` or `ClassNotFoundException`.
+The policy of not resolving these modules is the first step towards removing these APIs from Java SE and the JDK in the future.
+
+Use the --add-modules command line option to ensure the module with the API is resolved at startup.
+
+For example, if you run an application that uses JAXB API, it fails with the following error:
+
+````
+$java   com.examle.JAXBCustomer
+Exception in thread "main" java.lang.NoClassDefFoundError:
+javax/xml/bind/JAXBException
+        at java.base/java.lang.Class.getDeclaredMethods...
+        at java.base...
+````
+ 
+To resolve the `java.xml.bind` module at run time and ensure the module is available at run time, specify the following command line option:
+
+`$java --add-modules java.xml.bind com.example.JAXBCustomer`
+
+![Figure 1.12](img/figure1-12.png)
+
+### Using JDK Internal APIs
+
+The JDK consists of public APIs and internal APIs.
+
+The public APIs:
+- Used to develop portable Java applications
+- Are in `java.*`, `javax.*`, and `org.*` packages
+- If it works in JDK version `n`, it will continue to work in JDK version `n`+ 1
+
+Internal APIs:
+- Used to implement the JDK itself
+- Are in `com.sun.*`, `sun.*`, and `jdk.*` packages
+- Not meant to be used by developers
+
+Before modularization in JDK 9, it was possible to use any public API, even if those classes made up the JDK internal APIs.
+JDK internal APIs, such as the following classes for example, have been used by developers and in a few widely used libraries:
+- `sun.misc.BASE64Encoder`
+- `sun.misc.BASE64Dencoder`
+- `sun.misc.Unsafe`
+
+JDK 9 encapsulatin policy for JDK internals no longer permits access to `sun.misc.BASE64Encoder` and `sun.misc.BASE64Dencoder`, instead allowing access to `java.util.Base64`.
+
+#### Illegal access to JDK internals in JDK 9
+
+Some tools and libraries use reflection to access parts of JDK internal APIs. This illegal reflective access will be disabled
+in a future release of the JDK. In JDK 9, it is permitted by default and a warning is issued, e.g. a warning issued when starting Jython:
+
+````
+$ java -jar jython-standalone-2.7.0.jar
+WARNING: An illegal reflective acccess operation has occurred
+WARNING: Illegal reflective access by jnr.posix.JavaLibCHelper (:/jython-
+standalone-2.7.0.jar) to method sun.nio.ch.SelChImpl.getFD()
+WARNING: Please consider reporting this to the maintainers of
+jnr.posix.JavaLibCHelper
+WARNING: Use --illegal-access-warn to enable warning of further illegal
+reflective access operations
+WARNING: All illegal access operations will be denied in a future release
+...
+````
+
+Note: warnings can be disabled on a library-by-library basis with the `--add-opens` command line flag, e.g.:
+
+`$java --add-opens java.base/sun.nio.ch=ALL-UNNAMED --add-opens java.base/java.io=ALL_UNNAMED -jar jython-standalone-2.7.0.jar`
+
+### Changed JDK and JRE layout
+
+The layout of files in the JDK and JRE has changed in JDK 9:
+
+![Figure 1.13](img/figure1-13.png)
+
+In JDK 9, code that assumes the following abut the JDK layout will fail:
+- `lib` directory contains `rt.jar`
+- Presence of `rt.jar` and `tools.jar`
+Class and resource files previously stored in `lib/rt.jar`, `lib/tools.jar`, `lib/dt.jar`, and various other internal JAR files are stored in more efficient format in implementation-specific files in the `lib` directory
+
+### Why Modules?
+
 Modules are a fundamental new kind of Java programming component. The module system:
 
 - Supports programming in the "large"
@@ -20,10 +165,10 @@ Modules are a fundamental new kind of Java programming component. The module sys
 
 Jar files are:
     
-- Typically used for packaging the class files for:
+- Typically, used for packaging the class files for:
     - The application
     - The libraries
-- Composed of a set of packages with some additional meta data, e.g. main class to run, class path entries, multi-release flags
+- Composed of a set of packages with some additional metadata, e.g. main class to run, class path entries, multi-release flags
 - Added to the class path in order that their contents (classes) to be made available to the JDK for compilation and 
 running - some applications may have hundreds of JAR files in the class path
 
@@ -200,6 +345,44 @@ Note: `-p` is shortened term for `--module-path` and `-m` is shortened term for 
 
 ## <a name="q"></a>Quizzes
 
+1. In Java SE 9, which namespace contains modules that are not defined in the JDK in Java SE 9 platform specification but are instead specific to the JDK?
+    - `jdk.*`
+    - `java.*` (A)
+    - Both the above
+1. Which three directories are not present in JDK 9?
+    - `jre` (A)
+    - `rt.jar` (A)
+    - `bin`
+    - `tools.jar` (A)
+    - `conf`
+1. Which are part of the modular graph of `java.base` (Choose two):
+    - `javax.swing`
+    - `java.util` (A)
+    - `java.naming`
+    - `java.lang` (A)
+    - `java.rmi`
+1. Which is true?
+    - The installation directory JDK 9 contains the JRE folder
+    - The installation directory JDK 9 contains the `conf` folder (A)
+    - Both are true
+    - Both are false
+1. Which are part of the modular graph of the `java.se` module? (Choose three):
+    - `java.net`
+    - `java.io`
+    - `java.naming` (A)
+    - `java.util`
+    - `java.sql` (A)
+    - `java.rmi` (A) - See [java.se modular grpah here](https://javadoc.scijava.org/Java9/java.se-summary.html).
+1. Which statements are true about modular JDK? (Choose two):
+    - It helps the application to be more scalable to small devices (A)
+    - It is integrated with all the APIs, including logging, swing and instrumentation
+    - It is available from JDK 8
+    - It is a broken, well defined functional piece of the JDK (A)
+1. Which are part of modular JDK's default modules? (Choose two):
+    - Oracle-specific modules (A)
+    - JDK-specific modules (A)
+    - log4j
+    - swing
 1. Which statement is true about JARs in the classpath?
     - All teh classes in the JAR file are accessible
     - JRE continues to search for the last class within the JARs in the classpath if another similarly named class exists

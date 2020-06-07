@@ -6,10 +6,10 @@
 The Streams API was designed to make creating parallel streams quite easy. For the exam,
 you should be familiar with the two ways of creating a parallel stream.
 
-### parallel()
+### `parallel()`
 
 The first way to create a parallel stream is from an existing stream. You just call
-parallel() on an existing stream to convert it to one that supports multi-threaded
+`parallel()` on an existing stream to convert it to one that supports multi-threaded
 processing, as shown in the following code:
 
 ````
@@ -37,7 +37,7 @@ The Stream interface includes a method `isParallel()` that can be used
 to test if the instance of a stream supports parallel processing. Some
 operations on streams preserve the parallel attribute, while others do
 not. For example, the `Stream.concat(Stream s1, Stream s2)` is parallel
-if either s1 or s2 is parallel. On the other hand, `flatMap()` creates a new
+if either `s1` or `s2` is parallel. On the other hand, `flatMap()` creates a new
 stream that is not parallel by default, regardless of whether the underlying
 elements were parallel.
 
@@ -52,7 +52,7 @@ Arrays.asList(1,2,3,4,5,6)
 .forEach(s -> System.out.print(s+" "));
 ````
 
-What do you think this code will output when executed as part of a main() method?
+What do you think this code will output when executed as part of a `main()` method?
 
 Let’s take a look:
 
@@ -77,15 +77,15 @@ the stream concurrently. The following are each sample outputs of this code snip
 ````
 
 As you can see, the results are no longer ordered or predictable. If you compare this to
-earlier parts of the chapter, the forEach() operation on a parallel stream is equivalent to
-submitting multiple Runnable lambda expressions to a pooled thread executor.
+earlier parts of the chapter, the `forEach()` operation on a parallel stream is equivalent to
+submitting multiple `Runnable` lambda expressions to a pooled thread executor.
 
 ### Understanding Performance Improvements
 
 Let’s look at another example to see how much using a parallel stream may improve performance
 in your applications. Let’s say that you have a task that requires processing 4,000
 records, with each record taking a modest 10 milliseconds to complete. The following is a
-sample implementation that uses Thread.sleep() to simulate processing the data:
+sample implementation that uses `Thread.sleep()` to simulate processing the data:
 
 ````
 import java.util.*;
@@ -149,7 +149,7 @@ overhead costs to allocating and setting up the parallel processing.
 Parallel streams can improve performance because they rely on the property that many stream
 operations can be executed independently. By independent operations, we mean that the results
 of an operation on one element of a stream do not require or impact the results of another
-element of the stream. For example, in the previous example, each call to processRecord()
+element of the stream. For example, in the previous example, each call to `processRecord()`
 can be executed separately, without impacting any other invocation of the method.
 
 As another example, consider the following lambda expression supplied to the `map()`
@@ -163,11 +163,11 @@ Arrays.asList("jackal","kangaroo","lemur")
 ````
 
 In this example, mapping jackal to JACKAL can be done independently of mapping
-kangaroo to KANGAROO . In other words, multiple elements of the stream can be processed at
+kangaroo to KANGAROO. In other words, multiple elements of the stream can be processed at
 the same time and the results will not change.
 
-Many common streams including map() , forEach() , and filter() can be processed
-independently, although order is never guaranteed. Consider the following modifi ed version
+Many common streams including `map()`, `forEach()`, and `filter()` can be processed
+independently, although order is never guaranteed. Consider the following modified version
 of our previous stream code:
 
 ````
@@ -177,8 +177,8 @@ Arrays.asList("jackal","kangaroo","lemur")
     .forEach(System.out::println);
 ````
 
-This example includes an embedded print statement in the lambda passed to the map()
-method. While the return values of the map() operation are the same, the order in which
+This example includes an embedded print statement in the lambda passed to the `map()`
+method. While the return values of the `map()` operation are the same, the order in which
 they are processed can result in very different output. We might even print terminal results
 before the intermediate operations have finished, as shown in the following generated
 output:
@@ -251,8 +251,8 @@ synchronized one, we could have seen output such as the following:
 null 2 4 5 6 1
 ````
 
-For an ArrayList object, the JVM internally manages a primitive array of the same type. As the
-size of the dynamic ArrayList grows, a new, larger primitive array is periodically required. If
+For an `ArrayList` object, the JVM internally manages a primitive array of the same type. As the
+size of the dynamic `ArrayList` grows, a new, larger primitive array is periodically required. If
 two threads both trigger the array to be resized at the same time, a result can be lost, producing
 the unexpected value shown here. The unexpected result of two tasks executing at the same time is a race condition.
 
@@ -260,11 +260,11 @@ the unexpected value shown here. The unexpected result of two tasks executing at
 
 ### Combining Results with reduce()
 
-The stream operation reduce() combines a stream into a
-single object. Recall that first parameter to the reduce() method is called the identity, the
+The stream operation `reduce()` combines a stream into a
+single object. Recall that first parameter to the `reduce()` method is called the identity, the
 second parameter is called the accumulator, and the third parameter is called the combiner.
 
-We can concatenate a string using the reduce() method to produce wolf , as shown in the
+We can concatenate a string using the `reduce()` method to produce wolf , as shown in the
 following example:
 
 ````
@@ -274,31 +274,31 @@ System.out.println(Arrays.asList('w', 'o', 'l', 'f')
         (s2,s3) -> s2 + s3));
 ````
 
-On parallel streams, the reduce() method works by applying the reduction to pairs of
+On parallel streams, the `reduce()` method works by applying the reduction to pairs of
 elements within the stream to create intermediate values and then combining those intermediate
-values to produce a fi nal result. Whereas with a serial stream, wolf was built one
-character at a time, in a parallel stream, the intermediate strings wo and lf could have been
+values to produce a fi nal result. Whereas with a serial stream, `wolf` was built one
+character at a time, in a parallel stream, the intermediate strings `wo` and `lf` could have been
 created and then combined.
 
 With parallel streams, though, we now have to be concerned about order. What if
-the elements of a string are combined in the wrong order to produce wlfo or flwo? The
+the elements of a string are combined in the wrong order to produce `wlfo` or `flwo`? The
 Streams API prevents this problem, while still allowing streams to be processed in parallel,
-as long as the arguments to the reduce() operation adhere to certain principles.
+as long as the arguments to the `reduce()` operation adhere to certain principles.
 
-#### Requirements for reduce() Arguments
+#### Requirements for `reduce()` Arguments
 
-- The identity must be defined such that for all elements in the stream u,
-combiner.apply(identity, u) is equal to u.
-- The accumulator operator op must be associative and stateless such that (a op b) op c
-is equal to a op (b op c).
+- The identity must be defined such that for all elements in the stream `u`,
+`combiner.apply(identity, u)` is equal to `u`.
+- The accumulator operator op must be associative and stateless such that `(a op b) op c`
+is equal to `a op (b op c)`.
 - The combiner operator must also be associative and stateless and compatible with the
-identity, such that for all u and t combiner.apply(u,accumulator.apply(identity,t))
-is equal to accumulator.apply(u,t).
+identity, such that for all `u` and `t` `combiner.apply(u,accumulator.apply(identity,t))`
+is equal to `accumulator.apply(u,t)`.
 
-If you follow these principles when building your reduce() arguments, then the
+If you follow these principles when building your `reduce()` arguments, then the
 operations can be performed using a parallel stream and the results will be ordered as they
 would be with a serial stream. Note that these principles still apply to the identity and
-accumulator when using the one- or two-argument version of reduce() on parallel streams.
+accumulator when using the one- or two-argument version of `reduce()` on parallel streams.
 
 Let’s take a look at an example using a non-associative accumulator. In particular, subtracting
 numbers is not an associative operation; therefore the following code can output
@@ -310,7 +310,7 @@ System.out.println(Arrays.asList(1,2,3,4,5,6)
     .reduce(0,(a,b) -> (a-b))); // NOT AN ASSOCIATIVE ACCUMULATOR
 ````
 
-It may output -21, 3, or some other value, as the accumulator function violates the associativity
+It may output `-21`, `3`, or some other value, as the accumulator function violates the associativity
 property.
 
 You can see other problems if we use an identity parameter that is not truly an identity
@@ -322,16 +322,16 @@ System.out.println(Arrays.asList("w","o","l","f")
     .reduce("X",String::concat));
 ````
 
-In fact, it can output XwXoXlXf. As part of the parallel process, the identity is applied to
+In fact, it can output `XwXoXlXf`. As part of the parallel process, the identity is applied to
 multiple elements in the stream, resulting in very unexpected data.
 
 ### Combing Results with collect()
 
-Like reduce(), the Streams API includes a three-argument version of collect() that takes
+Like `reduce()`, the Streams API includes a three-argument version of `collect()` that takes
 accumulator and combiner operators, along with a supplier operator instead of an identity.
-Also like reduce(), the accumulator and combiner operations must be associative and
+Also like `reduce()`, the accumulator and combiner operations must be associative and
 stateless, with the combiner operation compatible with the accumulator operator, as previously
-discussed. In this manner, the three-argument version of collect() can be performed
+discussed. In this manner, the three-argument version of `collect()` can be performed
 as a parallel reduction, as shown in the following example:
 
 ````
@@ -367,22 +367,22 @@ operations are unable to be completed in parallel.
 The following rules ensure that a parallel reduction will be performed efficiently in Java
 using a collector.
 
-#### Requirements for Parallel Reduction with collect()
+#### Requirements for Parallel Reduction with `collect()`
 - The stream is parallel.
-- The parameter of the collect operation has the Collector.Characteristics.CONCURRENT
+- The parameter of the collect operation has the `Collector.Characteristics.CONCURRENT`
 characteristic.
 - Either the stream is unordered, or the collector has the characteristic
-Collector.Characteristics.UNORDERED.
+`Collector.Characteristics.UNORDERED`.
 
-Any class that implements the Collector interface includes a characteristics()
-method that returns a set of available attributes for the collector. While Collectors.
-toSet() does have the UNORDERED characteristic, it does not have the CONCURRENT
-characteristic; therefore the previous collector example will not be performed as a
+Any class that implements the Collector interface includes a `characteristics()`
+method that returns a set of available attributes for the collector. While `Collectors.
+toSet()` does have the UNORDERED characteristic, it does not have the `CONCURRENT
+characteristic`; therefore the previous collector example will not be performed as a
 concurrent reduction.
 
-The Collectors class includes two sets of methods for retrieving collectors
-that are both UNORDERED and CONCURRENT, Collectors.toConcurrentMap() and
-Collectors.groupingByConcurrent(), and therefore it is capable of performing parallel
+The `Collectors` class includes two sets of methods for retrieving collectors
+that are both UNORDERED and CONCURRENT, `Collectors.toConcurrentMap()` and
+`Collectors.groupingByConcurrent()`, and therefore it is capable of performing parallel
 reductions efficiently. Like their non-concurrent counterparts, there are overloaded versions
 that take additional arguments.
 
@@ -398,11 +398,11 @@ System.out.println(map); // {5=lions,bears, 6=tigers}
 System.out.println(map.getClass()); // java.util.concurrent.ConcurrentHashMap
 ````
 
-We use a ConcurrentMap reference, although the actual class returned is likely
-ConcurrentHashMap. The particular class is not guaranteed; it will just be a class that
-implements the interface ConcurrentMap.
+We use a `ConcurrentMap` reference, although the actual class returned is likely
+`ConcurrentHashMap`. The particular class is not guaranteed; it will just be a class that
+implements the interface `ConcurrentMap`.
 
-Finally, we can rewrite our groupingBy() example from Chapter 4 to use a parallel
+Finally, we can rewrite our `groupingBy()` example to use a parallel
 stream and parallel reduction:
 
 ````
@@ -412,4 +412,4 @@ ConcurrentMap<Integer, List<String>> map = ohMy.collect(
 System.out.println(map); // {5=[lions, bears], 6=[tigers]}
 ````
 
-As before, the returned object can be assigned a ConcurrentMap reference.
+As before, the returned object can be assigned a `ConcurrentMap` reference.
