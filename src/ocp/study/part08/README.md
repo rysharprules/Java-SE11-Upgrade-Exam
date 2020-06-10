@@ -100,9 +100,9 @@ FIGURE 2.1 Lambda syntax omitting optional parts
 
 The second example also has three parts, as shown in Figure 2.2; it’s just more verbose:
 - We specify a single parameter with the name a and state that the type is Animal,
-wrapping the input parameters in parentheses ().
+wrapping the input parameters in parentheses `()`.
 - The arrow operator −> separates the parameter from the body.
-- The body has one or more lines of code, including braces {}, a semicolon ;, and a
+- The body has one or more lines of code, including braces `{}`, a semicolon ;, and a
 return statement.
 
 FIGURE 2.2 Lambda syntax, including optional parts

@@ -3,6 +3,7 @@
 Material which does not map to the exam topics but may be useful nonetheless. 
 
 - [0.1 - Custom Runtime Images](#0-1)
+- [0.2 - Multi-Release JAR Files](#0-2)
 - [Quiz](#q)
 
 ## <a name="0-1"></a>Custom Runtime Images
@@ -133,6 +134,105 @@ The `strip-debug` plug-in removes all the debugging information from the Java co
     --output myimage
     -strip-debug --compress=2
 ````
+
+## <a name="0-2"></a>Multi-Release JAR Files
+
+### Packaging an Application for Different JDKs
+
+- Maintaining and releasing an application targeting different JDKs is difficult
+- Prior to Java SE 9, when packaging the application code for different JDKs, you needed to create a separate application JAR for each
+
+![Figure 0.2](img/figure0-2.png)
+
+- JDK 9 offers a new way of packaging application code so that it can support multiple JDK versions in a single JAR
+- This type of JAR is called a multi-release JAR
+
+![Figure 0.3](img/figure0-3.png)
+
+### What is a Multi-Release JAR file?
+
+A multi-release JAR (MRJAR) is a single unit of distribution, compatible with multiple major Java platform versions. For example:
+
+- You can have an MRJAR that will work on Java SE 8 and Java SE 9
+- The MRJAR will contain the class files compiled in Java SE 8, plus additional classes compiled in Java SE 9.
+    - The classes compiled in Java SE 9 may take advantage of APIs only offered in Java SE 9 & 10
+
+### Structure of a multi-release JAR file
+
+A JAR has a root directory, which contains:
+
+- A directory structure representing packages and classes
+- A `META-INF` directory that is used to store metadata about the JAR (this contains a `META-INF/MANIFEST.MF` file containing its attributes)
+
+![Figure 0.4](img/figure0-4.png)
+
+An MRJAR extends the `META-INF` directory to store classes that are for a particular JDK version.
+
+- These classes that are specific to particular JDK version are contained in a versions subdirectory in the `META-INF` directory.
+- The versions directory may contain many subdirectories - each of them named as a JDK major version
+
+Entries in a multi-release JAR file look like the following:
+
+![Figure 0.5](img/figure0-5.png)
+
+If ann MRJAR is used in an environment that does not support MRJAR then it is treated as a regular JAR. So, if the MRJAR is ued with:
+
+- Pre JDK 9:
+    - The contents in the root directory will be used and everything in `META-INF/versions/9` will be ignored
+- JDK 9+:
+    - There are additional classes which will be used instead of those with the same name
+
+#### Search process in an MRJAR
+
+If more than one version of a class exists in an MRJAR:
+
+- The JDK will use the first one it finds
+- The search begins in the directory tree whose name matches the JDK major version number
+- The search continues with successively lower-numbered directories until finally reaching the root directory
+    - i.e., if the class has more than one version, for JDK 9 the search starts at `META-INF/versions/9`, whilst for JDK 8, it starts at teh root, `META-INF`  
+
+### Creating a multi-release JAR file
+
+The `jar` tool has been enhanced in JDK 9 to support creating MRJARs. In JDK 9, the `jar` tool accepts a new option called `--release`:
+
+`$ jar <options> --release N <other options>`
+
+Here, `N` is a JDK major version, such as 9 for JDK 9
+
+![Figure 0.6](img/figure0-6.png)
+
+You can list the entries in `foo.jar` by using the `--list` option:
+
+````
+$ jar --list --file foor.jar
+
+META-INF/
+META-INF/MANIFEST.MF
+com/
+com/foo/
+com/foo/ListUtil.class
+...
+META-INF/versions/9/com/foo/ListUtil.class
+...
+````
+
+You can run `foo.jar` on JDK 7, 8 or 9 with:
+
+`$ java -jar foo.jar`
+
+But different classes will be used in each run depending on the JDK version.
+
+### Creating a modular multi-release JAR file
+
+Here is the same project converted to a modular project by adding `module-info.java`:
+
+![Figure 0.7](img/figure0-7.png)
+
+Use the `--create` option from the `jar` tool as seen previously to create the modular MRJAR. If you ran `--list` on this, you'll see the `module-info.class` included in the directory/file list. 
+
+Running can be done the same way as above. But now, because the project is modular we can also run it on the module path:
+
+`java -p modular_foo.jar -m mymod`
 
 ## <a name="q"></a>Quiz
 

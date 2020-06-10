@@ -100,7 +100,7 @@ Arguments against this feature:
 
 - "Useful information will be hidden"
 - "Readability will be impaired"
-- "Bad developers will miuse and overuse the feature to write terrible code"
+- "Bad developers will misuse and overuse the feature to write terrible code"
 
 Argument for this feature:
 
