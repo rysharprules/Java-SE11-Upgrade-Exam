@@ -269,3 +269,16 @@ Running can be done the same way as above. But now, because the project is modul
     - add-modules (A)
     - list-modules
     - module-path
+1. If a class `Test.class` contains SE 9 specific code and is in the root directory of an MRJAR, and another
+`Test.class` file contains SE 8 specific code and is in `META-INF/versions/9`, what will happen if a JDK 8 runtime is used?
+    - `Test.class` in the root directory will be used and will fail
+    - `Test.class` containing SE 8 specific code will be used
+    - `Test.class` in the root directory will be used (A)
+1. In a modular MRJAR file, where should the `module-info.class` be stored?
+    - In the root directory for the module, under the `META-INF/versions/<version number>` for the appropriate version of the modular application
+    - In both locations A & B
+    - In the root directory for the module, under the root directory of the JAR (A)
+1. If a `Test.class` exists in the root directory of an MRJAR and under `META-INF/versions/10`, which version of the class will be used with a JDK 9 runtime? (Assuming that `Test.class` is required to run the code in the JAR)
+    - Neither, the code will fail if no `Test.class` file in a `META-INF/versions/9` directory
+    - `Test.class` in the `META-INF/versions/10` directory
+    - `Test.class` in the root directory (A)

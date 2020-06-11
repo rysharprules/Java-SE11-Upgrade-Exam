@@ -1,5 +1,6 @@
 - [3.1 - Create and use methods in interfaces](#3-1)
 - [3.2 - Define and write functional interfaces](#3-2)
+- [Quiz](#q)
 
 ## <a name="3-1"></a>3.1 Create and use methods in interfaces
 
@@ -116,6 +117,225 @@ are additional rules for default methods, such as Java failing to compile if a c
 interface inherits two default methods with the same signature and doesn’t provide its
 own implementation.
 
+### Private methods in interfaces
+
+Java SE 9 introduces the ability to implement `private` methods in interfaces:
+
+````
+public interface ExampleInterface {
+    private void exampleMethod(int x) {
+        System.out.println(x);
+    }
+}
+````
+
+This is the latest step in the evolution of Java interfaces. To fully understand why this is beneficial,
+we'll need to re-examine the original purpose of interfaces and how they were written in Java SE 7 and earlier.
+
+#### Java SE 7 Interfaces
+
+Interfaces are Java's solution to safely facilitate multiple inheritance. Interfaces originally only contained `static`
+variables and `abstract` methods. An example is the `Accessible` interface below. This interface is meant to
+be implemented in classes for financial products where people access money through deposits and withdrawls.
+
+````
+public interface Accessible {
+    public static final double OVERDRAFT_FEE = 25;
+
+    public abstract double verifyDeposit(double amount, int pin);
+    public abstract double verifyWithdraw(double amount, int pin);
+}
+````
+
+`abstract` methods must be implemented later. If one class implements an interface, you'll write your implementation
+logic inside that class. If many classes implement the same interface, you'll write your implementation logic many times.
+
+What if most classes implement the exact same logic? Must you duplicate the same code in many places? Isn't code duplication bad?
+
+#### Example: Implementing `abstract` methods
+
+Notice the logic found in these methods:
+
+````
+public class BasicChecking implements Accessible {
+    ...
+    public double verifyDeposit(double amount, int pin) {
+        // Verify the PIN
+        // Verify amount is greater than 0
+    }
+    public double verifyWithdraw(double amount, int pin) {
+        // Verify the PIN
+        // Verify amount is greater than 0
+        // Verify account balance won't go negative
+    }
+}
+````
+
+#### Example: Duplicated logic
+
+The same logic is largely duplicated by other classes that implement `Accessible`.
+
+````
+public class RestrictedChecking implements Accessible {
+    ...
+    public double verifyDeposit(double amount, int pin) {
+        // Verify the PIN
+        // Verify amount is greater than 0
+    }
+    public double verifyWithdraw(double amount, int pin) {
+        // Verify the PIN
+        // Verify amount is greater than 0
+        // Verify account balance won't go negative
+        // Verify the withdrawl is under 20
+    }
+}
+````
+
+#### Java SE 8 Interfaces
+
+In Java SE 8, you're allowed to implement special types of methods within interfaces: `static` methods and `default` methods.
+
+`default` methods help minimize code duplication. They provide a single location to write and edit. They can
+be overridden later if necessary. They're overridden with per-class precision.
+
+Previously duplicated logic can be written once in `Accessible`:
+
+````
+public interface Accessible {
+    ...
+    public default double verifyDeposit(double amount, int pin) {
+        // Verify the PIN
+        // Verify amount is greater than 0
+    }
+    public default double verifyWithdraw(double amount, int pin) {
+        // Verify the PIN
+        // Verify amount is greater than 0
+        // Verify account balance won't go negative
+    }
+}
+````
+
+You can override a `default` method and call the interface's implementation with `super`:
+
+````
+public class RestrictedChecking implements Accessible {
+    ...
+    public double verifyWithdraw(double amount, int pin) {
+        // Call the interface's implementation
+        Accessible.super.verifyWithdraw(amount, pin);
+
+        // Verify the withdrawl is under 20
+    }
+}
+````
+
+#### What about problems in multiple inheritance?
+
+![Figure 3.1](img/figure3-1.png)
+
+#### Inheritance rules of `default` methods
+
+1. A superclass method takes priority over an interface `default` method
+![Figure 3.2](img/figure3-2.png)
+    - The superclass method may be concrete or abstract
+    - Only consider the interface `default` if no method exists from the superclass
+1. A subtype interface's `default` method takes priority over a super-type interface `default` method
+![Figure 3.3](img/figure3-3.png)
+1. If there is a conflict, treat the `default` method as abstract
+    - The concrete class must provide its own implementation. This may include a call to a specific interface's implementation
+
+#### Interfaces don't replace abstract classes
+
+- An interface doesn't let you store the state of an instance
+- An `abstract` class may contain instance fields
+- To avoid complications caused by multiple inheritance of state, a class cannot extend multiple `abstract` classes
+
+#### What if `default` methods duplicate logic?
+
+See `Verify the PIN` and `Verify amount is greater than 0` below.
+
+````
+public interface Accessible {
+    ...
+    public default double verifyDeposit(double amount, int pin) {
+        // Verify the PIN
+        // Verify amount is greater than 0
+    }
+    public default double verifyWithdraw(double amount, int pin) {
+        // Verify the PIN
+        // Verify amount is greater than 0
+        // Verify account balance won't go negative
+    }
+}
+````
+
+One strategy is to put duplicated logic within its own default method:
+
+````
+public interface Accessible {
+    ...
+    public default double verifyDeposit(double amount, int pin) {
+        verifyTransaction(amount, pin);
+    }
+    public default double verifyWithdraw(double amount, int pin) {
+        verifyTransaction(amount, pin);
+        // Verify account balance won't go negative
+    }
+    public default boolean verifyTransaction(double amount, int pin) {
+        // Verify the PIN
+        // Verify amount is greater than 0
+    }
+}
+````
+
+The problem with this approach is `default` methods must be `public`. They can be called from almost anywhere.
+The returned values may not mean anything outside the context of the methods. It's dangerous if the method returns
+information you don't want exposed. 
+
+They can also be overridden at any time. The result of the calling method may not be predictable.
+
+#### Introducing `private` methods in interface
+
+- A better strategy is to make the method `private`
+- `private` interface methods are more secure
+    - They can't be called from elsewhere
+    - They limit the risk of exposing sensitive information
+- `private` interface methods lead to more predictable programs
+    - They can't be overridden
+    - They can't be called from a class which implements the interface
+- `private` interface methods lead to more maintainable code
+    - Common logic can be stored and edited in one place
+- `private` interface methods don't lead to complications
+
+````
+public interface Accessible {
+    ...
+    public default double verifyDeposit(double amount, int pin) {
+        verifyTransaction(amount, pin);
+    }
+    public default double verifyWithdraw(double amount, int pin) {
+        verifyTransaction(amount, pin);
+        // Verify account balance won't go negative
+    }
+    private boolean verifyTransaction(double amount, int pin) {
+        // Verify the PIN
+        // Verify amount is greater than 0
+    }
+}
+````
+
+#### Types of methods in interfaces
+
+| Access modifier and method type | Supported? |
+| --- | --- |
+| `public abstract` | Yes |
+| `private abstract` | Compiler error |
+| `public default` | Yes |
+| `private default` | Compiler error |
+| `public static` | Yes |
+| `private static` | Yes |
+| `private` | Yes |
+
 ## <a name="3-2"></a>3.2 Define and write functional interfaces
 
 Let’s take a look at an example of a functional interface and a class that implements it:
@@ -204,3 +424,64 @@ interfaces down the road.
 The exam writers aren’t likely to use this annotation, as they expect you to be able to
 determine whether an interface is a functional interface on your own.
 
+## <a name="q"></a>Quiz
+
+1. What is true about code duplication?
+    - Duplication makes your code longer. This is good because it makes colleagues believe you're really smart and capable of handling complex code
+    - Duplication is good because it builds redundancy into the system
+    - If you need to make an edit, you''ll have to search for all the occassions where the code is duplicated. This is tedious and inefficient (A)
+    - Duplication is an elegant substitute for version control
+1. If a `private` method is written in an interface, where can that method be called from?
+    - From any other method within the interface (A)
+    - From any class which implements the interface
+    - From any class which shares the same package
+    - From the main method in a separate test class
+1. Given the code fragment:
+    ````
+    public interface i1 {
+        private default void m1(){
+            System.out.println("i");
+        }
+        abstract void m2();
+        public default void m3(){}
+        static default void m4(){}
+        private static void m5(){}
+    }
+    ````
+   What are the valid methods in the interface i1? (Choose three):
+   - m3 (A)
+   - m4
+   - m1
+   - m2 (A)
+   - m5 (A)
+1. The private methods in interfaces feature helps you:
+   A) Improve the readability of the code
+   B) Improve the security of the business logic implemented
+   C) Avoid inheritance complications
+   Select the correct answer:
+   - only option B
+   - all the listed features (A)
+   - only options A and C
+   - only option C
+1. Given the following, what is the result?
+    ````
+    class C1 {
+        public void m() { System.out.println
+    ("C"); }
+   }
+   interface I1 {
+        default void m(){ System.out.println
+   ("I");}
+   }
+   public class App extends C1
+   implements I1{
+        public static void main(String[] args){
+            I1 obj = new App();
+            obj.m();
+        }
+   }
+   ````
+   - I
+   - an error at I1.java
+   - an error at App.java
+   - C (A)
