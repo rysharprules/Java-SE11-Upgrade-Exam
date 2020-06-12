@@ -4,6 +4,7 @@ Material which does not map to the exam topics but may be useful nonetheless.
 
 - [0.1 - Custom Runtime Images](#0-1)
 - [0.2 - Multi-Release JAR Files](#0-2)
+- [0.3 - Enhancements to the Stream API](#0-3)
 - [Quiz](#q)
 
 ## <a name="0-1"></a>Custom Runtime Images
@@ -233,6 +234,18 @@ Use the `--create` option from the `jar` tool as seen previously to create the m
 Running can be done the same way as above. But now, because the project is modular we can also run it on the module path:
 
 `java -p modular_foo.jar -m mymod`
+
+## <a name="0-3"></a>Enhancements to the Stream API
+
+New `Stream` interfaces from Java 9:
+
+| Modifier and Type | Method | Description |
+| --- | --- | --- |
+| default Stream<T> | dropWhile​(Predicate<? super T> predicate) | Returns, if this stream is ordered, a stream consisting of the remaining elements of this stream after dropping the longest prefix of elements that match the given predicate. |
+| static <T> Stream<T> | iterate​(T seed, Predicate<? super T> hasNext, UnaryOperator<T> next) | Returns a sequential ordered Stream produced by iterative application of the given next function to an initial element, conditioned on satisfying the given hasNext predicate. |
+| default Stream<T> | takeWhile​(Predicate<? super T> predicate) | Returns, if this stream is ordered, a stream consisting of the longest prefix of elements taken from this stream that match the given predicate. |
+
+Note: `iterate` existed in Java 8 but is now overloaded since Java 9.
 
 ## <a name="q"></a>Quiz
 

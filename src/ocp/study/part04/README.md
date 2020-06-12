@@ -4,6 +4,7 @@
 - [4.4 - Perform calculations using count, max, min, average and sum stream operations](#4-4)
 - [4.5 - Sort a collection using lambda expressions](#4-5)
 - [4.6 - Use Collectors with streams, including the groupingBy and partitioningBy operation](#4-6)
+- [Quiz](#q)
 
 ### Using Streams
 
@@ -872,8 +873,64 @@ System.out.println(opt.orElseGet(() -> Math.random()));
 System.out.println(opt.orElseThrow(() -> new IllegalStateException()));
 ````
 
-It prints out 95 three times. Since the value does exist, there is no need to use the “or
-else” logic.
+It prints out 95 three times. Since the value does exist, there is no need to use the “or else” logic.
+
+### Converting an `Optional` into a Stream
+
+In Java 9, the [stream()](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html#stream()) method was introduced to `Optional`:
+
+````
+accountList.stream()
+    .filter(a -> a.getBalance() > 600)
+    .findAny()
+    .stream()
+    .forEach(a -> System.out.println(a.getBalance()));
+````
+
+#### The `or` method
+
+The `or()` method of `Optional` class in Java is used to get this Optional instance if any 
+value is present. If there is no value present in this Optional instance, then this method returns 
+an Optional instance with the value generated from the specified supplier.
+
+Syntax: `public Optional<T> or(Supplier<T> supplier)`
+
+This method accepts supplier as a parameter of type T to generate an Optional instance with the value generated from the specified supplier.
+This method returns this Optional instance, if any value is present. If there is no value present in this Optional instance, then this method returns an Optional instance with the value generated from the specified supplier.
+
+````
+// create a Optional 
+Optional<Integer> op = Optional.of(9455); 
+
+// print supplier 
+System.out.println("Optional: " + op); 
+
+// or supplier 
+System.out.println("Optional by or(() -> Optional.of(100)) method: "
+    + op.or(() -> Optional.of(100)));
+
+// empty Optional 
+op = Optional.empty();
+
+// print supplier 
+System.out.println("Optional: " + op); 
+
+// or supplier 
+System.out.println("Optional by or(() -> Optional.of(100)) method: "
+    + op.or(() -> Optional.of(100)));
+
+````
+
+Outputs: 
+
+````
+Optional: Optional[9455]
+Optional by or(() -> Optional.of(100)) method: Optional[9455]
+Optional: Optional.empty
+Optional by or(() -> Optional.of(100)) method: Optional[100]
+````
+
+You can chain `or` statements together.
 
 ## <a name="4-4"></a>4.4 - Perform calculations using count, max, min, average and sum stream operations
 
@@ -1627,3 +1684,44 @@ System.out.println(map); // {5=Optional[b], 6=Optional[t]}
 The code does the same thing as in the previous example. This means that it is important
 to recognize the collector names because you might not have the Collectors class
 name to call your attention to it.
+
+## <a name="q"></a>Quiz
+
+1. What does the `or` method of the `Optional` class return?
+    - The same object type that the collection/stream is based on
+    - An Optional<T> (A)
+    - null
+    - The method is void and doesn't return anything
+1. Given the code fragment below, what is the result?
+    ````
+   List<Integer> items = List.of(10, 25, 30);
+    Stream<Integer> stream1 = items
+        .stream()
+        .takeWhile(s -> s % 2 == 0).sorted();
+    stream1.forEach(x -> System.out.println(x));
+   ````
+   - 30 10
+   - 10 25 30
+   - 10 (A)
+   - 10 30
+1. Given the code fragment below, what is the result?
+   ````
+   Stream<Integer> nums = Stream.iterate(1, i -> i + 10).limit(3);
+   nums.forEach(n -> System.out.println(n + ""));
+   ````
+   - 11 21 31
+   - 1 10 20
+   - 11 21 31
+   - 1 11 21 (A)
+1. Given the code fragment below, what is the result?
+    ![Figure 4.6](img/figure4-6.png)
+    - Compilation error
+    - bread butter \-
+    - bread butter \- bread butter
+    - \- bread butter (A)
+1. Given the code fragment below, what is the result?
+    ![Figure 4.7](img/figure4-7.png)
+    - bread butter \- bread butter egg jam
+    - bread butter \- egg jam (A)
+    - \- egg jam
+    - bread butter \-
