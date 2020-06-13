@@ -64,3 +64,4 @@ Examples and notes to aid revision for the Oracle Certified Professional (OCP) U
 - 0.3 - Enhancements to the Stream API
 - 0.4 - JShell
 - 0.5 - Convenience Methods for Collections
+- 0.6 - Convenience Methods for Arrays

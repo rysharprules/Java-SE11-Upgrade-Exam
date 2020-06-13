@@ -7,6 +7,7 @@ Material which does not map to the exam topics but may be useful nonetheless.
 - [0.3 - Enhancements to the Stream API](#0-3)
 - [0.4 - JShell](#0-4)
 - [0.5 - Convenience Methods for Collections](#0-5)
+- [0.6 - Convenience Methods for Arrays](#0-6)
 - [Quiz](#q)
 
 ## <a name="0-1"></a>0.1 - Custom Runtime Images
@@ -416,6 +417,74 @@ Set<String> testSet2 = Collections.unmodifiableSet(testSet);
 
 `testSet` can be altered which changes `testSet2`, despite it being "unmodifiable"!
 
+## <a name="0-6"></a>0.6 - Convenience Methods for Arrays
+
+`equals` was introduced in Java SE 8. Java SE 9 introduced `compare`, `compareUnsigned`, and `mismatch`
+plus overloads for `equals`.
+
+### Equating Two Arrays
+
+We can use equals to compare two arrays contents - it returns a `boolean`  indicating the equality between the two arrays under test:
+
+````
+char[] DNAStrand1 = {'A', 'A', 'G', 'T', 'C', 'T'};
+char[] DNAStrand2 = {'A', 'A', 'G', 'T', 'C', 'T'};
+Arrays.equals(DNAStrand1, DNAStrand2); // true
+````
+
+Before this introduction, we'd have to use a for-loop to go through both arrays and check each element 
+at each position.
+
+In Java SE 9, `equals` was overloaded to let you specify a range:
+
+````
+char[] DNAStrand3 = {'G', 'G', 'G', 'T', 'C', 'T'};
+char[] DNAStrand4 = {'T', 'A', 'G', 'G', 'C', 'C'};
+Arrays.equals(DNAStrand1, 2, 5, DNAStrand2, 3, 6); // true
+````
+
+The above code compares `DNAStrand3` with the range between indices 2 and 5 (`'G', 'T', 'C'`) and 
+`DNAStrand4` with the range between indices 3 and 6 (`'G', 'T', 'C'`) which returns `true`.
+
+There are variants for all array types. This includes a generic version.
+
+````
+Comparator<? super Character> dnaComparator = new DNAComparator<>();
+Arrays.equals(DNAStrand1, 2, 5, DNAStrand2, 3, 6, dnaComparator));
+````
+
+### Comparing the Difference Between Two Arrays
+
+`compare` returns an integer, measuring the distance between the fist two elements to differ:
+
+![Figure 0.11](img/figure0-11.png)
+
+There are 17 characters between T and C in the alphabet. So what if many elements differ from the array?
+This method does not return the cumulative difference between all elements. It only returns the 
+difference between the first mismatch.
+
+Similar to `equals`, `compare` is overloaded to handle all array types (primitive and objects), including
+comparisons within a range (with to and from indexes), and with generic variants letting you specify 
+comparison criteria via a `Comparator`.
+
+#### Absolute values with `compareUnsigned`
+
+`compareUnsigned` works with a limited number of array types: `byte`, `short`, `int` and `long`. This
+allows you to compare when you do not care about the sign of the number and are only interested in comparinf
+absolute values.
+
+### Pinpointing the Mismatch Between Two Arrays
+
+The `mismatch` method returns the position of the first mismatch when comparing two arrays:
+
+````
+char[] DNAStrand5 = {'G', 'A', 'G', 'T', 'C', 'T'};
+char[] DNAStrand6 = {'G', 'A', 'G', 'C', 'C', 'C'};
+Arrays.mismatch(DNAStrand5, DNAStrand6); // 3
+````
+
+The 3 returned also allows us to know the length of the prefix, i.e. the elements that were matched before a mismatch was found.
+
 ## <a name="q"></a>Quiz
 
 1. In Java SE 9, which phase provides an opportunity to perform optimization
@@ -522,3 +591,27 @@ Set<String> testSet2 = Collections.unmodifiableSet(testSet);
    - A, B, C, D
      A, B, C
    - An Exception is thrown at run time (A)
+1. Given the code fragment below, what is the result?
+    ![Figure 0.11](img/figure0-11.png)
+    - false true
+    - false false (A)
+    - true false
+    - true true
+1. Given the code fragment below, what is the result?
+    ![Figure 0.15](img/figure0-15.png)
+    - -1 0
+    - -1 1
+    - Compilation error
+    - -2 1 (A)
+1. Given the code fragment below, what is the result?
+    ![Figure 0.16](img/figure0-16.png)
+    - 1 -3
+    - An exception thrown at runtime
+    - -4 -4
+    - -1 3 (A)
+1. Given the code fragment below, what is the result?
+    ![Figure 0.17](img/figure0-17.png)
+    - false false
+    - true false
+    - true true
+    - false true (A)
