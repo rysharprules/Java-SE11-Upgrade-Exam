@@ -56,3 +56,10 @@ Examples and notes to aid revision for the Oracle Certified Professional (OCP) U
 ### 10 [Language Enhancements](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/tree/master/src/ocp/study/part10)
 - 10.1 - Use try-with-resources construct
 - 10.2 - Develop code that handles multiple Exception types in a single catch block
+
+## [Extra Reading](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/tree/master/src/ocp/study/part00)
+
+### 0.1 - Custom Runtime Images
+### 0.2 - Multi-Release JAR Files
+### 0.3 - Enhancements to the Stream API
+### 0.4 - JShell

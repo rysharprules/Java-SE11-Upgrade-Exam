@@ -5,6 +5,7 @@ Material which does not map to the exam topics but may be useful nonetheless.
 - [0.1 - Custom Runtime Images](#0-1)
 - [0.2 - Multi-Release JAR Files](#0-2)
 - [0.3 - Enhancements to the Stream API](#0-3)
+- [0.4 - JShell](#0-4)
 - [Quiz](#q)
 
 ## <a name="0-1"></a>Custom Runtime Images
@@ -247,6 +248,86 @@ New `Stream` interfaces from Java 9:
 
 Note: `iterate` existed in Java 8 but is now overloaded since Java 9.
 
+## <a name="0-4"></a>JShell
+
+Normal execution:
+    - You enter all your code ahead of time
+    - Compile your code
+    - The program runs once in its entirety
+    - If after the first run you realize you've made a mistake you need to run the entire program again
+    
+JShell:
+- It's a command line interface
+- It avoids the ceremony of creating a new program and gets right into testing code
+- You enter one of code at a time
+- You get feedback on that line
+- At any time you can:
+    - Explore an API, language features, a class you wrote; do other experiments with logic, variables, or methods
+    - Prototype ideas and incrementally write more-complex code
+- You'll get instant feedback from the **Read Evaluate Print Loop (REPL)** process
+
+![Figure 0.8](img/figure0-8.png)
+
+Note that semicolons are optional on one liners but are mandatory on multi-line statements, e.g. for-loops.
+
+- R \- The expression `Math.sqrt(8)` is **read** into JShell
+- E \- The expression is **evaluated**
+- P \- Its value is **printed**
+- L \- The state of JShell **loops** back to where it began
+
+You can use the `/edit` command to open the Edit Pad:
+
+![Figure 0.9](img/figure0-9.png)
+
+`jshell> Math.sqrt(8)` evaluated to `$2 ==> 2.8284271247461903`. The `$2` is a **scratch variable**.
+Like most other variables, scratch variables store the result of a method call, can be referenced later,
+have its value changed, be primitive or an Object type. Scratch variable names are auto generated.
+
+Too many scratch variables can lead to confusion as there's no limit to how many you can make and their
+names are not descriptive. Traditional variables have names which provide context for their purpose.
+JShell allows you to declare, reference, and manipulate variables as you normally would.
+
+The `/list` command shows you the expressions that have been passed into JShell:
+
+````
+jshell> /list
+   1 : 2 + 3
+   2 : Math.sqrt(8)
+   3 : String name = "Sharp";
+   4 : name += " test"
+````
+
+The `/var` command shows you the variables in teh current JShell instance:
+
+````
+jshell> /var
+|    int $1 = 5
+|    double $2 = 2.8284271247461903
+|    String name = "Sharp test"
+|    String $4 = "Sharp test"
+````
+
+JShell provides tab completion for Java SE API. You can also "double tab" to get JavaDocs for API classes:
+
+````
+jshell> System.out
+Signatures:
+System.out:java.io.PrintStream
+
+<press tab again to see documentation>
+
+jshell> System.out
+System.out:java.io.PrintStream
+The "standard" output stream.This stream is already open and ready to accept output data.
+Typically this stream corresponds to display output or another output destination specified by
+the host environment or user.
+...
+````
+
+The `/imports` command shows you the packages imported into JShell by default.
+
+`/help` provides a list of all the commands.
+
 ## <a name="q"></a>Quiz
 
 1. In Java SE 9, which phase provides an opportunity to perform optimization
@@ -295,3 +376,26 @@ Note: `iterate` existed in Java 8 but is now overloaded since Java 9.
     - Neither, the code will fail if no `Test.class` file in a `META-INF/versions/9` directory
     - `Test.class` in the `META-INF/versions/10` directory
     - `Test.class` in the root directory (A)
+1. Do you need to make an import statement before creating an `ArrayList` in JShell
+    - Yes
+    - No (A)
+1. Which statement is true about JShell?
+    - It is an OS Utility
+    - It is a Java code editor tool
+    - It is a script tool
+    - It is a command line interface to execute a single Java command instantly (A)
+1. In which situations is the use of JShell beneficial? (Choose two):
+    - You want to create a test case by using JUnit
+    - You want to develop a GUI application
+    - You want to experiment with unfamiliar code (A)
+    - You want to simulate a scenario (A)
+1. Which command is valid at the JShell prompt?
+    - ````
+       int day
+        while(day < 10) {
+       System.out.println(day);
+       }
+       ````
+   - `package mypack;`
+   - `break`
+   - `import java.nio.file.*` (A)
