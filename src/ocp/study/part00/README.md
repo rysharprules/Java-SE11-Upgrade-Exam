@@ -6,9 +6,10 @@ Material which does not map to the exam topics but may be useful nonetheless.
 - [0.2 - Multi-Release JAR Files](#0-2)
 - [0.3 - Enhancements to the Stream API](#0-3)
 - [0.4 - JShell](#0-4)
+- [0.5 - Convenience Methods for Collections](#0-5)
 - [Quiz](#q)
 
-## <a name="0-1"></a>Custom Runtime Images
+## <a name="0-1"></a>0.1 - Custom Runtime Images
 
 ### What is a Custom Runtime Image?
 
@@ -137,7 +138,7 @@ The `strip-debug` plug-in removes all the debugging information from the Java co
     -strip-debug --compress=2
 ````
 
-## <a name="0-2"></a>Multi-Release JAR Files
+## <a name="0-2"></a>0.2 - Multi-Release JAR Files
 
 ### Packaging an Application for Different JDKs
 
@@ -236,7 +237,7 @@ Running can be done the same way as above. But now, because the project is modul
 
 `java -p modular_foo.jar -m mymod`
 
-## <a name="0-3"></a>Enhancements to the Stream API
+## <a name="0-3"></a>0.3 - Enhancements to the Stream API
 
 New `Stream` interfaces from Java 9:
 
@@ -248,7 +249,7 @@ New `Stream` interfaces from Java 9:
 
 Note: `iterate` existed in Java 8 but is now overloaded since Java 9.
 
-## <a name="0-4"></a>JShell
+## <a name="0-4"></a>0.4 JShell
 
 Normal execution:
     - You enter all your code ahead of time
@@ -328,6 +329,93 @@ The `/imports` command shows you the packages imported into JShell by default.
 
 `/help` provides a list of all the commands.
 
+## <a name="0-5"></a>0.5 - Convenience Methods for Collections
+
+Many convenience methods in Java SE 9:
+
+![Figure 0.10](img/figure0-10.png)
+
+Key Collections interfaces:
+
+![Figure 0.11](img/figure0-11.png)
+
+### `of` method
+
+In Java SE 8, Collections require one line of code for each element:
+
+````
+List<String> testList = new ArrayList<>();
+testList.add("A");
+testList.add("B");
+testList.add("C");
+````
+
+In Java SE 9, the same work is done in one line of code with `of`
+
+`List<String> testList = List.of("A", "B", "C");`
+
+The same is available for `Set`s:
+
+`Set<String> testSet = Set.of("A", "B", "C");`
+
+During the creation of a Set using a factory method, if duplicate elements are passed as parameters, 
+then `IllegalArgumentException` is thrown at runtime.
+
+`Map` has an `of` method also:
+
+`Map<String, Integer> testMap = Map.of("A", 1, "B", 2, "C", 3);`
+
+Passing in duplicate values for Key would throw an `IllegalArgumentException`.
+
+For `List` and `Set` there are 12 overloaded versions of this method – eleven with 0 to 10 parameters 
+and one with var-args:
+
+````
+static <E> List<E> of()
+static <E> List<E> of(E e1)
+static <E> List<E> of(E e1, E e2)
+// ....and so on
+ 
+static <E> List<E> of(E... elems)
+````
+
+For most practical purposes, 10 elements would be sufficient, but if more are required, the var-args 
+version can be used.
+
+Now, we may ask, what is the point of having 11 extra methods if there's a var-args version that can 
+work for any number of elements.
+
+The answer to that is performance. Every var-args method call implicitly creates an array. Having the 
+overloaded methods avoid unnecessary object creation and the garbage collection overhead thereof. On 
+the contrary, Arrays.asList always creates that implicit array and, consequently, is less efficient 
+when the number of elements is low.
+
+Similarly to `List` and `Set`, the `of` method for `Map` is overloaded to have 0 to 10 key-value pairs.
+In the case of `Map`, there is a different method for more than 10 key-value pairs, `ofEntries`:
+
+````
+Map<String, String> map = Map.ofEntries(
+  new AbstractMap.SimpleEntry<>("foo", "a"),
+  new AbstractMap.SimpleEntry<>("bar", "b"),
+  new AbstractMap.SimpleEntry<>("baz", "c"));
+````
+
+If you pass a `null` as a parameter of `of` for `List`, `Set` or `Map` you will get a `NullPointerException`.
+
+`of` and `ofEntries` return immutable collections. Methods like `add`, `set` and `remove` throw 
+`UnsupportedOperationException`. The common case is to be able to create a collection from known values
+which never change.
+
+No general-purpose immutable collections previously existed in the JDK. Unmodifiable wrappers are a poor
+substitute as the wrapper is unmodifiable but the underlying collection still is:
+
+````
+Set<String> testSet = new HashSet<>(); testSet.add("A"); testSet.add("B");
+Set<String> testSet2 = Collections.unmodifiableSet(testSet);
+````
+
+`testSet` can be altered which changes `testSet2`, despite it being "unmodifiable"!
+
 ## <a name="q"></a>Quiz
 
 1. In Java SE 9, which phase provides an opportunity to perform optimization
@@ -399,3 +487,38 @@ The `/imports` command shows you the packages imported into JShell by default.
    - `package mypack;`
    - `break`
    - `import java.nio.file.*` (A)
+1. Which statement is true about the convenience method?
+    - The `of` method cannot be overloaded
+    - The size of the smallest collection returned by the `of` method is 1
+    - The varargs variant is used for greater than 10 elements (A)
+    - The size of the largest colletion returned by the `of` method is 100
+1. Given the code fragment below, what is the result?
+    ![Figure 0.11](img/figure0-11.png)
+    - `{1=A,2=B}{1=A,2=B}`
+    - A NPE is thrown (A)
+    - Compilation failure
+    - `{1=A,2=B}` A NPE is thrown
+1. Given the code fragment below, what is the result?
+    ````
+   List<String> c1 = List.of("B", "C", "D", "A");
+   c1.add(4,"E");
+   System.out.println(c1);
+   ````
+   - A, B, C, D, E
+   - B, C, D, E
+   - B, C, D, A, E
+   - An Exception is thrown at run time (A)
+1. Given the code fragment below, what is the result?
+    ````
+   List<String> c1 = List.of("B", "C", "D", "A");
+   Set<String> c2 = Set.of("B", "C", "C", "A");
+   System.out.println(c1);
+   System.out.println(c2);
+   ````
+   - B, C, D, A
+     A, B, C
+   - B, C, D, A
+     B, A, C
+   - A, B, C, D
+     A, B, C
+   - An Exception is thrown at run time (A)
