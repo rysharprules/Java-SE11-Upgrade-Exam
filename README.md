@@ -65,3 +65,4 @@ Examples and notes to aid revision for the Oracle Certified Professional (OCP) U
 - 0.4 - JShell
 - 0.5 - Convenience Methods for Collections
 - 0.6 - Convenience Methods for Arrays
+- 0.7 - Enhanced Deprecation

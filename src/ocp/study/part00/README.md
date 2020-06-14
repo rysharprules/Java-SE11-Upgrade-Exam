@@ -8,6 +8,7 @@ Material which does not map to the exam topics but may be useful nonetheless.
 - [0.4 - JShell](#0-4)
 - [0.5 - Convenience Methods for Collections](#0-5)
 - [0.6 - Convenience Methods for Arrays](#0-6)
+- [0.7 - Enhanced Deprecation](#0-7)
 - [Quiz](#q)
 
 ## <a name="0-1"></a>0.1 - Custom Runtime Images
@@ -485,6 +486,94 @@ Arrays.mismatch(DNAStrand5, DNAStrand6); // 3
 
 The 3 returned also allows us to know the length of the prefix, i.e. the elements that were matched before a mismatch was found.
 
+## <a name="0-7"></a>0.7 - Enhanced Deprecation
+
+Java offers a couple of mechanisms to depracate the API. One is @deprecated in the Javadoc that's 
+introduced JDK 1.1. And the other one is @Depracated with a capital D, which was introduced in Java SE 5, JDK 5.
+
+### Using `@deprecated`
+
+Use the `@deprecated` tag in the Javadoc comment of any deprecated program element to indicate that it
+should no longer be used. This tag is valid in all class, method, or field documentation comments.
+
+![Figure 0.18](img/figure0-18.png)
+
+### Enhancements to the `@Deprecated` Annotation in JDK 9
+
+`@Deprecation` is used to indicate deprecation. It can preceed a module, class, method or memeber declarion.
+The following two elements are added to the `@Deprecated` annotation: `since=<string>` and `forRemoval=<boolean>`.
+
+### Using `@Deprecated`
+
+The `@Deprecated` annotation contains these elements:
+
+- `forRemoval=<boolean>` - returns a boolean value
+    -   `forRemoval=true`:
+        - Is a warning that the API is subject to removal in a future release
+        - It is called a **terminal deprecation**, and warnings issued are called removal warnings
+    -   `forRemoval=false`:
+        - Recommends that code should no longer this API, however there is no current intent to remove it
+        - Is called an **ordinary deprecation**, and warnings issued are called ordinary warnings
+        - Is the default
+- `since=<string>`: returns String
+    - This string contains the release or version number when the element was deprecated
+    - The default value is an empty string
+    
+The two types of warnings are controlled by separate `-Xlint` flags: `Xlint:deprecation` and `Xlint:removal`.
+The `javac -Xlint:removal` option is enabled by default so removal warnings are shown. Below is an
+example of compiler deprecation warnings.
+
+![Figure 0.20](img/figure0-20.png)
+
+#### Example using the `@Deprecated` annotation
+
+An example of a `@Deprecated` annotation from the `java.lang.Thread` class:
+
+![Figure 0.19](img/figure0-19.png)
+
+Further examples of deprecated APIs in JDK 9 are:
+
+- `java.se.ee` module
+    - `@Deprecated(since="9", forRemoval=true`<br />
+      `Module java.se.ee`
+- `java.corba` module
+- `java.applet.Applet` class
+- `Thread.destroy()`
+- `Thread.stop()`
+
+### Suppressing deprecation warnings
+
+Prior to JDK 9, you could surpress all deprecation warnings by annotating with `@SuppressWarnings`.
+Starting JDK 9, the `@SuppressWarnings` deprecation now works only for ordinary deprecation. It shows 
+compiler warnings for depracated API intended for removal in a future release.
+
+### `jdeprscan`
+
+Before JDK 9, you had to recompile your source code to find out about the deprecated JDK API from 
+the compiler modification. Starting JDK 9 and 10, a new static analysis tool called 
+`jdeprscan` is now available. This tool performs a static analysis of class files and JAR and reports the use of deprecated APIs.
+
+The benefits of the jdeprscan, it's important to discover dependencies on a deprecated API before the 
+API are removed from the JDK. So looks for and reports the usage of only deprecated Java SE APIs.
+
+#### Running `jdeprscan`
+
+The `jdeprscan` tool is located in the `JDK_HOME/bin` directory. The syntax to run is:
+
+`jdeprscan [options] {dir|jar|class}`
+
+You specify a list of space-separated directory, JARs, or a fully-qualified class names as arguments to the scan.
+
+Example: `com.example.foo.class`
+![Figure 0.23](img/figure0-23.png)
+![Figure 0.21](img/figure0-21.png)
+![Figure 0.22](img/figure0-22.png)
+
+`jdeprscan` can be version-specific with the `--release` setting - from JDK 6 and up. Note, you don't 
+have to install different versions of the JDK.
+
+![Figure 0.24](img/figure0-24.png)
+
 ## <a name="q"></a>Quiz
 
 1. In Java SE 9, which phase provides an opportunity to perform optimization
@@ -615,3 +704,20 @@ The 3 returned also allows us to know the length of the prefix, i.e. the element
     - true false
     - true true
     - false true (A)
+1. Which statement is true about the `jdeprscan` tool?
+    - It helps to know dependencies on deprecated APIs before the APIs are removed from the JDK (A)
+    - It manages warnings about deprecation
+    - It reports users if the code uses deprecated APIs from other libraries
+    - It removes the deprecated APIs
+1. Which statement is true?
+    - In JDK 9, APIs marked as deprecated are deprecated but virtually never removed
+    - In JDK 9, APIs marked as deprecated are eligible to be removed in the next release of the JDK (A)
+1. Which element of the `@Deprecated` annotation generates terminal deprecation warnings?
+    - `forRemoval=true` (A)
+    - `forRemoval=false`
+1. Which statements are true? (Choose three):
+    - The "since" element of the `@Deprecated` annotation indicates the version at which the API was deprecated (A)
+    - The `@Deprecated` annotation can precede the module, class, method, or member declaration (A)
+    - In JDK 9, you cannot suppress deprecation warnings
+    - The Java compiler generates warnings about the deprecated APIs (A)
+    - The `@Deprecated` annotation can precede only the class
