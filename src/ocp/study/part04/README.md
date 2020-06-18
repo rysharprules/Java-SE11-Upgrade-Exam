@@ -167,11 +167,11 @@ lambda expression that gets passed the previous value and generates the next val
 the random numbers example, it will keep on producing odd numbers as long as you need
 them.
 
-Note: If you try to call System.out.println(stream), you’ll get something like
+_Note: If you try to call System.out.println(stream), you’ll get something like
 `java.util.stream.ReferencePipeline$3@4517d9a3`. This is different than
 a Collection where you see the contents. You don’t need to know this for
 the exam. We mention it so that you aren’t caught by surprise when writing
-code for practice.
+code for practice._
 
 ### Using Common Terminal Operations
 
@@ -210,8 +210,8 @@ Stream<String> s = Stream.of("Monkey", "Gorilla", "Bonobo");
 s.forEach(System.out::print); // MonkeyGorillaBonobo
 ````
 
-Note: Remember that you can call forEach() directly on a Collection or on a
-Stream. Don’t get confused on the exam when you see both approaches.
+_Note: Remember that you can call forEach() directly on a Collection or on a
+Stream. Don’t get confused on the exam when you see both approaches._
 
 Notice that you can’t use a traditional for loop on a stream:
 
@@ -392,9 +392,9 @@ You might get different output for this last one since toSet() makes no guarante
 to which implementation of Set you’ll get. It is likely to be a HashSet , but you shouldn’t
 expect or rely on that.
 
-Note: The exam expects you to know about common predefined collectors in
+_Note: The exam expects you to know about common predefined collectors in
 addition to being able to write your own by passing a supplier, accumulator,
-and combiner.
+and combiner._
 
 ### Using Common Intermediate Operations
 
@@ -582,8 +582,8 @@ This one looks more complicated than the others you have seen. It uses the lambd
 expression to figure out the type passed to that function and the one returned. The return
 type is the stream that gets returned.
 
-Note: The map() method on streams is for transforming data. Don’t confuse it
-with the Map interface, which maps keys to values.
+_Note: The map() method on streams is for transforming data. Don’t confuse it
+with the Map interface, which maps keys to values._
 
 As an example, this code converts a list of String objects to a list of Integer s representing
 their lengths:
@@ -651,10 +651,10 @@ long count = stream.filter(s -> s.startsWith("g"))
 System.out.println(count); // 1
 ````
 
-Note: When working with a Queue , peek() looks only at the first element. In a
+_Note: When working with a Queue , peek() looks only at the first element. In a
 stream, peek() looks at each element that goes through that part of the
 stream pipeline. It’s like having a worker take notes on how a particular
-step of the process is doing.
+step of the process is doing._
 
 ## <a name="4-2"></a>4.2 - Search stream data using search findFirst, findAny, anyMatch, allMatch and noneMatch methods
 
@@ -722,8 +722,8 @@ anyMatch() returns true because two of the three elements match. allMatch() retu
 because one doesn’t match. noneMatch() also returns false because one matches. On the infinite list, one match is found, so the call terminates. If we called noneMatch() or allMatch() ,
 they would run until we killed the program.
 
-Note: Remember that allMatch(), anyMatch(), and noneMatch() return a boolean. 
-By contrast, the find methods return an Optional because they return an element of the stream.
+_Note: Remember that allMatch(), anyMatch(), and noneMatch() return a boolean. 
+By contrast, the find methods return an Optional because they return an element of the stream._
 
 ## <a name="4-3"></a>4.3 - Use the Optional class
 
@@ -934,7 +934,7 @@ You can chain `or` statements together.
 
 ## <a name="4-4"></a>4.4 - Perform calculations using count, max, min, average and sum stream operations
 
-Note: For `average` and `sum` see section 8.4 as these are performed on `IntStream`.
+_Note: For `average` and `sum` see section 8.4 as these are performed on `IntStream`._
 
 ### count()
 
@@ -996,8 +996,8 @@ obvious—it is numerical order. For String objects, order is defi ned according
 Unicode character mapping. As far as the exam is concerned, that means numbers sort
 before letters and uppercase letters sort before lowercase letters.
 
-Note: Remember that numbers sort before letters and uppercase letters sort
-before lowercase letters.
+_Note: Remember that numbers sort before letters and uppercase letters sort
+before lowercase letters._
 
 You can also sort objects that you create. Java provides an interface called Comparable .
 If your class implements Comparable , it can be used in these data structures that require
@@ -1098,8 +1098,8 @@ compares a smaller id to a larger one, and therefore it prints a negative number
 compares animals with the same id , and therefore it prints 0. Line 13 compares a larger id
 to a smaller one, and therefore it returns a positive number.
 
-Note: Remember that id – a.id sorts in ascending order and a.id – id sorts in
-descending order.
+_Note: Remember that id – a.id sorts in ascending order and a.id – id sorts in
+descending order._
 
 When dealing with legacy code, the compareTo() method requires a cast since it is
 passed an Object:
@@ -1362,7 +1362,7 @@ Comparators built this way can also be chained together. For example, after comp
 
 `sort(people, comparing(Person::getFirstName).thenComparing(Person::getLastName));`
 
-Note: `Collections.sort(...)` only works on collections that are subtypes of List. The Set and Collection APIs do not imply any ordering of the elements.
+_Note: `Collections.sort(...)` only works on collections that are subtypes of List. The Set and Collection APIs do not imply any ordering of the elements._
 
 ### Sorting maps
 

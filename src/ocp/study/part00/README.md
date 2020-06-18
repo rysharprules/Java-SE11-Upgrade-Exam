@@ -57,7 +57,7 @@ The following command creates a new runtime image:
 1. `--add-modules`: This indicates that `com.greeting` which is the module that needs to be added in the runtime image
 1. `--output`: This directory is where the runtime image will be generated
 
-Note: In Windows, the path separator is ; instead of :
+_Note: In Windows, the path separator is ; instead of :_
 
 ![Figure 0.1](img/figure0-1.png)
 
@@ -79,11 +79,12 @@ A custom runtime image is fully self contained. It bundles the application modul
 
 You can check the runtime custom image with the `java -version` command.
 
-You can also execute the `java --list-modules` command to list the modules that are in a custom runtime image.
+You can also execute the `./java --list-modules` command to list the modules that are in a custom runtime image.
 
 You can use the `java` command, which is in `myimage`, to launch your application:
 
-`$ myimage/bin/ java --module com.greeting`
+`cd myimage/bin/`
+`./java --module com.greeting`
 
 or
 
@@ -249,7 +250,7 @@ New `Stream` interfaces from Java 9:
 | static <T> Stream<T> | iterate​(T seed, Predicate<? super T> hasNext, UnaryOperator<T> next) | Returns a sequential ordered Stream produced by iterative application of the given next function to an initial element, conditioned on satisfying the given hasNext predicate. |
 | default Stream<T> | takeWhile​(Predicate<? super T> predicate) | Returns, if this stream is ordered, a stream consisting of the longest prefix of elements taken from this stream that match the given predicate. |
 
-Note: `iterate` existed in Java 8 but is now overloaded since Java 9.
+_Note: `iterate` existed in Java 8 but is now overloaded since Java 9._
 
 ## <a name="0-4"></a>0.4 JShell
 

@@ -74,7 +74,7 @@ Java EE modules are not resolved by default when you compile or run code on the 
 Code on the class path with references to classes APIs will fail with `NoDefClassFoundError` or `ClassNotFoundException`.
 The policy of not resolving these modules is the first step towards removing these APIs from Java SE and the JDK in the future.
 
-Use the --add-modules command line option to ensure the module with the API is resolved at startup.
+Use the `--add-modules` command line option to ensure the module with the API is resolved at startup.
 
 For example, if you run an application that uses JAXB API, it fails with the following error:
 
@@ -132,7 +132,7 @@ WARNING: All illegal access operations will be denied in a future release
 ...
 ````
 
-Note: warnings can be disabled on a library-by-library basis with the `--add-opens` command line flag, e.g.:
+_Note: warnings can be disabled on a library-by-library basis with the `--add-opens` command line flag, e.g.:_
 
 `$java --add-opens java.base/sun.nio.ch=ALL-UNNAMED --add-opens java.base/java.io=ALL_UNNAMED -jar jython-standalone-2.7.0.jar`
 
@@ -291,6 +291,14 @@ Single module compilation:
 
 `javac -d <output folder> <list of source code file paths including module-info>`
 
+_Note: If you don't specify any `-d` options, the class files will be put into directories according 
+to the package structure, relative to the current directory. If you give an `-d` option, the class 
+files will be put relative to the directory given by the option. Non-existing directories will be 
+created here._
+
+_Note: `module-info.java` is specified first, so the compiler knows this is a modular application and
+will inform you accordingly if any problems exist with the code._
+
 Multi-module compilation:
 
 ````
@@ -340,7 +348,7 @@ Running Hello World example
 
 `java -p jars -m greeting`
 
-Note: `-p` is shortened term for `--module-path` and `-m` is shortened term for `-module`.
+_Note: `-p` is shortened term for `--module-path` and `-m` is shortened term for `-module`._
 
 ## <a name="q"></a>Quiz
 

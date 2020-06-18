@@ -168,6 +168,8 @@ A cyclic dependency is when two modules depend on each other. Cyclic dependencie
 
 One possible approach to address this is to remove the dependency and instead create a new module that both modules can depend on. This leads us to services which are described in section 2.
 
+
+
 ## <a name="q"></a>Quiz
 
 1. An unnamed module... (Choose two):

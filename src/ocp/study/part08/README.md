@@ -303,11 +303,11 @@ redundancy and simply write this:
 
 `Comparator<Duck> byWeight = DuckHelper::compareByWeight;`
 
-The :: operator tells Java to pass the parameters automatically into compareByWeight .
+The `::` operator tells Java to pass the parameters automatically into compareByWeight .
 
-Note: DuckHelper::compareByWeight returns a functional interface and not an
-int. Remember that :: is like lambdas, and it is typically used for deferred
-execution.
+_Note: `DuckHelper::compareByWeight` returns a functional interface and not an
+int. Remember that `::` is like lambdas, and it is typically used for deferred
+execution._
 
 There are four formats for method references:
 1. Static methods
@@ -315,9 +315,8 @@ There are four formats for method references:
 1. Instance methods on an instance to be determined at runtime
 1. Constructors
 
-In this chapter, we will be using three functional interfaces in our examples. We will use
-more in the next chapter. Remember from Chapter 2 that Predicate is a functional interface
-that takes a single parameter of any type and returns a boolean . Another functional
+Remember that Predicate is a functional interface
+that takes a single parameter of any type and returns a boolean. Another functional
 interface is Consumer , which takes a single parameter of any type and has a void return
 type. Finally, Supplier doesn’t take any parameters and returns any type.
 
@@ -396,11 +395,11 @@ only requirements are that it must be a valid interface name and contain a singl
 method. Table 4.1 is significant because these interfaces are often used in streams and other
 classes that come with Java, which is why you need to memorize them for the exam.
 
-Note: There’s an interface called Runnable used
+_Note: There’s an interface called `Runnable` used
 for concurrency the majority of the time. However, it may show up on the
 exam when you are asked to recognize which functional interface to use.
 All you need to know is that Runnable doesn’t take any parameters, return
-any data, or use generics.
+any data, or use generics._
 
 ### Applying the Predicate Interface
 
@@ -977,14 +976,14 @@ For Table 4.7 , you can start by thinking about the source and target types. Whe
 type is an object, you drop the To from the name. When the mapping is to the same type
 you started with, you use a unary operator instead of a function for the primitive streams.
 
-Note: You can also create a primitive stream from a Stream using flatMapToInt(),
-flatMapToDouble(), or flatMapToLong(). For example, IntStream ints =
-list.stream().flatMapToInt(x -> IntStream.of(x));
+_Note: You can also create a primitive stream from a Stream using `flatMapToInt()`,
+`flatMapToDouble()`, or `flatMapToLong()`. For example,_ 
+
+`IntStream ints = list.stream().flatMapToInt(x -> IntStream.of(x));`
 
 #### Using Optional with Primitive Streams
 
-Earlier in the chapter, we wrote a method to calculate the average of an int[] and promised
-a better way later. Now that you know about primitive streams, you can calculate the
+Now that you know about primitive streams, you can calculate the
 average in one line:
 
 ````

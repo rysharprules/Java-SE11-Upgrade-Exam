@@ -669,9 +669,9 @@ Path object equals() comparison returns false, then it locates each file to whic
 path refers in the file system and determines if they are the same, throwing a checked
 IOException if either file does not exist.
 
-Note: This isSameFile() method does not compare the contents of the file. For
+_Note: This isSameFile() method does not compare the contents of the file. For
 example, two files may have identical content and attributes, but if they
-are in different locations, then this method will return false.
+are in different locations, then this method will return false._
 
 Let’s assume that all of the files in the following examples exist within the file system and
 that cobra is a symbolic link to the snake file. What would be the output of the following code
@@ -816,23 +816,23 @@ The first example renames the zoo directory to zoo-new directory, keeping all of
 original contents from the source directory. The second example moves the addresses.txt
 file from the directory user to the directory zoo-new , and it renames it to addresses2.txt .
 
-By default, the move() method will follow links, throw an exception if the file
+By default, the `move()` method will follow links, throw an exception if the file
 already exists, and not perform an atomic move. These behaviors can be changed by
-providing the optional values NOFOLLOW_LINKS , REPLACE_EXISTING , or ATOMIC_MOVE ,
+providing the optional values `NOFOLLOW_LINKS`, `REPLACE_EXISTING`, or `ATOMIC_MOVE` ,
 respectively, to the method. If the file system does not support atomic moves, an
-AtomicMoveNotSupportedException will be thrown at runtime.
+`AtomicMoveNotSupportedException` will be thrown at runtime.
 
-Note: The Files.move() method can be applied to non-empty directories only if
+_Note: The `Files.move()` method can be applied to non-empty directories only if
 they are on the same underlying drive. While moving an empty directory
 across a drive is supported, moving a non-empty directory across a drive
-will throw an NIO.2 DirectoryNotEmptyException.
+will throw an NIO.2 `DirectoryNotEmptyException`._
 
-#### Removing a File with delete() and deleteIfExists()
+#### Removing a File with `delete()` and `deleteIfExists()`
 
-The Files.delete(Path) method deletes a file or empty directory within the file system.
-The delete() method throws the checked IOException under a variety of circumstances.
+The `Files.delete(Path)` method deletes a file or empty directory within the file system.
+The `delete()` method throws the checked `IOException` under a variety of circumstances.
 For example, if the path represents a non-empty directory, the operation will throw the
-runtime DirectoryNotEmptyException . If the target of the path is a symbol link, then the
+runtime `DirectoryNotEmptyException`. If the target of the path is a symbol link, then the
 symbolic link will be deleted, not the target of the link.
 
 The deleteIfExists(Path) method is identical to the delete(Path) method, except
@@ -1367,7 +1367,7 @@ traversed. For example, until a specific subdirectory is reached, its child elem
 loaded. This performance enhancement allows the process to be run on directories with a
 large number of descendants in a reasonable manner.
 
-Note: Keep in mind that when you create a Stream<Path> object using Files.walk() , the contents of the directory have not yet been traversed.
+_Note: Keep in mind that when you create a Stream<Path> object using Files.walk() , the contents of the directory have not yet been traversed._
 
 The following is an example of using a stream to walk a directory structure:
 
