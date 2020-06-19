@@ -15,8 +15,8 @@ Material which does not map to the exam topics but may be useful nonetheless.
 
 ### What is a Custom Runtime Image?
 
-You can create a special distribution of the java runtime containing only the runtime modules. 
-Application modules and only those platform modules required by your application. You can do this in 
+You can create a special distribution of the java runtime containing only the runtime modules, application 
+modules and only those platform modules required by your application. You can do this in 
 Java SE 9 with custom runtime images. A custom runtime image is a self contained image that bundles the
 application modules with the JVM and everything else it needs to execute your application.
 
@@ -29,7 +29,7 @@ a runtime image.
 ### Using `jlink` to Create a Custom Runtime Image
 
 `jlink` is a new tool in Java SE 9 that can be used to create a custom platform specific runtime image,
-assemble a set of modules form their dependencies (using a set of dependencies from `module-info.class`),
+assemble a set of modules from their dependencies (using a set of dependencies from `module-info.class`),
 and performing optimization.
 
 A basic invocation of `jlink`:
@@ -38,9 +38,9 @@ A basic invocation of `jlink`:
 
 You will have to specify the following three parameters:
 
-1. `modulepath`: The module path where the platform and application modules added to be added to the image are located. Modules can be modular jar files, jmods or 
-exploded directories.
-1. `mods`: The list of the modules to be added to the adds these modules and their transitive dependencies into your image.
+1. `modulepath`: The module path where the platform and application modules to be added to the image are located. Modules can be modular jar files, jmods or 
+exploded directories
+1. `mods`: The list of the modules to be added and their transitive dependencies into your image
 1. `path`: The output directory where the generated runtime image will be stored
 
 #### Example: Using `jlink` to Create a Runtime Image
@@ -48,7 +48,7 @@ exploded directories.
 The following command creates a new runtime image:
 
 ````
-/Hello$ jlink
+jlink
     --module-path dist/Hello.jar:/usr/java/jdk-9/mods
     --add-modules com.greeting
     --output myimage
@@ -61,7 +61,7 @@ _Note: In Windows, the path separator is ; instead of :_
 
 ![Figure 0.1](img/figure0-1.png)
 
-Note the sizes of the JDK 9 compared to the custom runtime image performed with `du -sh` command (979M in `jdk-9$` and 45M in `myimage$`).
+Note the sizes of the JDK 9 compared to the custom runtime image performed with `du -sh` command (979M in `jdk-9.0.1/` and 45M in `myimage/`).
 
 The generated image, `myimage`, has the following directory layout:
 
@@ -83,36 +83,36 @@ You can also execute the `./java --list-modules` command to list the modules tha
 
 You can use the `java` command, which is in `myimage`, to launch your application:
 
-`cd myimage/bin/`
-`./java --module com.greeting`
+````
+cd myimage/bin/
+./java --module com.greeting
+````
 
 or
 
-`$ myimage/bin/ java -m com.greeting`
+`./java -m com.greeting`
 
 You do not need to set the module path. The custom runtime image is in its own module path.
 
-The `jlink` command has a `-launcher` option that creates a platform specific executable in the `bin` directory.
+The `jlink` command has a `--launcher` option that creates a platform specific executable in the `bin` directory.
 
 ````
-/Hello$ jlink
+jlink
     --module-path dist/Hello.jar:/usr/java/jdk-9/mods
     --add-modules com.greeting
     --launcher com.greeting=Hello
     --output myimage
 ````
 
-You can use this executable to run your application:
-
-`$ myimage/bin Hello`
+You can use this executable to run your application.
 
 #### `jlink` resolves transitive dependencies
 
-The `jlink` tool will resolve all dependencies transitively for the modules specified using the `--add-modules` option, and includes all the resolved dependent modules into the runtime image.
+The `jlink` tool will resolve all dependencies transitively for the modules specified using the `--add-modules` option, and includes all the resolved dependent modules in the runtime image.
 
 ### Advantages of a Custom Runtime Image
 
-- Ease of use - Can be shipped to you application users who don't have to download and install JRE separately to run the application
+- Ease of use - Can be shipped to your application users who don't have to download and install JRE separately to run the application
 - Reduced footprint - Consists of only those modules that your application uses and is therefore much smaller than a full JDK. It can be used on resource constrained devices and applications on the cloud
 - Performance - Runs faster because of link time optimization
 
@@ -127,14 +127,14 @@ JDK 9 ships with the `jimage` tool to let you explore the contents of a JIMAGE f
 
 To use a plug-in, you need to use the command line option for it. Run the `jlink` tool with the `--list-plugins` options to print the list of all available plug-ins with their descriptions and command line options.
 
-`$ jlink --list-plugins`
+`jlink --list-plugins`
 
 The `compress` plug-in optimizes the custom runtime image by reducing the Java SE 9 runtime image (level 1 is constant string sharing and level 2 is ZIP).
 
 The `strip-debug` plug-in removes all the debugging information from the Java code further reducing the size of the image.
 
 ````
-/Hello$ jlink
+jlink
     --module-path dist/Hello.jar:/usr/java/jdk-9/mods
     --add-modules com.greeting
     --output myimage
@@ -161,7 +161,7 @@ A multi-release JAR (MRJAR) is a single unit of distribution, compatible with mu
 
 - You can have an MRJAR that will work on Java SE 8 and Java SE 9
 - The MRJAR will contain the class files compiled in Java SE 8, plus additional classes compiled in Java SE 9.
-    - The classes compiled in Java SE 9 may take advantage of APIs only offered in Java SE 9 & 10
+    - The classes compiled in Java SE 9 may take advantage of APIs only offered in Java SE 9 and above
 
 ### Structure of a multi-release JAR file
 
@@ -195,13 +195,13 @@ If more than one version of a class exists in an MRJAR:
 - The JDK will use the first one it finds
 - The search begins in the directory tree whose name matches the JDK major version number
 - The search continues with successively lower-numbered directories until finally reaching the root directory
-    - i.e., if the class has more than one version, for JDK 9 the search starts at `META-INF/versions/9`, whilst for JDK 8, it starts at teh root, `META-INF`  
+    - i.e., if the class has more than one version, for JDK 9 the search starts at `META-INF/versions/9`, whilst for JDK 8, it starts at the root, `META-INF`  
 
 ### Creating a multi-release JAR file
 
 The `jar` tool has been enhanced in JDK 9 to support creating MRJARs. In JDK 9, the `jar` tool accepts a new option called `--release`:
 
-`$ jar <options> --release N <other options>`
+`jar <options> --release N <other options>`
 
 Here, `N` is a JDK major version, such as 9 for JDK 9
 
@@ -210,7 +210,7 @@ Here, `N` is a JDK major version, such as 9 for JDK 9
 You can list the entries in `foo.jar` by using the `--list` option:
 
 ````
-$ jar --list --file foor.jar
+jar --list --file foor.jar
 
 META-INF/
 META-INF/MANIFEST.MF
@@ -224,9 +224,9 @@ META-INF/versions/9/com/foo/ListUtil.class
 
 You can run `foo.jar` on JDK 7, 8 or 9 with:
 
-`$ java -jar foo.jar`
+`java -jar foo.jar`
 
-But different classes will be used in each run depending on the JDK version.
+Different classes will be used in each run depending on the JDK version.
 
 ### Creating a modular multi-release JAR file
 
@@ -242,23 +242,23 @@ Running can be done the same way as above. But now, because the project is modul
 
 ## <a name="0-3"></a>0.3 - Enhancements to the Stream API
 
-New `Stream` interfaces from Java 9:
+New `Stream` interfaces from Java 9 with code examples:
 
-| Modifier and Type | Method | Description |
-| --- | --- | --- |
-| default Stream<T> | dropWhile​(Predicate<? super T> predicate) | Returns, if this stream is ordered, a stream consisting of the remaining elements of this stream after dropping the longest prefix of elements that match the given predicate. |
-| static <T> Stream<T> | iterate​(T seed, Predicate<? super T> hasNext, UnaryOperator<T> next) | Returns a sequential ordered Stream produced by iterative application of the given next function to an initial element, conditioned on satisfying the given hasNext predicate. |
-| default Stream<T> | takeWhile​(Predicate<? super T> predicate) | Returns, if this stream is ordered, a stream consisting of the longest prefix of elements taken from this stream that match the given predicate. |
+| Modifier and Type | Method | Description | Example |
+| --- | --- | --- | --- |
+| default Stream<T> | dropWhile​(Predicate<? super T> predicate) | Returns, if this stream is ordered, a stream consisting of the remaining elements of this stream after dropping the longest prefix of elements that match the given predicate. | [Example](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/blob/master/src/ocp/study/part00/DropWhileExample.java) |
+| static <T> Stream<T> | iterate​(T seed, Predicate<? super T> hasNext, UnaryOperator<T> next) | Returns a sequential ordered Stream produced by iterative application of the given next function to an initial element, conditioned on satisfying the given hasNext predicate. | [Example](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/blob/master/src/ocp/study/part00/IterateExample.java) |
+| default Stream<T> | takeWhile​(Predicate<? super T> predicate) | Returns, if this stream is ordered, a stream consisting of the longest prefix of elements taken from this stream that match the given predicate. | [Example](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/blob/master/src/ocp/study/part00/TakeWhileExample.java) |
 
 _Note: `iterate` existed in Java 8 but is now overloaded since Java 9._
 
 ## <a name="0-4"></a>0.4 JShell
 
 Normal execution:
-    - You enter all your code ahead of time
-    - Compile your code
-    - The program runs once in its entirety
-    - If after the first run you realize you've made a mistake you need to run the entire program again
+- You enter all your code ahead of time
+- Compile your code
+- The program runs once in its entirety
+- If after the first run you realize you've made a mistake you need to run the entire program again
     
 JShell:
 - It's a command line interface
@@ -301,7 +301,7 @@ jshell> /list
    4 : name += " test"
 ````
 
-The `/var` command shows you the variables in teh current JShell instance:
+The `/var` command shows you the variables in the current JShell instance:
 
 ````
 jshell> /var
@@ -334,11 +334,11 @@ The `/imports` command shows you the packages imported into JShell by default.
 
 ## <a name="0-5"></a>0.5 - Convenience Methods for Collections
 
-Many convenience methods in Java SE 9:
+Many convenience methods have been added in Java SE 9:
 
 ![Figure 0.10](img/figure0-10.png)
 
-Key Collections interfaces:
+A reminder of the key Collection interfaces:
 
 ![Figure 0.11](img/figure0-11.png)
 
@@ -361,7 +361,7 @@ The same is available for `Set`s:
 
 `Set<String> testSet = Set.of("A", "B", "C");`
 
-During the creation of a Set using a factory method, if duplicate elements are passed as parameters, 
+During the creation of a `Set` using a factory method, if duplicate elements are passed as parameters, 
 then `IllegalArgumentException` is thrown at runtime.
 
 `Map` has an `of` method also:
@@ -389,9 +389,7 @@ Now, we may ask, what is the point of having 11 extra methods if there's a var-a
 work for any number of elements.
 
 The answer to that is performance. Every var-args method call implicitly creates an array. Having the 
-overloaded methods avoid unnecessary object creation and the garbage collection overhead thereof. On 
-the contrary, Arrays.asList always creates that implicit array and, consequently, is less efficient 
-when the number of elements is low.
+overloaded methods avoids unnecessary object creation and the garbage collection overhead thereof.
 
 Similarly to `List` and `Set`, the `of` method for `Map` is overloaded to have 0 to 10 key-value pairs.
 In the case of `Map`, there is a different method for more than 10 key-value pairs, `ofEntries`:
@@ -459,7 +457,7 @@ Arrays.equals(DNAStrand1, 2, 5, DNAStrand2, 3, 6, dnaComparator));
 
 `compare` returns an integer, measuring the distance between the fist two elements to differ:
 
-![Figure 0.11](img/figure0-11.png)
+![Figure 0.13](img/figure0-13.png)
 
 There are 17 characters between T and C in the alphabet. So what if many elements differ from the array?
 This method does not return the cumulative difference between all elements. It only returns the 
@@ -489,8 +487,8 @@ The 3 returned also allows us to know the length of the prefix, i.e. the element
 
 ## <a name="0-7"></a>0.7 - Enhanced Deprecation
 
-Java offers a couple of mechanisms to depracate the API. One is @deprecated in the Javadoc that's 
-introduced JDK 1.1. And the other one is @Depracated with a capital D, which was introduced in Java SE 5, JDK 5.
+Java offers a couple of mechanisms to depracate the API. One is `@deprecated` in the Javadoc that's 
+introduced JDK 1.1. The other one is `@Depracated` with a capital D, which was introduced in JDK 5.
 
 ### Using `@deprecated`
 
@@ -551,11 +549,12 @@ compiler warnings for depracated API intended for removal in a future release.
 ### `jdeprscan`
 
 Before JDK 9, you had to recompile your source code to find out about the deprecated JDK API from 
-the compiler modification. Starting JDK 9 and 10, a new static analysis tool called 
+the compiler modification. Starting JDK 9, a new static analysis tool called 
 `jdeprscan` is now available. This tool performs a static analysis of class files and JAR and reports the use of deprecated APIs.
 
-The benefits of the jdeprscan, it's important to discover dependencies on a deprecated API before the 
-API are removed from the JDK. So looks for and reports the usage of only deprecated Java SE APIs.
+The benefit of the `jdeprscan`, is that it's important to discover dependencies on a deprecated API 
+before the APIs are removed from the JDK. `jdeprscan` looks for and reports the usage of only deprecated Java 
+SE APIs.
 
 #### Running `jdeprscan`
 
@@ -565,9 +564,9 @@ The `jdeprscan` tool is located in the `JDK_HOME/bin` directory. The syntax to r
 
 You specify a list of space-separated directory, JARs, or a fully-qualified class names as arguments to the scan.
 
-Example: `com.example.foo.class`
-![Figure 0.23](img/figure0-23.png)
-![Figure 0.21](img/figure0-21.png)
+Example: `com.example.foo.class`<br />
+![Figure 0.23](img/figure0-23.png)<br />
+![Figure 0.21](img/figure0-21.png)<br />
 ![Figure 0.22](img/figure0-22.png)
 
 `jdeprscan` can be version-specific with the `--release` setting - from JDK 6 and up. Note, you don't 
@@ -652,12 +651,6 @@ have to install different versions of the JDK.
     - The varargs variant is used for greater than 10 elements (A)
     - The size of the largest colletion returned by the `of` method is 100
 1. Given the code fragment below, what is the result?
-    ![Figure 0.11](img/figure0-11.png)
-    - `{1=A,2=B}{1=A,2=B}`
-    - A NPE is thrown (A)
-    - Compilation failure
-    - `{1=A,2=B}` A NPE is thrown
-1. Given the code fragment below, what is the result?
     ````
    List<String> c1 = List.of("B", "C", "D", "A");
    c1.add(4,"E");
@@ -681,25 +674,25 @@ have to install different versions of the JDK.
    - A, B, C, D
      A, B, C
    - An Exception is thrown at run time (A)
-1. Given the code fragment below, what is the result?
-    ![Figure 0.11](img/figure0-11.png)
+1. Given the code fragment below, what is the result?<br />
+    ![Figure 0.14](img/figure0-14.png)
     - false true
     - false false (A)
     - true false
     - true true
-1. Given the code fragment below, what is the result?
+1. Given the code fragment below, what is the result?<br />
     ![Figure 0.15](img/figure0-15.png)
     - -1 0
     - -1 1
     - Compilation error
     - -2 1 (A)
-1. Given the code fragment below, what is the result?
+1. Given the code fragment below, what is the result?<br />
     ![Figure 0.16](img/figure0-16.png)
     - 1 -3
     - An exception thrown at runtime
     - -4 -4
     - -1 3 (A)
-1. Given the code fragment below, what is the result?
+1. Given the code fragment below, what is the result?<br />
     ![Figure 0.17](img/figure0-17.png)
     - false false
     - true false
