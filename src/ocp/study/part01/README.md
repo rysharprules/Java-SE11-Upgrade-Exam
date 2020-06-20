@@ -76,10 +76,10 @@ The policy of not resolving these modules is the first step towards removing the
 
 Use the `--add-modules` command line option to ensure the module with the API is resolved at startup.
 
-For example, if you run an application that uses JAXB API, it fails with the following error:
+For example, if you run an application that uses the JAXB API, it fails with the following error:
 
 ````
-$java   com.examle.JAXBCustomer
+java com.examle.JAXBCustomer
 Exception in thread "main" java.lang.NoClassDefFoundError:
 javax/xml/bind/JAXBException
         at java.base/java.lang.Class.getDeclaredMethods...
@@ -88,7 +88,7 @@ javax/xml/bind/JAXBException
  
 To resolve the `java.xml.bind` module at run time and ensure the module is available at run time, specify the following command line option:
 
-`$java --add-modules java.xml.bind com.example.JAXBCustomer`
+`java --add-modules java.xml.bind com.example.JAXBCustomer`
 
 ![Figure 1.12](img/figure1-12.png)
 
@@ -120,7 +120,7 @@ Some tools and libraries use reflection to access parts of JDK internal APIs. Th
 in a future release of the JDK. In JDK 9, it is permitted by default and a warning is issued, e.g. a warning issued when starting Jython:
 
 ````
-$ java -jar jython-standalone-2.7.0.jar
+java -jar jython-standalone-2.7.0.jar
 WARNING: An illegal reflective acccess operation has occurred
 WARNING: Illegal reflective access by jnr.posix.JavaLibCHelper (:/jython-
 standalone-2.7.0.jar) to method sun.nio.ch.SelChImpl.getFD()
@@ -134,7 +134,7 @@ WARNING: All illegal access operations will be denied in a future release
 
 _Note: warnings can be disabled on a library-by-library basis with the `--add-opens` command line flag, e.g.:_
 
-`$java --add-opens java.base/sun.nio.ch=ALL-UNNAMED --add-opens java.base/java.io=ALL_UNNAMED -jar jython-standalone-2.7.0.jar`
+`java --add-opens java.base/sun.nio.ch=ALL-UNNAMED --add-opens java.base/java.io=ALL_UNNAMED -jar jython-standalone-2.7.0.jar`
 
 ### Changed JDK and JRE layout
 
@@ -164,7 +164,7 @@ Modules are a fundamental new kind of Java programming component. The module sys
 
 Jar files are:
     
-- Typically, used for packaging the class files for:
+- Typically, used for packaging class files for:
     - The application
     - The libraries
 - Composed of a set of packages with some additional metadata, e.g. main class to run, class path entries, multi-release flags
@@ -181,7 +181,7 @@ running - some applications may have hundreds of JAR files in the class path
     - The first class could be the wrong class if several versions of the library exists in the class path
     - Problems may occur only under specific operational conditions that require a particular class
     
-![Figure 1.1](img/figure1-2.png)
+![Figure 1.2](img/figure1-2.png)
 
 #### JAR Dependency Problems
 
@@ -197,11 +197,11 @@ Class path permits many versions of a library, including duplicated files.
 | --- | --- |
 | public<br />protected<br />< package ><br />private | public to everyone<br />public but only to specific modules<br />public only within a module<br />protected<br />< package ><br />private | 
 
-![Figure 1.1](img/figure1-3.png)
+![Figure 1.3](img/figure1-3.png)
 
 "public" no longer means accessible to everyone.
 
-![Figure 1.1](img/figure1-4.png)
+![Figure 1.4](img/figure1-4.png)
 
 You must edit the `module-info` classes to specify how modules read from each other.
 
@@ -212,7 +212,7 @@ You must edit the `module-info` classes to specify how modules read from each ot
     - Encapsulation
     - Interfaces
 - The unit of reuse is the module.
-    - It is a full-fledged Java component
+    - It is a fully-fledged Java component
     - It explicitly declares:
         - Dependencies on other modules
         - What packages it makes available to other modules
@@ -251,9 +251,9 @@ of its public types available to other modules. There are two directives to spec
 1. The `exports <package_name>` directive specifies a package whose public types are accessible to all other modules
 1. The `exports <package_name> to` directive restricts the availability of an exported package to a list of specific modules. It accepts a comma separated list of module names after the `to` keyword 
 
-![Figure 1.1](img/figure1-5.png)
+![Figure 1.5](img/figure1-5.png)
 
-![Figure 1.1](img/figure1-6.png)
+![Figure 1.6](img/figure1-6.png)
 
 ### Access to Types via Reflection
 
@@ -264,13 +264,13 @@ but it also makes all of its non-public types available via reflection. Modules 
 `opens` directive, because injections work via reflection. All packages in a module can be made available to access via reflection
 by using the `open` directive before the module directive.
 
-![Figure 1.1](img/figure1-7.png)
+![Figure 1.7](img/figure1-7.png)
 
 ### Example Hello World Modular Application Code
 
-![Figure 1.1](img/figure1-8.png)
+![Figure 1.8](img/figure1-8.png)
 
-![Figure 1.1](img/figure1-9.png)
+![Figure 1.9](img/figure1-9.png)
 
 ### Summary of Keywords
 
@@ -352,10 +352,6 @@ _Note: `-p` is shortened term for `--module-path` and `-m` is shortened term for
 
 ## <a name="q"></a>Quiz
 
-1. In Java SE 9, which namespace contains modules that are not defined in the JDK in Java SE 9 platform specification but are instead specific to the JDK?
-    - `jdk.*`
-    - `java.*` (A)
-    - Both the above
 1. Which three directories are not present in JDK 9?
     - `jre` (A)
     - `rt.jar` (A)
@@ -379,7 +375,7 @@ _Note: `-p` is shortened term for `--module-path` and `-m` is shortened term for
     - `java.naming` (A)
     - `java.util`
     - `java.sql` (A)
-    - `java.rmi` (A) - See [java.se modular grpah here](https://javadoc.scijava.org/Java9/java.se-summary.html).
+    - `java.rmi` (A) - See [java.se modular graph here](https://javadoc.scijava.org/Java9/java.se-summary.html).
 1. Which statements are true about modular JDK? (Choose two):
     - It helps the application to be more scalable to small devices (A)
     - It is integrated with all the APIs, including logging, swing and instrumentation
@@ -391,7 +387,7 @@ _Note: `-p` is shortened term for `--module-path` and `-m` is shortened term for
     - log4j
     - swing
 1. Which statement is true about JARs in the classpath?
-    - All teh classes in the JAR file are accessible
+    - All the classes in the JAR file are accessible
     - JRE continues to search for the last class within the JARs in the classpath if another similarly named class exists
     - JARs in the classpath can have duplicate classes and/or packages (A)
 1. A module can contain:
