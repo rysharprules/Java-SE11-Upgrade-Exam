@@ -236,10 +236,10 @@ public class RestrictedChecking implements Accessible {
 #### Inheritance rules of `default` methods
 
 1. A superclass method takes priority over an interface `default` method
-![Figure 3.2](img/figure3-2.png)
+![Figure 3.2](img/figure3-2.png)<br />
     - The superclass method may be concrete or abstract
     - Only consider the interface `default` if no method exists from the superclass
-1. A subtype interface's `default` method takes priority over a super-type interface `default` method
+1. A subtype interface's `default` method takes priority over a super-type interface `default` method<br />
 ![Figure 3.3](img/figure3-3.png)
 1. If there is a conflict, treat the `default` method as abstract
     - The concrete class must provide its own implementation. This may include a call to a specific interface's implementation
@@ -341,7 +341,7 @@ public interface Accessible {
 Let’s take a look at an example of a functional interface and a class that implements it:
 
 ```
-`@FunctionalInterface`
+@FunctionalInterface
 public interface Sprint {
     public void sprint(Animal animal);
 }
