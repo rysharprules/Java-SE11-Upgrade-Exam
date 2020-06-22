@@ -134,9 +134,10 @@ we'll need to re-examine the original purpose of interfaces and how they were wr
 
 #### Java SE 7 Interfaces
 
-Interfaces are Java's solution to safely facilitate multiple inheritance. Interfaces originally only contained `static`
-variables and `abstract` methods. An example is the `Accessible` interface below. This interface is meant to
-be implemented in classes for financial products where people access money through deposits and withdrawls.
+Interfaces are Java's solution to safely facilitate multiple inheritance. Interfaces originally only 
+contained `static` variables and `abstract` methods. An example is the `Accessible` interface below. 
+This interface is meant to be implemented in classes for financial products where people access money 
+through deposits and withdrawls.
 
 ````
 public interface Accessible {
@@ -147,10 +148,12 @@ public interface Accessible {
 }
 ````
 
-`abstract` methods must be implemented later. If one class implements an interface, you'll write your implementation
-logic inside that class. If many classes implement the same interface, you'll write your implementation logic many times.
+`abstract` methods must be implemented later. If one class implements an interface, you'll write your 
+implementation logic inside that class. If many classes implement the same interface, you'll write 
+your implementation logic many times.
 
-What if most classes implement the exact same logic? Must you duplicate the same code in many places? Isn't code duplication bad?
+What if most classes implement the exact same logic? Must you duplicate the same code in many places? 
+Isn't code duplication bad?
 
 #### Example: Implementing `abstract` methods
 
@@ -193,10 +196,11 @@ public class RestrictedChecking implements Accessible {
 
 #### Java SE 8 Interfaces
 
-In Java SE 8, you're allowed to implement special types of methods within interfaces: `static` methods and `default` methods.
+In Java SE 8, you're allowed to implement special types of methods within interfaces: `static` 
+methods and `default` methods.
 
-`default` methods help minimize code duplication. They provide a single location to write and edit. They can
-be overridden later if necessary. They're overridden with per-class precision.
+`default` methods help minimize code duplication. They provide a single location to write and edit. 
+They can be overridden later if necessary. They're overridden with per-class precision.
 
 Previously duplicated logic can be written once in `Accessible`:
 
@@ -239,16 +243,19 @@ public class RestrictedChecking implements Accessible {
 ![Figure 3.2](img/figure3-2.png)<br />
     - The superclass method may be concrete or abstract
     - Only consider the interface `default` if no method exists from the superclass
-1. A subtype interface's `default` method takes priority over a super-type interface `default` method<br />
+1. A subtype interface's `default` method takes priority over a super-type interface `default` 
+method<br />
 ![Figure 3.3](img/figure3-3.png)
 1. If there is a conflict, treat the `default` method as abstract
-    - The concrete class must provide its own implementation. This may include a call to a specific interface's implementation
+    - The concrete class must provide its own implementation. This may include a call to a specific 
+    interface's implementation
 
 #### Interfaces don't replace abstract classes
 
 - An interface doesn't let you store the state of an instance
 - An `abstract` class may contain instance fields
-- To avoid complications caused by multiple inheritance of state, a class cannot extend multiple `abstract` classes
+- To avoid complications caused by multiple inheritance of state, a class cannot extend multiple 
+`abstract` classes
 
 #### What if `default` methods duplicate logic?
 
@@ -288,9 +295,9 @@ public interface Accessible {
 }
 ````
 
-The problem with this approach is `default` methods must be `public`. They can be called from almost anywhere.
-The returned values may not mean anything outside the context of the methods. It's dangerous if the method returns
-information you don't want exposed. 
+The problem with this approach is `default` methods must be `public`. They can be called from 
+almost anywhere. The returned values may not mean anything outside the context of the methods. 
+It's dangerous if the method returns information you don't want exposed. 
 
 They can also be overridden at any time. The result of the calling method may not be predictable.
 
@@ -392,15 +399,15 @@ public interface Crawl {
 }
 ```
            
-Although all three of these interfaces will compile, none of them are considered functional interfaces. The Walk interface neither extends any functional interface classes
-nor defines any methods, so it is not a functional interface. The `dance` method extends
- `Sprint`, which already includes a single abstract method, bringing the total to two abstract
- methods; therefore, `dance` is not a functional interface. Finally, the `crawl` method defines
- two abstract methods; therefore it cannot be a functional interface.
+Although all three of these interfaces will compile, none of them are considered functional interfaces. 
+The Walk interface neither extends any functional interface classes nor defines any methods, so it 
+is not a functional interface. The `dance` method extends `Sprint`, which already includes a single 
+abstract method, bringing the total to two abstract methods; therefore, `dance` is not a functional 
+interface. Finally, the `crawl` method defines two abstract methods; therefore it cannot be a 
+functional interface.
  
- In these examples, applying the `@FunctionalInterface` annotation to any of these
- interfaces would result in a compiler error, as would attempting to use them implicitly as
- functional interfaces in a lambda expression.
+In these examples, applying the `@FunctionalInterface` annotation to any of these interfaces would 
+result in a compiler error, as would attempting to use them implicitly as functional interfaces in a lambda expression.
 
 ### Applying the `@FunctionalInterface` Annotation
 
@@ -427,9 +434,11 @@ determine whether an interface is a functional interface on your own.
 ## <a name="q"></a>Quiz
 
 1. What is true about code duplication?
-    - Duplication makes your code longer. This is good because it makes colleagues believe you're really smart and capable of handling complex code
+    - Duplication makes your code longer. This is good because it makes colleagues believe you're 
+    really smart and capable of handling complex code
     - Duplication is good because it builds redundancy into the system
-    - If you need to make an edit, you''ll have to search for all the occassions where the code is duplicated. This is tedious and inefficient (A)
+    - If you need to make an edit, you''ll have to search for all the occasions where the code is 
+    duplicated. This is tedious and inefficient (A)
     - Duplication is an elegant substitute for version control
 1. If a `private` method is written in an interface, where can that method be called from?
     - From any other method within the interface (A)

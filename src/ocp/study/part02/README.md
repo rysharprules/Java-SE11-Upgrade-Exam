@@ -11,13 +11,13 @@
 
 ![Figure 2.1](img/figure2-1.png)
 
-If we wanted to add another game on top of `basketball` and `soccer`, e.g. softball, baseball etc, that new
-module would depend on the `gameapi` and the `competition` module would depend on it.
+If we wanted to add another game on top of `basketball` and `soccer`, e.g. softball, baseball etc, 
+that new module would depend on the `gameapi` and the `competition` module would depend on it.
 
 ### Service Relationships
 
-Game can be an interface (e.g. basketball, soccer etc). The competition module then can use the game. Then the soccer class
-can implement the game interface.
+Game can be an interface (e.g. basketball, soccer etc). The competition module then can use the game. 
+Then the soccer class can implement the game interface.
 
 ![Figure 2.2](img/figure2-2.png)
 
@@ -39,7 +39,8 @@ module soccer {
 
 ### Service Loader
 
-We can now make use of the [ServiceLoader](https://docs.oracle.com/javase/9/docs/api/java/util/ServiceLoader.html) class in the `competition` module.
+We can now make use of the [ServiceLoader](https://docs.oracle.com/javase/9/docs/api/java/util/ServiceLoader.html) 
+class in the `competition` module.
 
 ````
 ServiceLoader<Game> game = ServiceLoader.load(Game.class);
@@ -50,7 +51,8 @@ for (Game currGame : game) {
 return providers;
 ````
 
-The `load` method above: Creates a new service loader for the given service type, using the current thread's context class loader.
+The `load` method above: Creates a new service loader for the given service type, using the current 
+thread's context class loader.
 
 ### Choosing the provider class
 

@@ -5,10 +5,12 @@
 
 ## <a name="1-1"></a>1.1 - Describe the Modular JDK
 
-In JDK 9, the monolithic JDK is broken into modules. Every module is a well defined piece of functionality of the JDK. All the various frameworks that were
-part of the prior release of the JDK are now broken down into a bunch of modules, e.g. Logging, Swing, Instrumentation.
+In JDK 9, the monolithic JDK is broken into modules. Every module is a well defined piece of 
+functionality of the JDK. All the various frameworks that were part of the prior release of the JDK 
+are now broken down into a bunch of modules, e.g. Logging, Swing, Instrumentation.
 
-The modular JDK makes it more scalable to small devices. It improves security and maintainability and improves application performance.
+The modular JDK makes it more scalable to small devices. It improves security and maintainability 
+and improves application performance.
 
 ### Java SE Modules
 
@@ -24,17 +26,23 @@ module java.se {
 }
 ````
 
-In the module descriptor, a `requires transitive` clause is listed for every single module that is part of the Java SE specification. When you say requires `java.se` in a module, all these modules will be available to you.
+In the module descriptor, a `requires transitive` clause is listed for every single module that is 
+part of the Java SE specification. When you say requires `java.se` in a module, all these modules 
+will be available to you.
 
 These modules are classified into two categories:
 
-1. Standard modules (`java.*` prefix for module names) that are part of the Java SE specification, e.g. `java.sql` for database connectivity, `java.xml` for XML processing and `java.logging` for logging.
-1. Modules not defined in the Java SE 9 platform (`jdk.*` prefix) are specific to the JDK, e.g. `jdk.jshell`, `jdk.policytool`, `jdk.httpserver`
+1. Standard modules (`java.*` prefix for module names) that are part of the Java SE specification, 
+e.g. `java.sql` for database connectivity, `java.xml` for XML processing and `java.logging` for logging.
+1. Modules not defined in the Java SE 9 platform (`jdk.*` prefix) are specific to the JDK, e.g. 
+`jdk.jshell`, `jdk.policytool`, `jdk.httpserver`
 
 ### The Base Module
 
-The base module is `java.base`. Every module depends on `java.base`, but this module doesn't depend on any other modules.
-The base module exports all of the platform's core packages.
+The base module is `java.base`. Every module depends on `java.base`, but this module doesn't depend 
+on any other modules.
+
+The base module exports all the platform's core packages.
 
 ![Figure 1.10](img/figure1-10.png)
 
@@ -71,8 +79,9 @@ These modules are deprecated for removal in JDK 9 release. Because of this, they
 #### Resolving Java EE modules in JDK 9
 
 Java EE modules are not resolved by default when you compile or run code on the class path.
-Code on the class path with references to classes APIs will fail with `NoDefClassFoundError` or `ClassNotFoundException`.
-The policy of not resolving these modules is the first step towards removing these APIs from Java SE and the JDK in the future.
+Code on the class path with references to classes APIs will fail with `NoDefClassFoundError` or 
+`ClassNotFoundException`. The policy of not resolving these modules is the first step towards removing 
+these APIs from Java SE and the JDK in the future.
 
 Use the `--add-modules` command line option to ensure the module with the API is resolved at startup.
 
@@ -86,7 +95,8 @@ javax/xml/bind/JAXBException
         at java.base...
 ````
  
-To resolve the `java.xml.bind` module at run time and ensure the module is available at run time, specify the following command line option:
+To resolve the `java.xml.bind` module at run time and ensure the module is available at run time, 
+specify the following command line option:
 
 `java --add-modules java.xml.bind com.example.JAXBCustomer`
 
@@ -106,18 +116,22 @@ Internal APIs:
 - Are in `com.sun.*`, `sun.*`, and `jdk.*` packages
 - Not meant to be used by developers
 
-Before modularization in JDK 9, it was possible to use any public API, even if those classes made up the JDK internal APIs.
-JDK internal APIs, such as the following classes for example, have been used by developers and in a few widely used libraries:
+Before modularization in JDK 9, it was possible to use any public API, even if those classes made up 
+the JDK internal APIs. JDK internal APIs, such as the following classes for example, have been used 
+by developers and in a few widely used libraries:
+
 - `sun.misc.BASE64Encoder`
 - `sun.misc.BASE64Dencoder`
 - `sun.misc.Unsafe`
 
-JDK 9 encapsulatin policy for JDK internals no longer permits access to `sun.misc.BASE64Encoder` and `sun.misc.BASE64Dencoder`, instead allowing access to `java.util.Base64`.
+JDK 9 encapsulatin policy for JDK internals no longer permits access to `sun.misc.BASE64Encoder` 
+and `sun.misc.BASE64Dencoder`, instead allowing access to `java.util.Base64`.
 
 #### Illegal access to JDK internals in JDK 9
 
-Some tools and libraries use reflection to access parts of JDK internal APIs. This illegal reflective access will be disabled
-in a future release of the JDK. In JDK 9, it is permitted by default and a warning is issued, e.g. a warning issued when starting Jython:
+Some tools and libraries use reflection to access parts of JDK internal APIs. This illegal reflective 
+access will be disabled in a future release of the JDK. In JDK 9, it is permitted by default and a 
+warning is issued, e.g. a warning issued when starting Jython:
 
 ````
 java -jar jython-standalone-2.7.0.jar
@@ -132,7 +146,8 @@ WARNING: All illegal access operations will be denied in a future release
 ...
 ````
 
-_Note: warnings can be disabled on a library-by-library basis with the `--add-opens` command line flag, e.g.:_
+_Note: warnings can be disabled on a library-by-library basis with the `--add-opens` command line 
+flag, e.g.:_
 
 `java --add-opens java.base/sun.nio.ch=ALL-UNNAMED --add-opens java.base/java.io=ALL_UNNAMED -jar jython-standalone-2.7.0.jar`
 
@@ -145,7 +160,8 @@ The layout of files in the JDK and JRE has changed in JDK 9:
 In JDK 9, code that assumes the following abut the JDK layout will fail:
 - `lib` directory contains `rt.jar`
 - Presence of `rt.jar` and `tools.jar`
-Class and resource files previously stored in `lib/rt.jar`, `lib/tools.jar`, `lib/dt.jar`, and various other internal JAR files are stored in more efficient format in implementation-specific files in the `lib` directory
+Class and resource files previously stored in `lib/rt.jar`, `lib/tools.jar`, `lib/dt.jar`, and various 
+other internal JAR files are stored in more efficient format in implementation-specific files in the `lib` directory
 
 ### Why Modules?
 
@@ -167,9 +183,10 @@ Jar files are:
 - Typically, used for packaging class files for:
     - The application
     - The libraries
-- Composed of a set of packages with some additional metadata, e.g. main class to run, class path entries, multi-release flags
-- Added to the class path in order that their contents (classes) to be made available to the JDK for compilation and 
-running - some applications may have hundreds of JAR files in the class path
+- Composed of a set of packages with some additional metadata, e.g. main class to run, class path 
+entries, multi-release flags
+- Added to the class path in order that their contents (classes) to be made available to the JDK for 
+compilation and running - some applications may have hundreds of JAR files in the class path
 
 ![Figure 1.1](img/figure1-1.png)
 
@@ -227,12 +244,13 @@ Therefore, Java modular applications have the followings traits:
 
 ### What is a Module
 
-A module contains one or more packages and other resources such as images or xml files. It is defined in its module
-descriptor (`module-info.class`), which is stored in the module's root folder.
+A module contains one or more packages and other resources such as images or xml files. It is 
+defined in its module descriptor (`module-info.class`), which is stored in the module's root folder.
 
 The module descriptor must contain the module name. Additionally, the module descriptor can contain details of:
 - Required module dependencies (other modules this module depends on)
-- Packages that this module exports, making them available to other modules (otherwise all packages in the module are implicitly unavailable to other modules)
+- Packages that this module exports, making them available to other modules (otherwise all packages 
+in the module are implicitly unavailable to other modules)
 - Permissions to open content of this module to other modules via the use of reflection
 - Services this module offers to other modules
 - Services this module consumes
@@ -246,10 +264,12 @@ but not at the runtime.
 
 ### Module Package Availability with `exports`
 
-A modules defines what content it makes available for other modules using the `exports` directive. Exporting a package makes all
-of its public types available to other modules. There are two directives to specify packages to export:
+A modules defines what content it makes available for other modules using the `exports` directive. 
+Exporting a package makes all of its public types available to other modules. There are two directives 
+to specify packages to export:
 1. The `exports <package_name>` directive specifies a package whose public types are accessible to all other modules
-1. The `exports <package_name> to` directive restricts the availability of an exported package to a list of specific modules. It accepts a comma separated list of module names after the `to` keyword 
+1. The `exports <package_name> to` directive restricts the availability of an exported package to a 
+list of specific modules. It accepts a comma separated list of module names after the `to` keyword 
 
 ![Figure 1.5](img/figure1-5.png)
 
@@ -257,12 +277,13 @@ of its public types available to other modules. There are two directives to spec
 
 ### Access to Types via Reflection
 
-A module may set up to allow runtime-only access to a package by using the `opens` directive. The `opens` directive makes a package 
-available to all other modules at run-time but not at compile time. The `opens ... to` directive makes a package available
-to a list of specific modules at run-time but not compile time. Using `opens` for a package is similar to using `exports`,
-but it also makes all of its non-public types available via reflection. Modules that contain injectable code should use the
-`opens` directive, because injections work via reflection. All packages in a module can be made available to access via reflection
-by using the `open` directive before the module directive.
+A module may set up to allow runtime-only access to a package by using the `opens` directive. The 
+`opens` directive makes a package available to all other modules at run-time but not at compile time. 
+The `opens ... to` directive makes a package available to a list of specific modules at run-time but 
+not compile time. Using `opens` for a package is similar to using `exports`, but it also makes all of 
+its non-public types available via reflection. Modules that contain injectable code should use the
+`opens` directive, because injections work via reflection. All packages in a module can be made 
+available to access via reflection by using the `open` directive before the module directive.
 
 ![Figure 1.7](img/figure1-7.png)
 
@@ -388,7 +409,8 @@ _Note: `-p` is shortened term for `--module-path` and `-m` is shortened term for
     - swing
 1. Which statement is true about JARs in the classpath?
     - All the classes in the JAR file are accessible
-    - JRE continues to search for the last class within the JARs in the classpath if another similarly named class exists
+    - JRE continues to search for the last class within the JARs in the classpath if another 
+    similarly named class exists
     - JARs in the classpath can have duplicate classes and/or packages (A)
 1. A module can contain:
     - only resources and a module descriptor
@@ -399,19 +421,24 @@ _Note: `-p` is shortened term for `--module-path` and `-m` is shortened term for
     - It addresses reliability, maintainability, and security requirements (A)
     - It supports reusability (A)
     - It addresses the need for enhanced networking support
-1. What two things would you change about this code to set up a `requires` relationship directly from `main` to `gameapi`?
+1. What two things would you change about this code to set up a `requires` relationship directly 
+from `main` to `gameapi`?
     ![questionFigure 1.1](img/questionFigure1-1.png)
-    (A): Remove transative keyword from `requires transative` from `competition` module and add `requires gameapi` to `main` module.
-1. The `main` module contains a class, which instantiates an object defined in `competition` module. `competition` exports its
-packages. `main` requires `competition`. Will this code still compile if the `requires` statement is commented out?
+    (A): Remove transative keyword from `requires transative` from `competition` module and add 
+    `requires gameapi` to `main` module.
+1. The `main` module contains a class, which instantiates an object defined in `competition` module. 
+`competition` exports its packages. `main` requires `competition`. Will this code still compile if the 
+`requires` statement is commented out?
     ````
     module main {
         //requires competion
     }
     ````
     - Yes
-    - No (A) - exporting (with `exports`) packages only specify what material could be read from a module. One more step is required to specify that one module requires another - `requires`
-1. You want the `gameapi` module to export the `game` package to both the `competition` and `basketball` modules. Which code example shows how this can be done?
+    - No (A) - exporting (with `exports`) packages only specify what material could be read from a 
+    module. One more step is required to specify that one module requires another - `requires`
+1. You want the `gameapi` module to export the `game` package to both the `competition` and `basketball` 
+modules. Which code example shows how this can be done?
     - A)
         ````
       module gameapi {
@@ -430,7 +457,8 @@ packages. `main` requires `competition`. Will this code still compile if the `re
     - A module descriptor file must be named module-descriptor.java
     - A module descriptor must be stored in the classpath
     - A module descriptor does not contain details of services offered by the module owned by it
-1. Given "order" module contains "Order.java" and "product" module contains "Product.java", which is valid module descriptor file content?
+1. Given "order" module contains "Order.java" and "product" module contains "Product.java", which 
+is valid module descriptor file content?
     <br />Order.java
     ````
     package p1;
