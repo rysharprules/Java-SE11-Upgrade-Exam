@@ -7,8 +7,8 @@
 
 ### The Unnamed Module
 
-All types must be associated with a module in Java SE 9. A type is considered a member of the unnamed module
-if it is in a package not associated with any module and is loaded by the application.
+All types must be associated with a module in Java SE 9. A type is considered a member of the unnamed 
+module if it is in a package not associated with any module and is loaded by the application.
 
 Unnamed modules:
 - Read all other modules
@@ -57,14 +57,16 @@ module league {
 }
 ````
 
-JAR files cannot be accessed on the classpath because modules cannot access classes on the classpath. We need a way to make this a module.
+JAR files cannot be accessed on the classpath because **modules cannot access classes on the classpath**. 
+We need a way to make this a module.
 
 #### Library JAR to Module
 
 How can unmodularized library JARs be used in the application?
 
 - Write the `module-info.java` file for the library?
-- Convert automatically (by putting the library JAR file on the module path)? Automatic modules do not have `module-info.java`
+- Convert automatically (by putting the library JAR file on the module path)? Automatic modules do 
+not have `module-info.java`
 
 The League `module-info.java` will now look like this:
     
@@ -111,8 +113,9 @@ module League {
 }
 ````
 
-League and Soccer will expose all their packages. We'll need to use `add-modules` as the League.jar is running
-as an unnamed module and the Java runtime cannot determine which modules to resolve. So we can add this manually:
+`League` and `Soccer` will expose all their packages. We'll need to use `add-modules` as the `League.jar` 
+is running as an unnamed module and the Java runtime cannot determine which modules to resolve. 
+So we can add this manually:
 
 ````
 java -cp dist/League.jar:lib/Soccer.jar -p lib/display.ascii
@@ -121,7 +124,8 @@ java -cp dist/League.jar:lib/Soccer.jar -p mods/display.ascii
     --add-modules display.ascii main.Main
 ````
 
-In this instance, league and soccer are automatic modules and therefore export all their packages and require all other modules.
+In this instance, `league` and `soccer` are automatic modules and therefore export all their packages 
+and require all other modules.
 
 ### Fully Modularized Application
 
@@ -152,7 +156,8 @@ java --limit-modules java.base,display.ascii,Soccer \
 
 ![Figure 6.5](img/figure6-5.png)
 
-The API Interfaces provide public API, whilst the implementations use package protected and are not publicly available.
+The API Interfaces provide public API, whilst the implementations use package protected and are not 
+publicly available.
 
 With the packages divided, they can be modularized.
 
@@ -164,11 +169,10 @@ Encapsulation is achieved at the modular JAR level in Java SE 9 through the use 
 
 ### Cyclic Dependencies
 
-A cyclic dependency is when two modules depend on each other. Cyclic dependencies are not permitted in Java SE 9.
+A cyclic dependency is when two modules depend on each other.
 
-One possible approach to address this is to remove the dependency and instead create a new module that both modules can depend on. This leads us to services which are described in section 2.
-
-
+One possible approach to address this is to remove the dependency and instead create a new module 
+that both modules can depend on.
 
 ## <a name="q"></a>Quiz
 
@@ -181,7 +185,8 @@ One possible approach to address this is to remove the dependency and instead cr
     - Be packaged in a JAR file
     - Be packaged in a modular JAR file
     - Have a `module-info.class` file (A)
-1. Which of the following are true? Assume that modularized means with a `module-info.class` file and un-modularized means without a `module-info.class` file. (Choose three):
+1. Which of the following are true? Assume that modularized means with a `module-info.class` file 
+and un-modularized means without a `module-info.class` file. (Choose three):
     - An un-modularized application run on the class path can access a modularized library run on the module path (A)
     - A modularized application run on the module path can access a library run on the class path (A)
     - A modularized application run on the module path can access an un-modularized library run on the class path
