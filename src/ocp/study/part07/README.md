@@ -7,8 +7,8 @@ Previously, all local variable declarations required an explicit type on the lef
 
 `ByteArrayOutputStream outputStream = new ByteArrayOutputStream();`
 
-Now, the explicit type can be replaced by the reserved type name `var`. The compiler infers the variable type from the 
-initializer on the right-hand side.
+Now, the explicit type can be replaced by the reserved type name `var`. The compiler infers the 
+variable type from the initializer on the right-hand side.
 
 `var outputStream = new ByteArrayOutputStream();`
 
@@ -36,7 +36,7 @@ try (var is = socket.getInputStream();
 
 Variable names align (more readable) and class names aren't repeated (more concise).
 
-### Reserved Type Name var
+### Reserved Type Name `var`
 
 Keywords cannot be used for variables names:
 
@@ -145,7 +145,7 @@ Like all features, it must be used with judgement. Follow these guidelines to mo
    var list.of("a", "b", "c");
    ````
 1. Consider `var` to split chained or nested expressions
-    - These examples take a collection fo String and finds which occurs most
+    - These examples take a collection fo `String` and finds which occurs most
     - As a single expression, it's hard to decipher the stream and optional mix:
     ````
    return strings.stream()
@@ -165,7 +165,8 @@ Like all features, it must be used with judgement. Follow these guidelines to mo
       return maxEntryOpt.map(Map.Entry::getKey);
       ````
 1. Don't worry too much about "Programming to the Interface" with local variables
-    - A common Java idiom is to construct an instance with a concrete intializer type, but assign it to a variable of an interface type:
+    - A common Java idiom is to construct an instance with a concrete intializer type, but assign 
+    it to a variable of an interface type:
     `List<String> list = new ArrayList<String>();`
     - This isn't possible with local variable type inference
     `var list = new ArrayList<String>():`
@@ -265,7 +266,7 @@ You cannot mix `var` and non-`var` in explicitly typed lambda expressions:
 
 `(var x, int y) -> x.process(y)`
 
-You cannot omit parenthesis for single explicitly typed or var parameters:
+You cannot omit the parenthesis for single explicitly typed or `var` parameters:
 
 `Item x -> x.toString()`
 `var x -> x.toString()`
