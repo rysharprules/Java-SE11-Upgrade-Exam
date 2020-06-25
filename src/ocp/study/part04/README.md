@@ -1435,13 +1435,13 @@ well.
 #### Collecting Results
 
 Early in the chapter, you saw the `collect()` terminal operation.
-There are many predefined collectors, including those shown in Table 4.11. We will look at
+There are many predefined collectors, including those shown in Table 4.5. We will look at
 the different types of collectors in the following sections.
 
-TABLE 4.11 Examples of grouping/partitioning collectors
+TABLE 4.5 Examples of grouping/partitioning collectors
 
-![Table 4.11](img/table4-11.png)
-![Table 4.11](img/table4-11cont.png)
+![Table 4.5](img/table4-5.png)
+![Table 4.5](img/table4-5cont.png)
 
 #### Collecting Using Basic Collectors
 
