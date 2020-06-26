@@ -4,12 +4,11 @@
 ## <a name="10-1"></a> 10.1 - Use `try-with-resources` construct
 
 Multi-catch allows you to write code without duplication. Another problem arises with duplication
-in finally blocks. It is important to close resources
-when you are finished with them. For the exam, a resource is typically a file or database.
+in finally blocks. It is important to close resources when you are finished with them.
 
-Imagine that you want to write a simple method to read the first line of one file and
-write it to another file. Prior to Java 7, your code would look like the following. Pay attention
-to the try-catch statements.
+Imagine that you want to write a simple method to read the first line of one file and write it to 
+another file. Prior to Java 7, your code would look like the following. Pay attention to the 
+try-catch statements.
 
 ````
 10: public void oldApproach(Path path1, Path path2) throws IOException {
@@ -27,8 +26,8 @@ to the try-catch statements.
 ````
 
 That’s twelve lines of code to do something quite simple, and we don’t even deal with
-catching the exception. Switching to the `try-with-resources` syntax
-introduced in Java 7, it can be rewritten as follows:
+catching the exception. Switching to the `try-with-resources` syntax introduced in Java 7, it can 
+be rewritten as follows:
 
 ````
 30: public void newApproach(Path path1, Path path2) throws IOException {
@@ -41,7 +40,7 @@ introduced in Java 7, it can be rewritten as follows:
 
 The new version has half as many lines! There is no longer code just to close resources.
 The new `try-with-resources` statement automatically closes all resources opened in the
-try clause. This feature is also known as automatic resource management, because Java
+`try` clause. This feature is also known as automatic resource management, because Java
 automatically takes care of the closing.
 
 In the following sections, we will look at the `try-with-resources` syntax and how to
@@ -49,16 +48,17 @@ indicate a resource can be automatically closed. We will introduce suppressed ex
 
 ### `try-with-resources` Basics
 
-You might have noticed that there is no finally block in the `try-with-resources` code. For the
-OCA exam, you learned that a try statement must have one or more catch blocks or a finally
-block. This is still true. The finally clause exists implicitly. You just don’t have to type it.
+You might have noticed that there is no `finally` block in the `try-with-resources` code. A `try` 
+statement must have one or more `catch` blocks or a `finally` block. This is still true. The `finally` 
+clause exists implicitly. You just don’t have to type it.
 
-Figure 6.4 shows what a `try-with-resources` statement looks like. Notice that one or
-more resources can be opened in the try clause. Also, notice that parentheses are used to
+The example below shows what a `try-with-resources` statement looks like. Notice that one or
+more resources can be opened in the `try` clause. Also, notice that parentheses are used to
 list those resources and semicolons are used to separate the declarations. This works just
 like declaring multiple indexes in a `for` loop.
 
-**FIGURE 6.4** - The syntax of a basic `try-with-resources`
+The syntax of a basic `try-with-resources`
+
 ````
 try (BufferedReader r = Files.newBufferedReader(path1); // Any resources that should automatically be closed within try
 BufferedWriter w = Files.newBufferedWriter(path2)) {
@@ -66,11 +66,9 @@ BufferedWriter w = Files.newBufferedWriter(path2)) {
 } // Resources are closed at this point
 ````
 
-Figure 6.5 shows that a `try-with-resources` statement is still allowed to have catch and/
-or finally blocks. They are run in addition to the implicit one. The implicit finally block
+The example below shows that a `try-with-resources` statement is still allowed to have `catch` and/
+or `finally` blocks. They are run in addition to the implicit one. The implicit finally block
 runs before any programmer-coded ones.
-
-**FIGURE 6.5** - The syntax of `try-with-resources` including catch /finally
 
 ````
 try (BufferedReader r = Files.newBufferedReader(path1); // Any resources that should automatically be closed
@@ -84,25 +82,25 @@ try (BufferedReader r = Files.newBufferedReader(path1); // Any resources that sh
 ````
 
 To make sure that you’ve wrapped your head around the differences, make sure you can
-fill in Table 6.4 and Table 6.5 with whichever combinations of catch and finally blocks
+fill in Table 10.1 and Table 10.2 with whichever combinations of catch and `finally` blocks
 are legal configurations.
 
-TABLE 6.4 - Legal vs. illegal configurations with a traditional try statement
+TABLE 10.1 - Legal vs. illegal configurations with a traditional `try` statement
 
 |  | 0 finally blocks | 1 finally block | 2 or more finally blocks |
 | --- | --- | --- | --- |
 | 0 catch blocks | Not legal | Legal | Not legal |
 | 1 or more catch blocks | Legal | Legal | Not legal |
 
-TABLE 6.5 - Legal vs. illegal configurations with a `try-with-resources` statement
+TABLE 10.2 - Legal vs. illegal configurations with a `try-with-resources` statement
 
 |  | 0 finally blocks | 1 finally block | 2 or more finally blocks |
 | --- | --- | --- | --- |
 | 0 catch blocks | Not legal | Legal | Not legal |
 | 1 or more catch blocks | Legal | Legal | Not legal |
 
-The resources created in the try clause are only in scope within the try block. This is
-another way to remember that the implicit finally runs before any catch/finally blocks
+The resources created in the `try` clause are only in scope within the `try` block. This is
+another way to remember that the implicit finally runs before any `catch`/`finally` blocks
 that you code yourself. The implicit close has run already, and the resource is no longer
 available. Do you see why lines 6 and 8 don’t compile in this example?
 
@@ -116,18 +114,18 @@ available. Do you see why lines 6 and 8 don’t compile in this example?
 9: }
 ````
 
-The problem is that Scanner has gone out of scope at the end of the try clause. Lines 6
+The problem is that `Scanner` has gone out of scope at the end of the `try` clause. Lines 6
 and 8 do not have access to it. This is actually a nice feature. You can’t accidentally use an
-object that has been closed. In a traditional try statement, the variable has to be declared
-before the try statement so that both the try and finally blocks can access it, which has
+object that has been closed. In a traditional `try` statement, the variable has to be declared
+before the `try` statement so that both the `try` and `finally` blocks can access it, which has
 the unpleasant side effect of making the variable in scope for the rest of the method, just
 inviting you to call it by accident.
 
-### AutoCloseable
+### `AutoCloseable`
 
 You can’t just put any random class in a `try-with-resources` statement. Java commits to
-closing automatically any resources opened in the try clause. Here we tell Java to try to
-close the Turkey class when we are finished with it:
+closing automatically any resources opened in the `try` clause. Here we tell Java to try to
+close the `Turkey` class when we are finished with it:
 
 ````
 public class Turkey {
@@ -174,8 +172,7 @@ is allowed to declare more specific exceptions than the parent or even none at a
 `Exception`, the `AutoCloseable` interface is saying that implementers may throw any
 exceptions they choose.
 
-The following shows what happens when an exception is thrown. Do you see any problems
-with it?
+The following shows what happens when an exception is thrown. Do you see any problems with it?
 
 ````
 public class StuckTurkeyCage implements AutoCloseable {
@@ -264,8 +261,8 @@ Next, we throw a runtime exception:
 ````
 
 Lines 4 and 5 read a text file into a `String`. It throws an `IOException` if the operation fails. Line 6 converts
-that `String` to a `LocalDate`. This throws a `DateTimeParseException` on failure. The two catch blocks on lines 8–14 print
-a stack trace and then wrap the exception in a `RuntimeException`.
+that `String` to a `LocalDate`. This throws a `DateTimeParseException` on failure. The two catch blocks 
+on lines 8–14 print a stack trace and then wrap the exception in a `RuntimeException`.
 
 This works. However, duplicating code is bad. Think about what happens if we decide
 that we want to change the code to write to a log file instead of printing the stack trace. We
@@ -332,13 +329,12 @@ public static void main(String[] args) {
 This is much better. There’s no duplicate code, the common logic is all in one place, and
 the logic is exactly where we would expect to find it.
 
-Figure 6.3 shows the syntax of multi-catch. It’s like a regular catch clause, except two
+The code example below shows the syntax of multi-catch. It’s like a regular catch clause, except two
 or more exception types are specified separated by a pipe. The pipe is also used as the “or”
 operator, making it easy to remember that you can use either/or of the exception types.
 Notice how there is only one variable name in the catch clause. Java is saying that the
 variable named e can be of type `Exception1` or `Exception2`.
 
-FIGURE 6.3 - The syntax of multi-catch
 ````
 try {
     //protected code
@@ -411,7 +407,7 @@ variable per catch block.
 - Line 18 and 19 are reversed. The more general superclasses must be caught after
 their subclasses. While this doesn’t have anything to do with multi-catch, you’ll see
 “regular” catch block problems mixed in with multi-catch.
-- Line 17 cannot catch FileNotFoundException because that exception was already
+- Line 17 cannot catch `FileNotFoundException` because that exception was already
 caught on line 15. You can’t list the same exception type more than once in the same
 try statement, just like with “regular” catch blocks.
 - Line 16 cannot catch `SQLException` because nothing in the try statement can
