@@ -17,21 +17,20 @@ Stream<Integer> stream = Arrays.asList(1,2,3,4,5,6).stream();
 Stream<Integer> parallelStream = stream.parallel();
 ````
 
-Be aware that `parallel()` is an intermediate operation that operates on the original
-stream.
+Be aware that `parallel()` is an intermediate operation that operates on the original stream.
 
-### parallelStream()
+### `parallelStream()`
 
-The second way to create a parallel stream is from a Java collection class. The Collection
+The second way to create a parallel stream is from a Java collection class. The `Collection`
 interface includes a method `parallelStream()` that can be called on any collection and
 returns a parallel stream. The following is a revised code snippet that creates the parallel
-stream directly from the List object:
+stream directly from the `List` object:
 
 ````
 Stream<Integer> parallelStream2 = Arrays.asList(1,2,3,4,5,6).parallelStream();
 ````
 
-### isParallel
+### `isParallel`
 
 The Stream interface includes a method `isParallel()` that can be used
 to test if the instance of a stream supports parallel processing. Some
@@ -135,9 +134,9 @@ possible output of the code using a parallel stream:
 
 `Tasks completed in: 10.542 seconds`
 
-You see that using a parallel stream can have a four-fold improvement in the results.
-Even better, the results scale with the number of processors. Scaling is the property that, as
-we add more resources such as CPUs, the results gradually improve.
+You see that using a parallel stream can have a four-fold improvement in the results. Even better, 
+the results scale with the number of processors. Scaling is the property that, as we add more 
+resources such as CPUs, the results gradually improve.
 
 Does that mean that all of your streams should be parallel? Not exactly. Parallel streams
 tend to achieve the most improvement when the number of elements in the stream is
@@ -162,8 +161,8 @@ Arrays.asList("jackal","kangaroo","lemur")
     .forEach(System.out::println);
 ````
 
-In this example, mapping jackal to JACKAL can be done independently of mapping
-kangaroo to KANGAROO. In other words, multiple elements of the stream can be processed at
+In this example, mapping `jackal` to `JACKAL` can be done independently of mapping
+`kangaroo` to `KANGAROO`. In other words, multiple elements of the stream can be processed at
 the same time and the results will not change.
 
 Many common streams including `map()`, `forEach()`, and `filter()` can be processed
@@ -243,7 +242,7 @@ parallelization.
 
 We applied the parallel stream to a synchronized list in the previous example. Anytime
 you are working with a collection with a parallel stream, it is recommended that you use
-a concurrent collection. For example, if we had used a regular ArrayList rather than a
+a concurrent collection. For example, if we had used a regular `ArrayList` rather than a
 synchronized one, we could have seen output such as the following:
 
 ````
@@ -254,17 +253,18 @@ null 2 4 5 6 1
 For an `ArrayList` object, the JVM internally manages a primitive array of the same type. As the
 size of the dynamic `ArrayList` grows, a new, larger primitive array is periodically required. If
 two threads both trigger the array to be resized at the same time, a result can be lost, producing
-the unexpected value shown here. The unexpected result of two tasks executing at the same time is a race condition.
+the unexpected value shown here. The unexpected result of two tasks executing at the same time is a 
+race condition.
 
 ## <a name="9-2"></a>9.2 - Implement decomposition and reduction with streams
 
-### Combining Results with reduce()
+### Combining Results with `reduce()`
 
-The stream operation `reduce()` combines a stream into a
-single object. Recall that first parameter to the `reduce()` method is called the identity, the
-second parameter is called the accumulator, and the third parameter is called the combiner.
+The stream operation `reduce()` combines a stream into a single object. Recall that first parameter 
+to the `reduce()` method is called the identity, the second parameter is called the accumulator, 
+and the third parameter is called the combiner.
 
-We can concatenate a string using the `reduce()` method to produce wolf , as shown in the
+We can concatenate a string using the `reduce()` method to produce `wolf`, as shown in the
 following example:
 
 ````
@@ -325,7 +325,7 @@ System.out.println(Arrays.asList("w","o","l","f")
 In fact, it can output `XwXoXlXf`. As part of the parallel process, the identity is applied to
 multiple elements in the stream, resulting in very unexpected data.
 
-### Combing Results with collect()
+### Combing Results with `collect()`
 
 Like `reduce()`, the Streams API includes a three-argument version of `collect()` that takes
 accumulator and combiner operators, along with a supplier operator instead of an identity.
@@ -341,16 +341,14 @@ SortedSet<String> set = stream.collect(ConcurrentSkipListSet::new, Set::add,
 System.out.println(set); // [f, l, o, w]
 ````
 
-Recall that elements in a ConcurrentSkipListSet are sorted according to their natural
-ordering.
+Elements in a `ConcurrentSkipListSet` are sorted according to their natural ordering.
 
 You should use a concurrent collection to combine the results, ensuring that the results
-of concurrent threads do not cause a ConcurrentModificationException.
+of concurrent threads do not cause a `ConcurrentModificationException`.
 
-### Using the One-Argument collect() Method
+### Using the One-Argument `collect()` Method
 
-Recall that the one-argument version of collect() takes a collector argument, as shown in
-the following example:
+The one-argument version of `collect()` takes a collector argument, as shown in the following example:
 
 ````
 Stream<String> stream = Stream.of("w", "o", "l", "f").parallel();
@@ -360,7 +358,7 @@ System.out.println(set); // [f, w, l, o]
 
 Performing parallel reductions with a collector requires additional considerations. For
 example, if the collection into which you are inserting is an ordered data set, such as a
-List, then the elements in the resulting collection must be in the same order, regardless of
+`List`, then the elements in the resulting collection must be in the same order, regardless of
 whether you use a serial or parallel stream. This may reduce performance, though, as some
 operations are unable to be completed in parallel.
 
@@ -368,26 +366,24 @@ The following rules ensure that a parallel reduction will be performed efficient
 using a collector.
 
 #### Requirements for Parallel Reduction with `collect()`
+
 - The stream is parallel.
 - The parameter of the collect operation has the `Collector.Characteristics.CONCURRENT`
 characteristic.
 - Either the stream is unordered, or the collector has the characteristic
 `Collector.Characteristics.UNORDERED`.
 
-Any class that implements the Collector interface includes a `characteristics()`
+Any class that implements the `Collector` interface includes a `characteristics()`
 method that returns a set of available attributes for the collector. While `Collectors.
-toSet()` does have the UNORDERED characteristic, it does not have the `CONCURRENT
+toSet()` does have the `UNORDERED` characteristic, it does not have the `CONCURRENT
 characteristic`; therefore the previous collector example will not be performed as a
 concurrent reduction.
 
 The `Collectors` class includes two sets of methods for retrieving collectors
-that are both UNORDERED and CONCURRENT, `Collectors.toConcurrentMap()` and
+that are both `UNORDERED` and `CONCURRENT`, `Collectors.toConcurrentMap()` and
 `Collectors.groupingByConcurrent()`, and therefore it is capable of performing parallel
 reductions efficiently. Like their non-concurrent counterparts, there are overloaded versions
 that take additional arguments.
-
-Here is a rewrite of an example from Chapter 4 to use a parallel stream and parallel
-reduction:
 
 ````
 Stream<String> ohMy = Stream.of("lions", "tigers", "bears").parallel();
@@ -402,8 +398,7 @@ We use a `ConcurrentMap` reference, although the actual class returned is likely
 `ConcurrentHashMap`. The particular class is not guaranteed; it will just be a class that
 implements the interface `ConcurrentMap`.
 
-Finally, we can rewrite our `groupingBy()` example to use a parallel
-stream and parallel reduction:
+Finally, we can rewrite our `groupingBy()` example to use a parallel stream and parallel reduction:
 
 ````
 Stream<String> ohMy = Stream.of("lions", "tigers", "bears").parallel();
