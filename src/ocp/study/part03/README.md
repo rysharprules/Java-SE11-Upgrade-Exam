@@ -1,6 +1,7 @@
 - [3.1 - Create and use methods in interfaces](#3-1)
 - [3.2 - Define and write functional interfaces](#3-2)
 - [Quiz](#q)
+- [Quiz Answers](#qa)
 
 ## <a name="3-1"></a>3.1 Create and use methods in interfaces
 
@@ -433,19 +434,21 @@ determine whether an interface is a functional interface on your own.
 
 ## <a name="q"></a>Quiz
 
-1. What is true about code duplication?
-    - Duplication makes your code longer. This is good because it makes colleagues believe you're 
+1. <a name="q1"></a>What is true about code duplication?
+    - A. Duplication makes your code longer. This is good because it makes colleagues believe you're 
     really smart and capable of handling complex code
-    - Duplication is good because it builds redundancy into the system
-    - If you need to make an edit, you''ll have to search for all the occasions where the code is 
-    duplicated. This is tedious and inefficient (A)
-    - Duplication is an elegant substitute for version control
-1. If a `private` method is written in an interface, where can that method be called from?
-    - From any other method within the interface (A)
-    - From any class which implements the interface
-    - From any class which shares the same package
-    - From the main method in a separate test class
-1. Given the code fragment:
+    - B. Duplication is good because it builds redundancy into the system
+    - C. If you need to make an edit, you''ll have to search for all the occasions where the code is 
+    duplicated. This is tedious and inefficient
+    - D. Duplication is an elegant substitute for version control
+<br />[Jump to answer](#qa1)
+2. <a name="q2"></a>If a `private` method is written in an interface, where can that method be called from?
+    - A. From any other method within the interface
+    - B. From any class which implements the interface
+    - C. From any class which shares the same package
+    - D. From the main method in a separate test class
+<br />[Jump to answer](#qa2)
+3. <a name="q3"></a>Given the code fragment:
     ````
     public interface i1 {
         private default void m1(){
@@ -458,21 +461,23 @@ determine whether an interface is a functional interface on your own.
     }
     ````
    What are the valid methods in the interface i1? (Choose three):
-   - m3 (A)
-   - m4
-   - m1
-   - m2 (A)
-   - m5 (A)
-1. The private methods in interfaces feature helps you:
+   - A. m3
+   - B. m4
+   - C. m1
+   - D. m2
+   - E. m5
+<br />[Jump to answer](#qa3)
+4. <a name="q4"></a>The private methods in interfaces feature helps you:
    A) Improve the readability of the code
    B) Improve the security of the business logic implemented
    C) Avoid inheritance complications
    Select the correct answer:
-   - only option B
-   - all the listed features (A)
-   - only options A and C
-   - only option C
-1. Given the following, what is the result?
+   - A. only option B
+   - B. all the listed features
+   - C. only options A and C
+   - D. only option C
+<br />[Jump to answer](#qa4)
+5. <a name="q5"></a>Given the following, what is the result?
     ````
     class C1 {
         public void m() { System.out.println
@@ -490,7 +495,189 @@ determine whether an interface is a functional interface on your own.
         }
    }
    ````
-   - I
-   - an error at I1.java
-   - an error at App.java
-   - C (A)
+   - A. `I`
+   - B. an error at `I1.java`
+   - C. an error at `App.java`
+   - D. `C`
+<br />[Jump to answer](#qa5)
+6. <a name="q6"></a>What is the result of the following code?
+   ````
+   1: public interface CanClimb {
+   2: public abstract void climb();
+   3: }
+   4: public interface CanClimbTrees extends CanClimb {}
+   5: public abstract class Chipmunk implements CanClimbTrees {
+   6: public abstract void chew();
+   7: }
+   8: public class EasternChipmunk extends Chipmunk {
+   9: public void chew() { System.out.println("Eastern Chipmunk is Chewing"); }
+   10: }
+   ````
+   - A. It compiles and runs without issue.
+   - B. The code will not compile because of line 2.
+   - C. The code will not compile because of line 4.
+   - D. The code will not compile because of line 5.
+   - E. The code will not compile because of line 8.
+   - F. It compiles but throws an exception at runtime.
+<br />[Jump to answer](#qa6)
+7. <a name="q7"></a>Which of the following are valid functional interfaces? (Choose all that apply.)
+    ````
+   public interface Climb {
+   public int climb();
+   }
+   public abstract class Swim {
+   public abstract Object swim(double speed, int duration);
+   }
+   public interface ArcticMountainClimb extends MountainClimb {
+   public default int getSpeed();
+   }
+   public interface MountainClimb extends Climb {}
+   ````
+   - A. Climb
+   - B. Swim
+   - C. ArcticMountainClimb
+   - D. MountainClimb
+   - E. None of these are valid functional interfaces.
+<br />[Jump to answer](#qa7)
+8. <a name="q8"></a>Which of the following are true of interfaces? (Choose all that apply.)
+   - A. They can extend other classes.
+   - B. They cannot be extended.
+   - C. They enable classes to have multiple inheritance.
+   - D. They can only contain abstract methods.
+   - E. They can be declared final.
+   - F. All members of an interface are public.
+<br />[Jump to answer](#qa8)
+9. <a name="q9"></a>What is the result of the following code?
+   ````
+   1: public interface CanWalk {
+   2: default void walk() { System.out.println("Walking"); }
+   3: }
+   4: public interface CanRun {
+   5: public default void walk() { System.out.println("Walking"); }
+   6: public abstract void run();
+   7: }
+   8: public interface CanSprint extends CanWalk, CanRun {
+   9: void sprint();
+   10: }
+   ````
+   - A. The code compiles without issue.
+   - B. The code will not compile because of line 5.
+   - C. The code will not compile because of line 6.
+   - D. The code will not compile because of line 8.
+   - E. The code will not compile because of line 9.
+<br />[Jump to answer](#qa9)
+10. <a name="q10"></a>What is the result of the following code?
+       ````
+       public interface Climb {
+       boolean isTooHigh(int height, int limit);
+       }
+       public class Climber {
+       public static void main(String[] args) {
+       check((h, l) -> h.toString(), 5); // x1
+       }
+       private static void check(Climb climb, int height) {
+       if (climb.isTooHigh(height, 10)) // x2
+       System.out.println("too high");
+       else System.out.println("ok");
+       } }
+       ````
+    - A. `ok`
+    - B. `too high`
+    - C. Compiler error on line `x1`.
+    - D. Compiler error on line `x2`.
+    - E. Compiler error on a different line.
+    - F. A runtime exception is thrown.
+<br />[Jump to answer](#qa10)
+11. <a name="q11"></a>Choose the correct statement about the following code:
+       ````
+       1: public interface Herbivore {
+       2: int amount = 10;
+       3: public static void eatGrass();
+       4: public int chew() {
+       5: return 13;
+       6: }
+       7: }
+       ````
+       - A. It compiles and runs without issue.
+       - B. The code will not compile because of line 2.
+       - C. The code will not compile because of line 3.
+       - D. The code will not compile because of line 4.
+       - E. The code will not compile because of lines 2 and 3.
+       - F. The code will not compile because of lines 3 and 4.
+<br />[Jump to answer](#qa11)
+12. <a name="q12"></a>Choose the correct statement about the following code:
+       ````
+       1: public interface CanFly {
+       2: void fly();
+       3: }
+       4: interface HasWings {
+       5: public abstract Object getWingSpan();
+       6: }
+       7: abstract class Falcon implements CanFly, HasWings {
+       8: }
+       ````
+       - A. It compiles without issue.
+       - B. The code will not compile because of line 2.
+       - C. The code will not compile because of line 4.
+       - D. The code will not compile because of line 5.
+       - E. The code will not compile because of lines 2 and 5.
+       - F. The code will not compile because the class `Falcon` doesn’t implement the interface
+       methods.
+<br />[Jump to answer](#qa12)  
+    
+## <a name="qa"></a>Quiz Answers
+1. <a name="qa1"></a>[Jump to question](#q1) - **C.** Duplicate code makes your program lengthy and bulky, 
+and decreases your code quality
+2. <a name="qa2"></a>[Jump to question](#q2) - **A.** Using private methods in interfaces have four rules:
+    1. Private interface methods cannot be abstract.
+    1. Private methods can be used only inside the interface.
+    1. Private `static` methods can be used inside other `static` and non-`static` interface methods.
+    1. Private non-static methods cannot be used inside private `static` methods.
+3. <a name="qa3"></a>[Jump to question](#q3) - **A, D, E.** A is correct as `default` methods have an 
+implementation and are implicitly public. B is incorrect as `static` methods cannot be overridden. C is
+incorrect as `default` methods cannot be private as they can be overridden. D & E are valid methods.
+4. <a name="qa4"></a>[Jump to question](#q4) - **B** Private interface methods improve the readability 
+of the code by providing a mechanism to place reused logic, improves the security of the business logic 
+implemented and avoids inheritance complications with encapsulation
+5. <a name="qa5"></a>[Jump to question](#q5) - **D.** A superclass method takes priority over an interface 
+default method
+6. <a name="qa6"></a>[Jump to question](#q6) - **E.** The code does not compile because `EasternChipmunk` 
+inherits the abstract method `climb()` but does not implement it, therefore the correct answer is E. B, C, and D are
+incorrect as they compile for various reasons. Line 2 compiles, as non-`static` and non-`default`
+interface methods are assumed to have the abstract modifier. Line 4 compiles
+without issue as an interface can extend another interface. Line 5 compiles without issue as
+an abstract class can implement an interface without implementing any of the abstract
+methods. F is incorrect, as Line 8 does not compile.
+7. <a name="qa7"></a>[Jump to question](#q7) - **A, D.** A is correct as `Climb` defines an interface with 
+exactly one abstract method. B is incorrect, as abstract classes are not functional interfaces despite 
+having a single abstract method. While functional interfaces may have any number of default methods, 
+`ArcticMountainClimb` will not compile due to the `default` method `getSpeed()` missing an
+implementation body, so C is incorrect. D is correct, as the interface `MountainClimb` has
+exactly one abstract method defined in `Climb`. Finally, E is incorrect because A and D are correct.
+8. <a name="qa8"></a>[Jump to question](#q8) - **C, F.** A and B are both incorrect as interfaces can extend 
+other interfaces, although not classes. C is correct since a class may implement multiple interfaces. 
+D is incorrect as interfaces have `static` and default methods, as well as `static` `final` variables. E 
+is incorrect as interfaces are assumed to be abstract, and abstract and final can never be used
+together. F is correct as interface methods and variables are each assumed public.
+9. <a name="qa9"></a>[Jump to question](#q9) - **D.** While Java supports multiple inheritance through 
+interfaces, it does not support method overriding in interfaces, since it’s not clear which parent 
+method should be used. In this example, `CanWalk` and `CanRun` both implement a default `walk()` 
+method. The definition of `CanSprint` extends these two interfaces and therefore won’t compile as 
+two `default` methods with the same signature from parent classes are detected, therefore the answer is D. 
+None of the other lines of code cause problems, so the rest of the answers are not correct.
+10. <a name="qa10"></a>[Jump to question](#q10) - **C.** The functional interface takes two `int` parameters. 
+The code on line `x1` attempts to use them as if one is an `Object`, resulting in a compiler error making 
+C the correct answer. It also tries to return `String` even though the data type for the functional 
+interface method is `boolean`. It is tricky to use types in a lambda when they are implicitly specified. 
+Remember to check the interface for the real type.
+11. <a name="qa11"></a>[Jump to question](#q11) - **F.** The interface variable amount is correctly declared,
+with `public`, `static`, and `final` being assumed and automatically inserted by the compiler, so B is 
+incorrect. The method declaration for `eatGrass()` on line 3 is incorrect because the method has been 
+marked as `static` but no method body has been provided. The method declaration for `chew()` on
+line 4 is also incorrect, since an interface method that provides a body must be marked as
+`default` or `static` explicitly. Therefore, F is the correct answer since this code contains
+two compile-time errors.
+12. <a name="qa12"></a>[Jump to question](#q12) - **A.** Although the definition of methods on lines 2 
+and 5 vary, both will be converted to `public abstract` by the compiler. Line 4 is fine, because an 
+interface can have `public` or `default` access. Finally, the class `Falcon` doesn’t need to implement the 
+interface methods because it is marked as `abstract`. Therefore, the code will compile without issue.

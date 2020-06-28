@@ -2,6 +2,8 @@
 - [8.2 - Use lambda expressions and method references](#8-2)
 - [8.3 - Use built-in functional interfaces including Predicate, Consumer, Function, and Supplier](#8-3)
 - [8.4 - Use primitive and binary variations of base interfaces of java.util.function package](#8-4)
+- [Quiz](#q)
+- [Quiz Answers](#qa)
 
 ## <a name="8-1"></a>8.1 - Create and use lambda expressions
 
@@ -1220,3 +1222,75 @@ solution is to call `flatMap()` instead:
 This one works because `flatMap` removes the unnecessary layer. In other words, it flattens
 the result. Chaining calls to `flatMap()` is useful when you want to transform one
 `Optional` type to another.
+
+## <a name="q"></a>Quiz
+1. <a name="q1"></a>Which of the following are valid lambda expressions? (Choose all that apply.)
+    - A. `() -> ""`
+    - B. `x,y -> x+y`
+    - C. `(Coyote y) -> return 0;`
+    - D. `(Camel c) -> {return;}`
+    - E. `Wolf w -> 39`
+    - F. `() ->`
+    - G. `(Animal z, m) -> a`
+<br />[Jump to answer](#qa1)
+2. <a name="q2"></a>What is the result of the following class?
+    ````
+   import java.util.function.*;
+   public class Panda {
+   int age;
+   public static void main(String[] args) {
+   Panda p1 = new Panda();
+   p1.age = 1;
+   check(p1, p -> p.age < 5); // h1
+   }
+   private static void check(Panda panda, Predicate<Panda> pred) { // h2
+   String result = pred.test(panda) ? "match": "not match"; // h3
+   System.out.print(result);
+   } }
+   ````
+   - A. `match`
+   - B. `not match`
+   - C. Compiler error on line `h1`.
+   - D. Compiler error on line `h2`.
+   - E. Compile error on line `h3`.
+   - F. A runtime exception is thrown.
+<br />[Jump to answer](#qa2)
+3. <a name="q3"></a>Which lambda can replace the MySecret class to return the same value? (Choose 
+all that apply.)
+    ````
+   public interface Secret {
+   String magic(double d);
+   }
+   public class MySecret implements Secret {
+   public String magic(double d) {
+   return "Poof";
+   }
+   }
+   ````
+   - A. `caller((e) -> "Poof");`
+   - B. `caller((e) -> {"Poof"});`
+   - C. `caller((e) -> { String e = ""; "Poof" });`
+   - D. `caller((e) -> { String e = ""; return "Poof"; });`
+   - E. `caller((e) -> { String e = ""; return "Poof" });`
+   - F. `caller((e) -> { String f = ""; return "Poof"; });`
+<br />[Jump to answer](#qa3)
+
+## <a name="qa"></a>Quiz Answers
+
+1. <a name="qa1"></a>[Jump to question](#q1) - **A, D.** The first lambda expression is valid, taking no 
+arguments and returning the empty string, so A is correct. B is incorrect, as more than one parameter 
+requires parentheses `()`. C is incorrect, as brackets `{}` are required when using return. D is correct, 
+as the expression takes one `Camel` input and returns void. E is incorrect, as parentheses are required
+when using the data type `Wolf`. F is incorrect, as it has no right-side expression. Finally, G
+is incorrect, as specifying the data type for one parameter in a lambda expression requires
+you to specify the data type for all parameters in the expression. In this case, `z` has a data
+type and `m` does not, therefore the expression is invalid.
+2. <a name="qa2"></a>[Jump to question](#q2) - **A.** This code compiles and runs without issue so 
+C, D, E, and F are incorrect. Line `h1` creates a lambda expression that checks if the age is less than 5. 
+Since there is only one parameter and it does not specify a type, the parentheses around the type 
+parameter are optional. Line h2 uses the Predicate interface, which declares a `test()` method. Since `test()`
+returns true on the expression, match is output and A is correct.
+3. <a name="qa3"></a>[Jump to question](#q3) - **A, F.** B is incorrect because it does not use the `return` 
+keyword. C, D, and E are incorrect because the variable e is already in use from the lambda and cannot 
+be redefined. Additionally, C is missing the `return` keyword and E is missing the semicolon `;`. A and F are 
+the only correct lambda expressions that match the functional interface.
