@@ -5,6 +5,7 @@
 - [4.5 - Sort a collection using lambda expressions](#4-5)
 - [4.6 - Use Collectors with streams, including the groupingBy and partitioningBy operation](#4-6)
 - [Quiz](#q)
+- [Quiz Answers](#qa)
 
 ### Using Streams
 
@@ -1695,11 +1696,12 @@ name to call your attention to it.
 ## <a name="q"></a>Quiz
 
 1. What does the `or` method of the `Optional` class return?
-    - The same object type that the collection/stream is based on
-    - An `Optional<T>` (A)
-    - `null`
-    - The method is void and doesn't return anything
-1. Given the code fragment below, what is the result?
+    - A. The same object type that the collection/stream is based on
+    - B. An `Optional<T>`
+    - C. `null`
+    - D. The method is void and doesn't return anything
+<br />[Jump to answer](#qa1)
+2. Given the code fragment below, what is the result?
     ````
    List<Integer> items = List.of(10, 25, 30);
     Stream<Integer> stream1 = items
@@ -1707,28 +1709,154 @@ name to call your attention to it.
         .takeWhile(s -> s % 2 == 0).sorted();
     stream1.forEach(x -> System.out.println(x));
    ````
-   - 30 10
-   - 10 25 30
-   - 10 (A)
-   - 10 30
-1. Given the code fragment below, what is the result?
+   - A. 30 10
+   - B. 10 25 30
+   - C. 10
+   - D. 10 30
+<br />[Jump to answer](#qa2)
+3. Given the code fragment below, what is the result?
    ````
    Stream<Integer> nums = Stream.iterate(1, i -> i + 10).limit(3);
    nums.forEach(n -> System.out.println(n + ""));
    ````
-   - 11 21 31
-   - 1 10 20
-   - 11 21 31
-   - 1 11 21 (A)
-1. Given the code fragment below, what is the result?<br />
+   - A. 11 21 31
+   - B. 1 10 20
+   - C. 11 21 31
+   - D. 1 11 21
+<br />[Jump to answer](#qa3)
+4. Given the code fragment below, what is the result?<br />
     ![Figure 4.6](img/figure4-6.png)
-    - Compilation error
-    - bread butter \-
-    - bread butter \- bread butter
-    - \- bread butter (A)
-1. Given the code fragment below, what is the result?<br />
+    A. - Compilation error
+    B. - bread butter \-
+    C. - bread butter \- bread butter
+    D. - \- bread butter
+<br />[Jump to answer](#qa4)
+5. Given the code fragment below, what is the result?<br />
     ![Figure 4.7](img/figure4-7.png)
-    - bread butter \- bread butter egg jam
-    - bread butter \- egg jam (A)
-    - \- egg jam
-    - bread butter \-
+    - A. bread butter \- bread butter egg jam
+    - B. bread butter \- egg jam
+    - C. \- egg jam
+    - D. bread butter \-
+<br />[Jump to answer](#qa5)
+6. What is the result of the following program?
+    ````
+   import java.util.*;
+   public class MyComparator implements Comparator<String> {
+   public int compare(String a, String b) {
+        return b.toLowerCase().compareTo(a.toLowerCase());
+   }
+   public static void main(String[] args) {
+        String[] values = { "123", "Abb", "aab" };
+        Arrays.sort(values, new MyComparator());
+        for (String s: values)
+            System.out.print(s + " ");
+        }
+   }
+   ````
+   - A. Abb aab 123
+   - B. aab Abb 123
+   - C. 123 Abb aab
+   - D. 123 aab Abb
+   - E. The code does not compile.
+   - F. A runtime exception is thrown.
+<br />[Jump to answer](#qa6)
+7. What is the result of the following program?
+    ````
+   import java.util.*;
+   public class Sorted implements Comparable<Sorted>, Comparator<Sorted> {
+       private int num;
+       private String text;
+       Sorted(int n, String t) {
+           this.num = n;
+           this.text = t;
+       }
+       public String toString() { return "" + num; }
+       public int compareTo(Sorted s) { return text.compareTo(s.text); }
+       public int compare(Sorted s1, Sorted s2) { return s1.num – s2.num; }
+       public static void main(String[] args) {
+           Sorted s1 = new Sorted(88, "a");
+           Sorted s2 = new Sorted(55, "b");
+           TreeSet<Sorted> t1 = new TreeSet<>();
+           t1.add(s1); t1.add(s2);
+           TreeSet<Sorted> t2 = new TreeSet<>(s1);
+           t2.add(s1); t2.add(s2);
+           System.out.println(t1 + " " + t2);
+   } }
+   ````
+   A. `[55. 88] [55, 88]`
+   B. `[55. 88] [88, 55]`
+   C. `[88. 55] [55, 88]`
+   D. `[88. 55] [88, 55]`
+   E. The code does not compile.
+   F. A runtime exception is thrown.
+<br />[Jump to answer](#qa7)
+8. What is the result of the following code?
+    ````
+   Comparator<Integer> c = (o1, o2) -> o2—o1;
+   List<Integer> list = Arrays.asList(5, 4, 7, 1);
+   Collections.sort(list, c);
+   System.out.println(Collections.binarySearch(list, 1));
+   ````
+   - A. 0
+   - B. 1
+   - C. 2
+   - D. The result is undefined.
+   - E. The code does not compile.
+   - F. A runtime exception is thrown.
+<br />[Jump to answer](#qa8)
+9. Which of the following statements are true? (Choose all that apply.)
+    - A. `Comparable` is in the `java.util` package.
+    - B. `Comparator` is in the `java.util` package.
+    - C. `compare()` is in the `Comparable` interface.
+    - D. `compare()` is in the `Comparator` interface.
+    - E. `compare()` takes one method parameter.
+    - F. `compare()` takes two method parameters.
+<br />[Jump to answer](#qa9)
+10. Which of the answer choices make sense to implement with a lambda? (Choose all that apply.)
+    - A. `Comparable` interface
+    - B. `Comparator` interface
+    - C. `remove` method on a Collection
+    - D. `removeAll` method on a Collection
+    - E. `removeIf` method on a Collection
+<br />[Jump to answer](#qa10)
+
+## <a name="qa"></a>Quiz Answers
+
+1. <a name="qa1"></a>[Jump to question](#q1) - **B.** The `or` function from the [JavaDocs](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html#or(java.util.function.Supplier):
+If a value is present, returns an `Optional` describing the value, otherwise returns an `Optional` 
+produced by the supplying function.
+2. <a name="qa2"></a>[Jump to question](#q2) - **C.** Due to the modulas (`%`) condition in the `Predicate`,
+we’re taking even numbers from the initial stream until the first odd number is encountered here. The 
+stream returned by `takeWhile` therefore contains just `10`.
+3. <a name="qa3"></a>[Jump to question](#q3) - **D.** `Stream.iterate` starts with a _seed_ of 1, which
+for each iteration is incremented by 10. `limit(3)`, limits the result to 3 numbers: `1`, `11`, and `21`.
+4. <a name="qa4"></a>[Jump to question](#q4) - **D.** We have a `List` of `String` `items`: `egg`, `bread`, `butter`,
+and `jam`. `stream1` uses `takeWhile` with the `String` method `startsWith` to take any items beginning
+with `b`, stopping when an item not starting with `b` is found. Since the first item is `egg`, the intermediate
+operation is exited with the stream empty. `stream2` uses `filter` which checks every item in the list
+and returns all those starting with `b` (`bread` and `butter`) before transferring control to `sorted`
+which as they're already ordered correctly alphabetically, has no effect, resulting in `- bread butter`. 
+5. <a name="qa5"></a>[Jump to question](#q5) - **B.** We have a `List` of `String` `items`: `bread`, `butter`,
+`egg` and `jam`. `stream1` uses `takeWhile` with the `String` method `startsWith` to take any items beginning
+with `b`, stopping when an item not starting with `b` is found. It takes `bread` and `butter` but terminates
+at `egg` as it does not pass the while condition. `bread butter` is printed. `dropWhile` essentially
+does the opposite to `takeWhile`, by dropping `bread` and `butter` as they start with `b`, resulting with
+`egg` and `jam` which are then `sorted` and printed.
+6. <a name="qa6"></a>[Jump to question](#q6) - **A.** The array is sorted using `MyComparator`, which 
+sorts the elements in reverse alphabetical order in a case-insensitive fashion. Normally, numbers 
+sort before letters. This code reverses that by calling the `compareTo()` method on `b` instead of `a`.
+7. <a name="qa7"></a>[Jump to question](#q7) - **C.** This question is hard because it defines both 
+`Comparable` and `Comparator` on the same object. `t1` doesn’t specify a `Comparator` so it uses the 
+`Comparable` object’s `compareTo()` method. This sorts by the text instance variable. `t2` did specify
+a `Comparator` when calling the constructor, so it uses the `compare()` method, which sorts by the `int`.
+8. <a name="qa8"></a>[Jump to question](#q8) - **D.** The list is sorted in descending order. However, 
+it is searched using the default order, which is sorted in ascending order. `binarySearch()` requires 
+both to use the same sort order. Therefore, the precondition for `binarySearch()` is not met and the 
+result is undefined.
+9. <a name="qa9"></a>[Jump to question](#q9) - **B, D, F.** The `java.lang.Comparable` interface is 
+implemented on the object to compare. It specifies the `compareTo()` method, which takes one parameter. 
+The `java.util.Comparator` interface specifies the `compare()` method, which takes two parameters.
+10. <a name="qa10"></a>[Jump to question](#q10) - **B, E.** Both `Comparator` and `Comparable` are 
+functional interfaces. However, `Comparable` is intended to be used on the object being compared, 
+making choice B correct. `removeIf` was added in Java 8 to allow specifying the lambda to check when 
+removing elements, making choice E correct.

@@ -240,13 +240,13 @@ public class RestrictedChecking implements Accessible {
 
 #### Inheritance rules of `default` methods
 
-1. A superclass method takes priority over an interface `default` method
+1. A superclass method takes priority over an interface `default` method<br />
 ![Figure 3.2](img/figure3-2.png)<br />
     - The superclass method may be concrete or abstract
     - Only consider the interface `default` if no method exists from the superclass
 1. A subtype interface's `default` method takes priority over a super-type interface `default` 
 method<br />
-![Figure 3.3](img/figure3-3.png)
+![Figure 3.3](img/figure3-3.png)<br />
 1. If there is a conflict, treat the `default` method as abstract
     - The concrete class must provide its own implementation. This may include a call to a specific 
     interface's implementation
@@ -543,9 +543,9 @@ determine whether an interface is a functional interface on your own.
    - A. They can extend other classes.
    - B. They cannot be extended.
    - C. They enable classes to have multiple inheritance.
-   - D. They can only contain abstract methods.
-   - E. They can be declared final.
-   - F. All members of an interface are public.
+   - D. They can only contain `abstract` methods.
+   - E. They can be declared `final`.
+   - F. All members of an interface are public unless marked `private`.
 <br />[Jump to answer](#qa8)
 9. <a name="q9"></a>What is the result of the following code?
    ````
@@ -573,12 +573,12 @@ determine whether an interface is a functional interface on your own.
        }
        public class Climber {
        public static void main(String[] args) {
-       check((h, l) -> h.toString(), 5); // x1
+            check((h, l) -> h.toString(), 5); // x1
        }
        private static void check(Climb climb, int height) {
-       if (climb.isTooHigh(height, 10)) // x2
-       System.out.println("too high");
-       else System.out.println("ok");
+            if (climb.isTooHigh(height, 10)) // x2
+                System.out.println("too high");
+            else System.out.println("ok");
        } }
        ````
     - A. `ok`
@@ -594,7 +594,7 @@ determine whether an interface is a functional interface on your own.
        2: int amount = 10;
        3: public static void eatGrass();
        4: public int chew() {
-       5: return 13;
+       5:   return 13;
        6: }
        7: }
        ````
@@ -626,6 +626,7 @@ determine whether an interface is a functional interface on your own.
 <br />[Jump to answer](#qa12)  
     
 ## <a name="qa"></a>Quiz Answers
+
 1. <a name="qa1"></a>[Jump to question](#q1) - **C.** Duplicate code makes your program lengthy and bulky, 
 and decreases your code quality
 2. <a name="qa2"></a>[Jump to question](#q2) - **A.** Using private methods in interfaces have four rules:
@@ -640,7 +641,7 @@ incorrect as `default` methods cannot be private as they can be overridden. D & 
 of the code by providing a mechanism to place reused logic, improves the security of the business logic 
 implemented and avoids inheritance complications with encapsulation
 5. <a name="qa5"></a>[Jump to question](#q5) - **D.** A superclass method takes priority over an interface 
-default method
+`default` method
 6. <a name="qa6"></a>[Jump to question](#q6) - **E.** The code does not compile because `EasternChipmunk` 
 inherits the abstract method `climb()` but does not implement it, therefore the correct answer is E. B, C, and D are
 incorrect as they compile for various reasons. Line 2 compiles, as non-`static` and non-`default`
@@ -658,7 +659,8 @@ exactly one abstract method defined in `Climb`. Finally, E is incorrect because 
 other interfaces, although not classes. C is correct since a class may implement multiple interfaces. 
 D is incorrect as interfaces have `static` and default methods, as well as `static` `final` variables. E 
 is incorrect as interfaces are assumed to be abstract, and abstract and final can never be used
-together. F is correct as interface methods and variables are each assumed public.
+together. F is correct as interface methods and variables are each assumed public unless explicitly set to
+private.
 9. <a name="qa9"></a>[Jump to question](#q9) - **D.** While Java supports multiple inheritance through 
 interfaces, it does not support method overriding in interfaces, since it’s not clear which parent 
 method should be used. In this example, `CanWalk` and `CanRun` both implement a default `walk()` 
@@ -679,5 +681,5 @@ line 4 is also incorrect, since an interface method that provides a body must be
 two compile-time errors.
 12. <a name="qa12"></a>[Jump to question](#q12) - **A.** Although the definition of methods on lines 2 
 and 5 vary, both will be converted to `public abstract` by the compiler. Line 4 is fine, because an 
-interface can have `public` or `default` access. Finally, the class `Falcon` doesn’t need to implement the 
+interface can have `public` or default access. Finally, the class `Falcon` doesn’t need to implement the 
 interface methods because it is marked as `abstract`. Therefore, the code will compile without issue.

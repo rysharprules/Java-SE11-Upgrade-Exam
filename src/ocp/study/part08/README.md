@@ -1237,15 +1237,15 @@ the result. Chaining calls to `flatMap()` is useful when you want to transform o
     ````
    import java.util.function.*;
    public class Panda {
-   int age;
-   public static void main(String[] args) {
-   Panda p1 = new Panda();
-   p1.age = 1;
-   check(p1, p -> p.age < 5); // h1
-   }
-   private static void check(Panda panda, Predicate<Panda> pred) { // h2
-   String result = pred.test(panda) ? "match": "not match"; // h3
-   System.out.print(result);
+       int age;
+       public static void main(String[] args) {
+           Panda p1 = new Panda();
+           p1.age = 1;
+           check(p1, p -> p.age < 5); // h1
+       }
+       private static void check(Panda panda, Predicate<Panda> pred) { // h2
+           String result = pred.test(panda) ? "match": "not match"; // h3
+           System.out.print(result);
    } }
    ````
    - A. `match`
@@ -1259,12 +1259,12 @@ the result. Chaining calls to `flatMap()` is useful when you want to transform o
 all that apply.)
     ````
    public interface Secret {
-   String magic(double d);
+        String magic(double d);
    }
    public class MySecret implements Secret {
-   public String magic(double d) {
-   return "Poof";
-   }
+       public String magic(double d) {
+            return "Poof";
+       }
    }
    ````
    - A. `caller((e) -> "Poof");`
@@ -1274,12 +1274,27 @@ all that apply.)
    - E. `caller((e) -> { String e = ""; return "Poof" });`
    - F. `caller((e) -> { String f = ""; return "Poof"; });`
 <br />[Jump to answer](#qa3)
+4. Which of the following compiles and print outs the entire set? (Choose all that apply.)
+    ````
+   Set<String> s = new HashSet<>();
+   s.add("lion");
+   s.add("tiger");
+   s.add("bear");
+   s.forEach(_____________________);
+   ````
+   - A. `() -> System.out.println(s)`
+   - B. `s -> System.out.println(s)`
+   - C. `(s) -> System.out.println(s)`
+   - D. `System.out.println(s)`
+   - E. `System::out::println`
+   - F. `System.out::println`
+<br />[Jump to answer](#qa4)
 
 ## <a name="qa"></a>Quiz Answers
 
 1. <a name="qa1"></a>[Jump to question](#q1) - **A, D.** The first lambda expression is valid, taking no 
 arguments and returning the empty string, so A is correct. B is incorrect, as more than one parameter 
-requires parentheses `()`. C is incorrect, as brackets `{}` are required when using return. D is correct, 
+requires parentheses `()`. C is incorrect, as brackets `{}` are required when using `return`. D is correct, 
 as the expression takes one `Camel` input and returns void. E is incorrect, as parentheses are required
 when using the data type `Wolf`. F is incorrect, as it has no right-side expression. Finally, G
 is incorrect, as specifying the data type for one parameter in a lambda expression requires
@@ -1288,9 +1303,13 @@ type and `m` does not, therefore the expression is invalid.
 2. <a name="qa2"></a>[Jump to question](#q2) - **A.** This code compiles and runs without issue so 
 C, D, E, and F are incorrect. Line `h1` creates a lambda expression that checks if the age is less than 5. 
 Since there is only one parameter and it does not specify a type, the parentheses around the type 
-parameter are optional. Line h2 uses the Predicate interface, which declares a `test()` method. Since `test()`
-returns true on the expression, match is output and A is correct.
+parameter are optional. Line `h2` uses the `Predicate` interface, which declares a `test()` method. Since `test()`
+returns true on the expression, `match` is output and A is correct.
 3. <a name="qa3"></a>[Jump to question](#q3) - **A, F.** B is incorrect because it does not use the `return` 
-keyword. C, D, and E are incorrect because the variable e is already in use from the lambda and cannot 
+keyword. C, D, and E are incorrect because the variable `e` is already in use from the lambda and cannot 
 be redefined. Additionally, C is missing the `return` keyword and E is missing the semicolon `;`. A and F are 
 the only correct lambda expressions that match the functional interface.
+4. <a name="qa4"></a>[Jump to question](#q4) - **F.** Choice A is incorrect because `forEach` takes a `Consumer` 
+parameter, which requires one parameter. Choices B and C are close. The syntax for a lambda is correct.
+However, `s` is already defined as a local variable and therefore the lambda can’t redefine it. Choices 
+D and E use incorrect syntax for a method reference. Choice F is correct.
