@@ -1289,8 +1289,8 @@ all that apply.)
    - E. `System::out::println`
    - F. `System.out::println`
 <br />[Jump to answer](#qa4)
-5. <a name="q5"></a>Which of the following are true given the declaration `IntStream is = IntStream.
-empty()`? (Choose all that apply.)
+5. <a name="q5"></a>Which of the following are true given the declaration `IntStream is = IntStream.empty()`?
+(Choose all that apply.)
     - A. `is.average()` returns the type `int`.
     - B. `is.average()` returns the type `OptionalInt`.
     - C. `is.findAny()` returns the type `int`.
@@ -1376,7 +1376,7 @@ and not produce any output? (Choose all that apply.)
     List<Integer> l = IntStream.range(1, 6)
         .mapToObj(i -> i).collect(Collectors.toList());
     l.forEach(System.out::println);
-    ```
+    ````
     - A. `IntStream.range(1, 6);`
     - B. `IntStream.range(1, 6).forEach(System.out::println);`
     - C. `IntStream.range(1, 6).mapToObj(1 -> i).forEach(System.out::println);`
