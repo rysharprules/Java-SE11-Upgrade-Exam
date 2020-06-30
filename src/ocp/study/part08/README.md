@@ -1274,7 +1274,7 @@ all that apply.)
    - E. `caller((e) -> { String e = ""; return "Poof" });`
    - F. `caller((e) -> { String f = ""; return "Poof"; });`
 <br />[Jump to answer](#qa3)
-4. Which of the following compiles and print outs the entire set? (Choose all that apply.)
+4. <a name="q4"></a>Which of the following compiles and print outs the entire set? (Choose all that apply.)
     ````
    Set<String> s = new HashSet<>();
    s.add("lion");
@@ -1289,6 +1289,100 @@ all that apply.)
    - E. `System::out::println`
    - F. `System.out::println`
 <br />[Jump to answer](#qa4)
+5. <a name="q5"></a>Which of the following are true given the declaration `IntStream is = IntStream.
+empty()`? (Choose all that apply.)
+    - A. `is.average()` returns the type `int`.
+    - B. `is.average()` returns the type `OptionalInt`.
+    - C. `is.findAny()` returns the type `int`.
+    - D. `is.findAny()` returns the type `OptionalInt`.
+    - E. `is.sum()` returns the type `int`.
+    - F. `is.sum()` returns the type `OptionalInt`.
+<br />[Jump to answer](#qa5)
+6. <a name="q6"></a>Which of the following can we add after line 5 for the code to run without error 
+and not produce any output? (Choose all that apply.)
+    ````
+    4: LongStream ls = LongStream.of(1, 2, 3);
+    5: OptionalLong opt = ls.map(n -> n * 10).filter(n -> n < 5).findFirst();
+    ````
+   - A. `if (opt.isPresent()) System.out.println(opt.get());`
+   - B. `if (opt.isPresent()) System.out.println(opt.getAsLong());`
+   - C. `opt.ifPresent(System.out.println)`
+   - D. `opt.ifPresent(System.out::println)`
+   - E. None of these; the code does not compile.
+   - F. None of these; line 5 throws an exception at runtime.
+<br />[Jump to answer](#qa6)
+7. <a name="q7"></a>Which functional interfaces complete the following code? (Choose all that apply.)
+    ````
+   6: ____________ x = String::new;
+   7: ____________ y = (a, b) -> System.out.println();
+   8: ____________ z = a -> a + a;
+   ````
+   - A. `BiConsumer<String, String>`
+   - B. `BiFunction<String, String>`
+   - C. `BinaryConsumer<String, String>`
+   - D. `BinaryFunction<String, String>`
+   - E. `Consumer<String>`
+   - F. `Supplier<String>`
+   - G. `UnaryOperator<String>`
+   - H. `UnaryOperator<String, String>`
+<br />[Jump to answer](#qa7)
+8. <a name="q8"></a>Which of the following is true?
+    ````
+    4: Stream<Integer> s = Stream.of(1);
+    5: IntStream is = s.mapToInt(x -> x);
+    6: DoubleStream ds = s.mapToDouble(x -> x);
+    7: Stream<Integer> s2 = ds.mapToInt(x -> x);
+    8: s2.forEach(System.out::print);
+   ````
+   - A. Line 4 does not compile.
+   - B. Line 5 does not compile.
+   - C. Line 6 does not compile.
+   - D. Line 7 does not compile.
+   - E. Line 8 does not compile.
+   - F. The code throws an exception.
+   - G. The code compiles and prints 1.
+<br />[Jump to answer](#qa8)
+9. <a name="q9"></a>Which of the following is equivalent to this code? `UnaryOperator<Integer> u = x -> x * x;`
+    - A. `BiFunction<Integer> f = x -> x*x;`
+    - B. `BiFunction<Integer, Integer> f = x -> x*x;`
+    - C. `BinaryOperator<Integer, Integer> f = x -> x*x;`
+    - D. `Function<Integer> f = x -> x*x;`
+    - E. `Function<Integer, Integer> f = x -> x*x;`
+    - F. None of the above
+<br />[Jump to answer](#qa9)   
+10. <a name="q10"></a>What is the result of the following?
+    ````
+    DoubleStream s = DoubleStream.of(1.2, 2.4);
+    s.peek(System.out::println).filter(x -> x > 2).count();
+    ````
+    - A. 1
+    - B. 2
+    - C. 2.4
+    - D. 1.2 and 2.4
+    - E. There is no output.
+    - F. The code does not compile.
+    - G. An exception is thrown.
+<br />[Jump to answer](#qa10)
+11. <a name="q11"></a>Which of the following return primitives? (Choose all that apply.)
+    - A. `BooleanSupplier`
+    - B. `CharSupplier`
+    - C. `DoubleSupplier`
+    - D. `FloatSupplier`
+    - E. `IntSupplier`
+    - F. `StringSupplier`
+<br />[Jump to answer](#qa11)
+12. <a name="q12"></a>What is the simplest way of rewriting this code?
+    ````
+    List<Integer> l = IntStream.range(1, 6)
+        .mapToObj(i -> i).collect(Collectors.toList());
+    l.forEach(System.out::println);
+    ```
+    - A. `IntStream.range(1, 6);`
+    - B. `IntStream.range(1, 6).forEach(System.out::println);`
+    - C. `IntStream.range(1, 6).mapToObj(1 -> i).forEach(System.out::println);`
+    - D. None of the above is equivalent.
+    - E. The provided code does not compile.
+<br />[Jump to answer](#qa12)
 
 ## <a name="qa"></a>Quiz Answers
 
@@ -1313,3 +1407,37 @@ the only correct lambda expressions that match the functional interface.
 parameter, which requires one parameter. Choices B and C are close. The syntax for a lambda is correct.
 However, `s` is already defined as a local variable and therefore the lambda can’t redefine it. Choices 
 D and E use incorrect syntax for a method reference. Choice F is correct.
+5. <a name="qa5"></a>[Jump to question](#q5) - **D, E.** The `sum()` method returns an int rather than 
+an `OptionalInt` because the sum of an empty list is zero. Therefore, option E is correct. The `findAny()` 
+method returns an `OptionalInt` because there might not be any elements to find. Therefore, option D is
+correct. The `average()` method returns an `OptionalDouble` since averages of any type can result in a 
+fraction. Therefore, options A and B are both incorrect.
+6. <a name="qa6"></a>[Jump to question](#q6) - **B, D.** Option A would work for a regular Stream. 
+However, we have a `LongStream` and therefore need to call `getAsLong()`. Option C is missing the `::` that 
+would make it a method reference. Therefore, options B and D are correct.
+7. <a name="qa7"></a>[Jump to question](#q7) - **A, F, G.** Line 6 doesn’t take any parameters, and 
+it returns a `String`, making it a `Supplier`. Another clue is that it uses a constructor reference, which 
+should scream `Supplier`! This makes choice F correct. Line 7 takes two parameters, and it doesn’t return 
+anything making it a `BiConsumer`. The print statement should also be a clue that we are dealing with
+a `Consumer` or `BiConsumer`. This makes choice A correct. Choices C and D are there to
+mislead you; these interfaces don’t actually exist. `BinaryOperator` spells out binary. The
+other functional interfaces use the prefix Bi. Finally, line 8 takes a single parameter, and it
+returns the same type, which is a `UnaryOperator`. Since the types are the same, only one
+generic is needed, making choice G correct.
+8. <a name="qa8"></a>[Jump to question](#q8) - **D.** Line 4 should obviously look OK. It creates a 
+Stream and uses autoboxing to put the Integer 1 inside. Line 5 converts to a primitive, again using 
+autoboxing. Line 6 converts to a double primitive, which works since `double d = 1;` would work. Line 7 
+is where it all falls apart. Converting from a `double` to an `int` would require a cast inside the lambda.
+9. <a name="qa9"></a>[Jump to question](#q9) - **E.** A `UnaryOperator` is a special type of function 
+where the parameter and return type are the same. Therefore, option E is correct. Notice that other 
+options don’t even compile because they have the wrong number of generic types for the functional 
+interface provided.
+10. <a name="qa10"></a>[Jump to question](#q10) - **D.** The terminal operation is `count()`. Since there 
+is a terminal operation, the intermediate operations run. The `peek()` operation comes before the filter, 
+so both numbers are printed. The count happens to be 1 since the other number is filtered. However, 
+the result of the stream pipeline isn’t stored in a variable, and that result is ignored.
+11. <a name="qa11"></a>[Jump to question](#q11) - **A, C, E.** The three common types of `double`, `int` 
+and, `long` have dedicated supplier classes. The only primitive functional interface that does not 
+involve one of those three types is `BooleanSupplier`.
+12. <a name="qa12"></a>[Jump to question](#q12) - **B.** Both lists and streams have `forEach()` methods. 
+There is no reason to collect into a list just to loop through it.

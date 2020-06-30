@@ -1695,13 +1695,13 @@ name to call your attention to it.
 
 ## <a name="q"></a>Quiz
 
-1. What does the `or` method of the `Optional` class return?
+1. <a name="q1"></a>What does the `or` method of the `Optional` class return?
     - A. The same object type that the collection/stream is based on
     - B. An `Optional<T>`
     - C. `null`
     - D. The method is void and doesn't return anything
 <br />[Jump to answer](#qa1)
-2. Given the code fragment below, what is the result?
+2. <a name="q2"></a>Given the code fragment below, what is the result?
     ````
    List<Integer> items = List.of(10, 25, 30);
     Stream<Integer> stream1 = items
@@ -1714,7 +1714,7 @@ name to call your attention to it.
    - C. 10
    - D. 10 30
 <br />[Jump to answer](#qa2)
-3. Given the code fragment below, what is the result?
+3. <a name="q3"></a>Given the code fragment below, what is the result?
    ````
    Stream<Integer> nums = Stream.iterate(1, i -> i + 10).limit(3);
    nums.forEach(n -> System.out.println(n + ""));
@@ -1724,21 +1724,21 @@ name to call your attention to it.
    - C. 11 21 31
    - D. 1 11 21
 <br />[Jump to answer](#qa3)
-4. Given the code fragment below, what is the result?<br />
+4. <a name="q4"></a>Given the code fragment below, what is the result?<br />
     ![Figure 4.6](img/figure4-6.png)
     A. - Compilation error
     B. - bread butter \-
     C. - bread butter \- bread butter
     D. - \- bread butter
 <br />[Jump to answer](#qa4)
-5. Given the code fragment below, what is the result?<br />
+5. <a name="q5"></a>Given the code fragment below, what is the result?<br />
     ![Figure 4.7](img/figure4-7.png)
     - A. bread butter \- bread butter egg jam
     - B. bread butter \- egg jam
     - C. \- egg jam
     - D. bread butter \-
 <br />[Jump to answer](#qa5)
-6. What is the result of the following program?
+6. <a name="q6"></a>What is the result of the following program?
     ````
    import java.util.*;
    public class MyComparator implements Comparator<String> {
@@ -1760,7 +1760,7 @@ name to call your attention to it.
    - E. The code does not compile.
    - F. A runtime exception is thrown.
 <br />[Jump to answer](#qa6)
-7. What is the result of the following program?
+7. <a name="q7"></a>What is the result of the following program?
     ````
    import java.util.*;
    public class Sorted implements Comparable<Sorted>, Comparator<Sorted> {
@@ -1790,7 +1790,7 @@ name to call your attention to it.
    E. The code does not compile.
    F. A runtime exception is thrown.
 <br />[Jump to answer](#qa7)
-8. What is the result of the following code?
+8. <a name="q8"></a>What is the result of the following code?
     ````
    Comparator<Integer> c = (o1, o2) -> o2—o1;
    List<Integer> list = Arrays.asList(5, 4, 7, 1);
@@ -1804,7 +1804,7 @@ name to call your attention to it.
    - E. The code does not compile.
    - F. A runtime exception is thrown.
 <br />[Jump to answer](#qa8)
-9. Which of the following statements are true? (Choose all that apply.)
+9. <a name="q9"></a>Which of the following statements are true? (Choose all that apply.)
     - A. `Comparable` is in the `java.util` package.
     - B. `Comparator` is in the `java.util` package.
     - C. `compare()` is in the `Comparable` interface.
@@ -1812,17 +1812,187 @@ name to call your attention to it.
     - E. `compare()` takes one method parameter.
     - F. `compare()` takes two method parameters.
 <br />[Jump to answer](#qa9)
-10. Which of the answer choices make sense to implement with a lambda? (Choose all that apply.)
+10. <a name="q10"></a>Which of the answer choices make sense to implement with a lambda? (Choose all that apply.)
     - A. `Comparable` interface
     - B. `Comparator` interface
     - C. `remove` method on a Collection
     - D. `removeAll` method on a Collection
     - E. `removeIf` method on a Collection
 <br />[Jump to answer](#qa10)
-
+11. <a name="q11"></a>What is the output of the following?
+    ````
+    Stream<String> stream = Stream.iterate("", (s) -> s + "1");
+    System.out.println(stream.limit(2).map(x -> x + "2"));
+    ````
+    - A. 12112
+    - B. 212
+    - C. 212112
+    - D. `java.util.stream.ReferencePipeline$3@4517d9a3`
+    - E. The code does not compile.
+    - F. An exception is thrown.
+    - G. The code hangs.
+<br />[Jump to answer](#qa11)
+12. <a name="q12"></a>What is the output of the following?
+        ````
+       Predicate<? super String> predicate = s -> s.startsWith("g");
+       Stream<String> stream1 = Stream.generate(() -> "growl! ");
+       Stream<String> stream2 = Stream.generate(() -> "growl! ");
+       boolean b1 = stream1.anyMatch(predicate);
+       boolean b2 = stream2.allMatch(predicate);
+       System.out.println(b1 + " " + b2);
+       ````
+       - A. true false
+       - B. true true
+       - C. `java.util.stream.ReferencePipeline$3@4517d9a3`
+       - D. The code does not compile.
+       - E. An exception is thrown.
+       - F. The code hangs.
+<br />[Jump to answer](#qa12)
+13. <a name="q13"></a>What is the output of the following?
+    ````
+    Predicate<? super String> predicate = s -> s.length() > 3;
+    Stream<String> stream = Stream.iterate("-", (s) -> s + s);
+    boolean b1 = stream.noneMatch(predicate);
+    boolean b2 = stream.anyMatch(predicate);
+    System.out.println(b1 + " " + b2);
+    ````
+    - A. false true
+    - B. false false
+    - C. `java.util.stream.ReferencePipeline$3@4517d9a3`
+    - D. The code does not compile.
+    - E. An exception is thrown.
+    - F. The code hangs.
+<br />[Jump to answer](#qa13)
+14. <a name="q14"></a>Which are true statements about terminal operations in a stream? (Choose all that apply.)
+    - A. At most one terminal operation can exist in a stream pipeline.
+    - B. Terminal operations are a required part of the stream pipeline in order to get a result.
+    - C. Terminal operations have Stream as the return type.
+    - D. The referenced Stream may be used after the calling a terminal operation.
+    - E. The `peek()` method is an example of a terminal operation.
+<br />[Jump to answer](#qa14)
+15. <a name="q15"></a>Which terminal operations on the Stream class are reductions? (Choose all that apply.)
+    - A. `collect()`
+    - B. `count()`
+    - C. `findFirst()`
+    - D. `map()`
+    - E. `peek()`
+    - F. `sum()`
+<br />[Jump to answer](#qa15)
+16. <a name="q16"></a>Which of the following can fill in the blank so that the code prints out false? (Choose all that apply.)
+    ````
+    Stream<String> s = Stream.generate(() -> "meow");
+    boolean match = s.________________(String::isEmpty);
+    System.out.println(match);
+    ````
+    - A. `allMatch`
+    - B. `anyMatch`
+    - C. `findAny`
+    - D. `findFirst`
+    - E. `noneMatch`
+    - F. None of the above
+<br />[Jump to answer](#qa16)
+17. <a name="q17"></a>We have a method that returns a sorted list without changing the original. Which of the
+following can replace the method implementation to do the same with streams?
+    ````
+    private static List<String> sort(List<String> list) {
+        List<String> copy = new ArrayList<>(list);
+        Collections.sort(copy, (a, b) -> b.compareTo(a));
+        return copy;
+    }
+    ````
+    - A. 
+    ````
+    return list.stream()
+        .compare((a, b) -> b.compareTo(a))
+        .collect(Collectors.toList());
+    ````
+    - B.
+    ````
+    return list.stream()
+        .compare((a, b) -> b.compareTo(a))
+        .sort();
+    ````
+    - C.
+    ````
+    return list.stream()
+        .compareTo((a, b) -> b.compareTo(a))
+        .collect(Collectors.toList());
+    ````
+    - D.
+    ````
+    return list.stream()
+        .compareTo((a, b) -> b.compareTo(a))
+        .sort();
+    ````
+    - E. 
+    ````
+    return list.stream()
+        .sorted((a, b) -> b.compareTo(a))
+        .collect();
+    ````
+    - F.
+    ````
+    return list.stream()
+        .sorted((a, b) -> b.compareTo(a))
+        .collect(Collectors.toList());
+    ````  
+<br />[Jump to answer](#qa17)
+18. <a name="q18"></a>What changes need to be made for this code to print the string 12345? (Choose 
+all that apply.)
+    `Stream.iterate(1, x -> x++).limit(5).map(x -> x).collect(Collectors.joining());`
+    - A. Change `Collectors.joining()` to `Collectors.joining("")`.
+    - B. Change `map(x -> x)` to `map(x -> "" + x)`.
+    - C. Change `x -> x++` to `x -> ++x`.
+    - D. Add `forEach(System.out::print)` after the call to `collect()`.
+    - E. Wrap the entire line in a `System.out.print` statement.
+    - F. None of the above. The code already prints 12345.
+<br />[Jump to answer](#qa18)
+19. <a name="q19"></a>Which of the following is true?
+    ````
+    List<Integer> l1 = Arrays.asList(1, 2, 3);
+    List<Integer> l2 = Arrays.asList(4, 5, 6);
+    List<Integer> l3 = Arrays.asList();
+    Stream.of(l1, l2, l3).map(x -> x + 1)
+        .flatMap(x -> x.stream()).forEach(System.out::print);
+    ````
+    - A. The code compiles and prints 123456.
+    - B. The code compiles and prints 234567.
+    - C. The code compiles but does not print anything.
+    - D. The code compiles but prints stream references.
+    - E. The code runs infinitely.
+    - F. The code does not compile.
+    - G. The code throws an exception
+<br />[Jump to answer](#qa19)
+20. <a name="q20"></a>The `partitioningBy()` collector creates a `Map<Boolean, List<String>>` when passed 
+to `collect()` by default. When specific parameters are passed to `partitioningBy()`, which return types 
+can be created? (Choose all that apply.)
+    - A. `Map<boolean, List<String>>`
+    - B. `Map<Boolean, Map<String>>`
+    - C. `Map<Long, TreeSet<String>>`
+    - D. `Map<Boolean, List<String>>`
+    - E. `Map<Boolean, Set<String>>`
+    - F. None of the above
+<br />[Jump to answer](#qa20)
+21. <a name="q21"></a>What is the output of the following?
+    ````
+    Stream<String> s = Stream.empty();
+    Stream<String> s2 = Stream.empty();
+    Map<Boolean, List<String>> p = s.collect(
+        Collectors.partitioningBy(b -> b.startsWith("c")));
+    Map<Boolean, List<String>> g = s2.collect(
+        Collectors.groupingBy(b -> b.startsWith("c")));
+    System.out.println(p + " " + g);
+    ````
+    - A. `{} {}`
+    - B. `{} {false=[], true=[]}`
+    - C. `{false=[], true=[]} {}`
+    - D. `{false=[], true=[]} {false=[], true=[]}`
+    - E. The code does not compile.
+    - F. An exception is thrown.
+<br />[Jump to answer](#qa21)
 ## <a name="qa"></a>Quiz Answers
 
-1. <a name="qa1"></a>[Jump to question](#q1) - **B.** The `or` function from the [JavaDocs](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html#or(java.util.function.Supplier):
+1. <a name="qa1"></a>[Jump to question](#q1) - **B.** The `or` function from the [JavaDocs](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html#or):
 If a value is present, returns an `Optional` describing the value, otherwise returns an `Optional` 
 produced by the supplying function.
 2. <a name="qa2"></a>[Jump to question](#q2) - **C.** Due to the modulas (`%`) condition in the `Predicate`,
@@ -1860,3 +2030,49 @@ The `java.util.Comparator` interface specifies the `compare()` method, which tak
 functional interfaces. However, `Comparable` is intended to be used on the object being compared, 
 making choice B correct. `removeIf` was added in Java 8 to allow specifying the lambda to check when 
 removing elements, making choice E correct.
+11. <a name="qa11"></a>[Jump to question](#q11) - **D.** No terminal operation is called, so the stream 
+never executes. The methods chain to create a stream that would contain “2” and “12.” The first line 
+creates an infinite stream. The second line would get the first two elements from that infinite stream 
+and map each element to add an extra character.
+12. <a name="qa12"></a>[Jump to question](#q12) - **F.** b1 is set to true since `anyMatch()` terminates. 
+Even though the stream is infinite, Java finds a match on the first element and stops looking. However, 
+when `allMatch()` runs, it needs to keep going until the end of the stream since it keeps finding matches.
+Since all elements continue to match, the program hangs.
+13. <a name="qa13"></a>[Jump to question](#q13) - **E.** An infinite stream is generated where each 
+element is twice as long as the previous one. `b1` is set to false because Java finds an element that 
+doesn’t match when it gets to the element of length 4. However, the next line tries to operate on 
+the same stream. Since streams can be used only once, this throws an exception that the “stream has 
+already been operated upon or closed.” If two different streams were used, the result would be option A.
+14. <a name="qa14"></a>[Jump to question](#q14) - **A, B.** Terminal operations are the final step in
+a stream pipeline. Exactly one is required, because it triggers the execution of the entire stream 
+pipeline. Therefore, options A and B are correct. Options C and F are true of intermediate operations
+rather than terminal operations. Option E is never true. Once a stream pipeline is run, the Stream 
+is marked invalid.
+15. <a name="qa15"></a>[Jump to question](#q15) - **A, B.** Options D and E are incorrect because 
+they are intermediate operations and not terminal operations. While option F is a reduction, it is 
+incorrect because it is available only on primitive streams such as IntStream. Option C is incorrect
+because it is not a reduction — it does not look at each element in the stream.
+16. <a name="qa16"></a>[Jump to question](#q16) - **A.** Options C and D are incorrect because these
+methods do not take a `Predicate` parameter and do not return a `boolean`. Options B and E are incorrect
+because they cause the code to run infinitely. The stream has no way to know that a match won’t show 
+up later. Option A is correct because it is safe to return false as soon as one element passes
+through the stream that doesn’t match.
+17. <a name="qa17"></a>[Jump to question](#q17) - **F.** The `sorted()` method is used in a stream 
+pipeline to return a sorted Stream. A collector is needed to turn the stream back into a `List`. The 
+`collect()` method takes the desired collector.
+18. <a name="qa18"></a>[Jump to question](#q18) - **B, C, E.** As written, the code doesn’t compile 
+because the collector expects to get a `String` immediately before it in the chain. Option B fixes this,
+at which point nothing is output because the collector creates a `String`. Option E fixes this and causes
+the output to be 11111. Since the post-increment operator is used, the stream contains an infinite 
+number of 1s. Option C fixes this and causes the stream to contain increasing numbers.
+19. <a name="qa19"></a>[Jump to question](#q19) - **F.** If the `map()` and `flatMap()` calls were reversed,
+choice B would be correct. In this case, the Stream created from the source is of type 
+`Stream<List<Integer>>`. The `Function` in `map` expects an `Integer` rather than a `List<Integer>`, so the 
+code does not compile.
+20. <a name="qa20"></a>[Jump to question](#q20) - **D, E.** Choices A and B do not compile, because 
+they are invalid generic declarations. Primitives are not allowed as generics, and `Map` must have two 
+generic types. Choice C is incorrect because partitioning only gives a `Boolean` key. Choices D and E 
+are correct because the result Collection can be customized.
+21. <a name="qa21"></a>[Jump to question](#q21) - **C.** The `partitioningBy()` operation always returns 
+a map with two `Boolean` keys, even if there are no corresponding values. By contrast, `groupingBy()` 
+returns only keys that are actually needed.
