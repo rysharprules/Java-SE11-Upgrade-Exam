@@ -1783,12 +1783,12 @@ name to call your attention to it.
            System.out.println(t1 + " " + t2);
    } }
    ````
-   A. `[55. 88] [55, 88]`
-   B. `[55. 88] [88, 55]`
-   C. `[88. 55] [55, 88]`
-   D. `[88. 55] [88, 55]`
-   E. The code does not compile.
-   F. A runtime exception is thrown.
+   - A. `[55. 88] [55, 88]`
+   - B. `[55. 88] [88, 55]`
+   - C. `[88. 55] [55, 88]`
+   - D. `[88. 55] [88, 55]`
+   - E. The code does not compile.
+   - F. A runtime exception is thrown.
 <br />[Jump to answer](#qa7)
 8. <a name="q8"></a>What is the result of the following code?
     ````
@@ -1833,7 +1833,7 @@ name to call your attention to it.
     - G. The code hangs.
 <br />[Jump to answer](#qa11)
 12. <a name="q12"></a>What is the output of the following?
-        ````
+       ````
        Predicate<? super String> predicate = s -> s.startsWith("g");
        Stream<String> stream1 = Stream.generate(() -> "growl! ");
        Stream<String> stream2 = Stream.generate(() -> "growl! ");
@@ -1901,42 +1901,42 @@ following can replace the method implementation to do the same with streams?
     }
     ````
     - A. 
-    ````
-    return list.stream()
-        .compare((a, b) -> b.compareTo(a))
-        .collect(Collectors.toList());
-    ````
+        ````
+        return list.stream()
+            .compare((a, b) -> b.compareTo(a))
+            .collect(Collectors.toList());
+        ````
     - B.
-    ````
-    return list.stream()
-        .compare((a, b) -> b.compareTo(a))
-        .sort();
-    ````
+        ````
+        return list.stream()
+            .compare((a, b) -> b.compareTo(a))
+            .sort();
+        ````
     - C.
-    ````
-    return list.stream()
-        .compareTo((a, b) -> b.compareTo(a))
-        .collect(Collectors.toList());
-    ````
+        ````
+        return list.stream()
+            .compareTo((a, b) -> b.compareTo(a))
+            .collect(Collectors.toList());
+        ````
     - D.
-    ````
-    return list.stream()
-        .compareTo((a, b) -> b.compareTo(a))
-        .sort();
-    ````
+        ````
+        return list.stream()
+            .compareTo((a, b) -> b.compareTo(a))
+            .sort();
+        ````
     - E. 
-    ````
-    return list.stream()
-        .sorted((a, b) -> b.compareTo(a))
-        .collect();
-    ````
+        ````
+        return list.stream()
+            .sorted((a, b) -> b.compareTo(a))
+            .collect();
+        ````
     - F.
-    ````
-    return list.stream()
-        .sorted((a, b) -> b.compareTo(a))
-        .collect(Collectors.toList());
-    ````  
-<br />[Jump to answer](#qa17)
+        ````
+        return list.stream()
+            .sorted((a, b) -> b.compareTo(a))
+            .collect(Collectors.toList());
+        ````  
+    [Jump to answer](#qa17)
 18. <a name="q18"></a>What changes need to be made for this code to print the string 12345? (Choose 
 all that apply.)
     `Stream.iterate(1, x -> x++).limit(5).map(x -> x).collect(Collectors.joining());`
