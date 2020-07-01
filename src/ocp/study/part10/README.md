@@ -1,5 +1,7 @@
 - [10.1 - Use `try-with-resources` construct](#10-1)
 - [10.2 - Develop code that handles multiple Exception types in a single catch block](#10-2)
+- [Quiz](#q)
+- [Quiz Answers](#qa)
 
 ## <a name="10-1"></a> 10.1 - Use `try-with-resources` construct
 
@@ -450,3 +452,128 @@ forbids reassigning the exception variable in a multi-catch situation.
 This is scarcely a hardship given that it is bad practice to reassign the variable to begin
 with! Since Java is big on backward compatibility, this bad practice is still permitted
 when catching a single exception type.
+
+## <a name="q"></a>Quiz
+
+1. <a name="q1"></a>Which of the following fills in the blank to make the code compile? (Choose all that apply)
+    ````
+   public static void main(String[] args) {
+       try {
+            throw new IOException();
+       } catch (__________________________ ) { }
+   }
+   ````
+   - A. `FileNotFoundException | IOException e`
+   - B. `FileNotFoundException e | IOException e`
+   - C. `FileNotFoundException | RuntimeException e`
+   - D. `FileNotFoundException e | RuntimeException e`
+   - E. `IOException | RuntimeException e`
+   - F. `IOException e | RuntimeException e`
+<br />[Jump to answer](#qa1)
+2. <a name="q2"></a>Which of the following are true statements? (Choose all that apply.)
+    - A. A traditional `try` statement without a `catch` block requires a `finally` block.
+    - B. A traditional `try` statement without a `finally` block requires a `catch` block.
+    - C. A traditional `try` statement with only one statement can omit the `{}`.
+    - D. A try-with-resources statement without a `catch` block requires a `finally` block.
+    - E. A try-with-resources statement without a `finally` block requires a `catch` block.
+    - F. A try-with-resources statement with only one statement can omit the `{}`.
+<br />[Jump to answer](#qa2)
+3. <a name="q3"></a>Which of the following can legally fill in the blank? (Choose all that apply.)
+    ````
+   public class AhChoo {
+       static class SneezeException extends Exception { }
+       static class SniffleException extends SneezeException { }
+       public static void main(String[] args) throws SneezeException {
+           try {
+                throw new SneezeException();
+           } catch (SneezeException | RuntimeException e) {
+                _________________
+                throw e;
+   } } }
+   ````
+   - A. `// leave line blank`
+   - B. `e = new Exception();`
+   - C. `e = new RuntimeException();`
+   - D. `e = new SneezeException();`
+   - E. `e = new SniffleException();`
+   - F. None of the above; the code does not compile.
+<br />[Jump to answer](#qa3)
+4. <a name="q4"></a>Fill in the blank: A class that implements _________________ may be in a 
+try-with-resource statement. (Choose all that apply.)
+    - A. `AutoCloseable`
+    - B. `Closeable`
+    - C. `Exception`
+    - D. `RuntimeException`
+    - E. `Serializable`
+<br />[Jump to answer](#qa4)
+5. <a name="q5"></a>Which of the following cannot fill in the blank? (Choose all that apply.)
+    ````
+   public void read() throws SQLException {
+       try {
+           readFromDatabase();
+       } catch (_________________ e) {
+           throw e;
+       }
+   }
+   private void readFromDatabase() throws SQLException { }
+   ````
+   - A. `Exception`
+   - B. `RuntimeException`
+   - C. `SQLException`
+   - D. `SQLException | IOException`
+   - E. `SQLException | RuntimeException`
+<br />[Jump to answer](#qa5)
+6. <a name="q6"></a>What is the output of the following code?
+    ````
+   import java.io.*;
+   public class AutocloseableFlow {
+       static class Door implements AutoCloseable {
+           public void close() {
+               System.out.print("D");
+           } }
+       static class Window implements Closeable {
+           public void close() {
+               System.out.print("W");
+               throw new RuntimeException();
+           } }
+       public static void main(String[] args) {
+           try (Door d = new Door(); Window w = new Window()) {
+               System.out.print("T");
+           } catch (Exception e) {
+               System.out.print("E");
+           } finally {
+               System.out.print("F");
+           } } }
+   ````
+   - A. `TWF`
+   - B. `TWDF`
+   - C. `TWDEF`
+   - D. `TWF` followed by an exception
+   - E. `TWDF` followed by an exception
+   - F. `TWEF` followed by an exception
+   - G. The code does not compile.
+<br />[Jump to answer](#qa6)
+
+## <a name="qa"></a>Quiz Answers
+
+1. <a name="qa1"></a>[Jump to question](#q1) - **E.** Options B, D, and F are incorrect because only 
+one variable name is allowed in a multi-catch block. Option A is incorrect because `FileNotFoundException` 
+is a subclass of `IOException`. A multi-catch statement does not allow redundancy, and just catching
+`IOException` would have been equivalent. Option C is incorrect because the `IOException` that is thrown 
+is not handled.
+2. <a name="qa2"></a>[Jump to question](#q2) - **A, B.** A try-with-resources statement does not require 
+a catch or finally block. A traditional try statement requires at least one of the two.
+3. <a name="qa3"></a>[Jump to question](#q3) - **A.** Since a multi-catch is used, the variable in 
+the `catch` block is effectively final and cannot be reassigned.
+4. <a name="qa4"></a>[Jump to question](#q4) - **A, B.** `Closeable` was the original interface for IO 
+classes. `AutoCloseable` was added in Java 7 along with try-with-resources. `Closeable` extends `AutoCloseable` 
+for backward compatibility.
+5. <a name="qa5"></a>[Jump to question](#q5) - **D.** Choice A is allowed because Java 7 and later 
+“translates” `Exception` in a `catch` block to the correct one. Choices C and E are allowed because they 
+actually `catch` a `SQLException`. Choice D is not allowed because there is no `IOException` declared. Choice 
+B is allowed because a method does not have to handle an exception if it declares it.
+6. <a name="qa6"></a>[Jump to question](#q6) - **C.** After opening both resources in the try-with-resources 
+statement, `T` is printed. Then the try-with-resource completes and closes the resources in reverse order 
+from which they were opened. After `W` is printed, an exception is thrown. However, the remaining resource 
+is still closed and `D` is printed. The exception thrown is then caught and `E` is printed. Last, the
+`finally` block is run, printing `F`. Therefore the answer is `TWDEF`.

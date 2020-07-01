@@ -1990,6 +1990,7 @@ can be created? (Choose all that apply.)
     - E. The code does not compile.
     - F. An exception is thrown.
 <br />[Jump to answer](#qa21)
+
 ## <a name="qa"></a>Quiz Answers
 
 1. <a name="qa1"></a>[Jump to question](#q1) - **B.** The `or` function from the [JavaDocs](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html#or):
