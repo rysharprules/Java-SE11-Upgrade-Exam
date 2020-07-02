@@ -1,6 +1,8 @@
 - [5.1 - Use Path interface to operate on file and directory paths](#5-1)
 - [5.2 - Use Files class to check, delete, copy or move a file or directory](#5-2)
 - [5.3 - Use Stream API with Files](#5-3)
+- [Quiz](#q)
+- [Quiz Answers](#qa)
 
 ## <a name="5-1"></a>5.1 - Use Path interface to operate on file and directory paths
 
@@ -1529,3 +1531,398 @@ Files.lines(path).filter(s -> s.length()>2).forEach(System.out::println);
 
 The first line does not compile because the `filter()` operation cannot be applied to a
 Collection without first converting it to a Stream using the `stream()` method.
+
+## <a name="q"></a>Quiz
+
+1. <a name="q1"></a>What is the output of the following code?
+    ````
+   Path path = Path.get("/user/.././root","../kodiacbear.txt");
+   path.normalize().relativize("/lion");
+   System.out.println(path);
+   ````
+    - A. `/user/.././root/../kodiacbear.txt`
+    - B. `/user/./root/kodiacbear.txt/lion`
+    - C. `/kodiacbear.txt`
+    - D. `kodiacbear.txt`
+    - E. `../lion`
+    - F. The code does not compile.
+<br />[Jump to answer](#qa1)
+2. <a name="q2"></a>For which values of path inserted on the blank line would it be possible for the 
+following code to output Success? (Choose all that apply.)
+    ````
+   Path path = ____________________;
+   if(Files.isDirectory(path))
+   System.out.println(Files.deleteIfExists(path) ? "Success": "Try Again");
+   ````
+   - A. path refers to a regular file in the file system.
+   - B. path refers to a symbolic link in the file system.
+   - C. path refers to an empty directory in the file system.
+   - D. path refers to a directory with content in the file system.
+   - E. path does not refer to a record that exists within the file system.
+   - F. The code does not compile.
+<br />[Jump to answer](#qa2)
+3. <a name="q3"></a>What is the result of executing the following code? (Choose all that apply.)
+    ````
+   1: Path path = Paths.get("sloth.schedule");
+   2: BasicFileAttributes attributes = Files.readAttributes(path, BasicFileAttributes.class);
+   3: if(attributes.size()>0 && attributes.creationTime().toMillis()>0) {
+   4:   attributes.setTimes(null,null,null);
+   5: }
+   ````
+   - A. It compiles and runs without issue.
+   - B. The code will not compile because of line 2.
+   - C. The code will not compile because of line 3.
+   - D. The code will not compile because of line 4.
+   - E. The code compiles but throws an exception at runtime.
+<br />[Jump to answer](#qa3)
+4. <a name="q4"></a>If the current working directory is /user/home, then what is the output of the 
+following code?
+    ````
+   Path path = Paths.get("/zoo/animals/bear/koala/food.txt");
+   System.out.println(path.subpath(1,3).getName(1).toAbsolutePath());
+   ````
+   - A. `animals/bear`
+   - B. `koala`
+   - C. `/user/home/bear`
+   - D. `/user/home/koala/koala`
+   - E. `/user/home/food.txt`
+   - F. `/user/home/koala/food.txt`
+   - G. The code does not compile.
+<br />[Jump to answer](#qa4)
+5. <a name="q5"></a>Assume `/kang` exists as a symbolic link to the directory `/mammal/kangaroo` within 
+the file system. Which of the following statements are correct about this code snippet? (Choose all
+that apply.)
+    ````
+   Path path = Paths.get("/kang");
+   if(Files.isDirectory(path) && Files.isSymbolicLink(path))
+        Files.createDirectory(path.resolve("joey"));
+   ````
+   - A. A new directory will always be created.
+   - B. A new directory will be created only if `/mammal/kangaroo` exists.
+   - C. If the code creates a directory, it will be reachable at `/kang/joey`.
+   - D. If the code creates a directory, it will be reachable at `/mammal/kangaroo/joey`.
+   - E. The code does not compile.
+   - F. The code will compile but always throws an exception at runtime.
+<br />[Jump to answer](#qa5)
+6. <a name="q6"></a>Given that /animals is a directory that exists and it is empty, what is the result 
+of the following code?
+    ````
+   Path path = Paths.get("/animals");
+   boolean myBoolean = Files.walk(path)
+       .filter((p,a) -> a.isDirectory() && !path.equals(p)) // w1
+       .findFirst().isPresent(); // w2
+   System.out.println(myBoolean ? "No Sub-directory": "Has Sub-directory");
+   ````
+   - A. It prints N`o Sub-directory`.
+   - B. It prints `Has Sub-directory`.
+   - C. The code will not compile because of line w1.
+   - D. The code will not compile because of line w2.
+   - E. The output cannot be determined.
+   - F. It produces an infinite loop at runtime.
+<br />[Jump to answer](#qa6)
+7. <a name="q7"></a>If the current working directory is `/zoo`, and the path `/zoo/turkey` does not exist, 
+then what is the result of executing the following code? (Choose all that apply.)
+    ````
+   Path path = Paths.get("turkey");
+   if(Files.isSameFile(path,Paths.get("/zoo/turkey"))) // x1
+        Files.createDirectory(path.resolve("info")); // x2
+   ````
+   - A. The code compiles and runs without issue, but it does not create any directories.
+   - B. The directory `/zoo/turkey` is created.
+   - C. The directory `/zoo/turkey/info` is created.
+   - D. The code will not compile because of line x1.
+   - E. The code will not compile because of line x2.
+   - F. It compiles but throws an exception at runtime.
+<br />[Jump to answer](#qa7)  
+8. <a name="q8"></a>What is the output of the following code?
+    ````
+   Path path1 = Paths.get("/pets/../cat.txt");
+   Path path2 = Paths.get("./dog.txt");
+   System.out.println(path1.resolve(path2));
+   System.out.println(path2.resolve(path1));
+   ````
+   - A. 
+   ````
+   /pets/../cat.txt/./dog.txt
+   /pets/../cat.txt
+   ````
+   - B. 
+   ````
+   /pets/../cat.txt/./dog.txt
+   ./dog.txt/pets/../cat.txt
+   ````
+   - C. 
+   ````
+   /cats.txt
+   /dog.txt
+   ````
+   - D. 
+   ````
+   /cats.txt/dog.txt
+   /cat.txt
+   ````
+   - E. It compiles but throws an exception at runtime.
+<br />[Jump to answer](#qa8)
+9. <a name="q9"></a>What are some advantages of using Files.lines() over Files.readAllLines()? (Choose 
+all that apply.)
+    - A. It is often faster.
+    - B. It can be run on large files with very little memory available.
+    - C. It can be chained with stream methods directly.
+    - D. It does not modify the contents of the file.
+    - E. It ensures the file is not read-locked by the file system.
+    - F. There are no differences, because one method is a pointer to the other.
+<br />[Jump to answer](#qa9)
+10. <a name="q10"></a>What is correct about the following code snippet? (Choose all that apply.)
+    ````
+    Files.move(Paths.get("monkey.txt"), Paths.get("/animals"),
+        StandardCopyOption.ATOMIC_MOVE,
+        LinkOption.NOFOLLOW_LINKS);
+    ````
+    - A. If `/animals` exists, it will be overwritten at runtime.
+    - B. If `monkey.txt` is a symbolic link, the file it points to will be moved at runtime.
+    - C. If another process is monitoring the file system, it will not see an incomplete file at
+    runtime.
+    - D. The code will always throw an exception, since no filename is specified in the target
+    - folder path.
+    - E. The metadata of the `monkey.txt` will be moved along with the file.
+<br />[Jump to answer](#qa10)
+11. <a name="q11"></a>For the `copy()` method shown here, assume that the source exists as regular 
+file and that the target does not. What is the result of the following code?
+    ````
+    Path path1 = Paths.get("./goat.txt").normalize(); // k1
+    Path path2 = Paths.get("mule.png");
+    Files.copy(path1,path2,StandardCopyOption.COPY_ATTRIBUTES); //k2
+    System.out.println(Files.isSameFile(path1, path2)); //k3
+    ````
+    - A. It will output false.
+    - B. It will output true.
+    - C. It does not compile because of line k1.
+    - D. It does not compile because of line k2.
+    - E. It does not compile because of line k3.
+    - F. It compiles but throws an exception at runtime.
+<br />[Jump to answer](#qa11)    
+12. <a name="q12"></a>Which of the following methods cannot be used to obtain a `Path` instance? (Choose 
+all that apply.)
+    - A. `new Path("jaguar.txt")`
+    - B. `FileSystems.getDefault().getPath("puma.txt")`
+    - C. `Paths.get(new URI("cheetah.txt"))`
+    - D. `Paths.get("cats","lynx.txt")`
+    - E. `new java.io.File("tiger.txt").toPath()`
+    - F. `new FileSystem().getPath("leopard")`
+    - G. `Paths.getPath("ocelot.txt")`
+<br />[Jump to answer](#qa12)
+13. <a name="q13"></a>Assume `/monkeys` exists as a regular directory containing multiple files, symbolic 
+links, and subdirectories. What is true about the following code? (Choose all that apply.)
+    ````
+    Path path = Paths.get("/monkeys");
+    Files.find(path, 0, (p,a) -> a.isSymbolicLink()).map(p -> p.toString()) // y1
+        .collect(Collectors.toList()) // y2
+        .stream() // y3
+        .filter(x -> x.toString().endsWith(".txt")) // y4
+        .forEach(System.out::println);
+    ````
+    - A. It will print all symbolic links in the directory tree ending in `.txt`.
+    - B. It will print nothing.
+    - C. It does not compile because of line y1.
+    - D. It does not compile because of line y2.
+    - E. It does not compile because of line y3.
+    - F. It does not compile because of line y4.
+    - G. It compiles but throws an exception at runtime.
+<br />[Jump to answer](#qa13)
+14. <a name="q14"></a>Which NIO.2 method is most similar to the legacy `java.io.File.listFiles()` method?
+    - A. `Path.listFiles()`
+    - B. `Files.walk()`
+    - C. `Files.find()`
+    - D. `Files.files()`
+    - E. `Files.list()`
+    - F. `Files.lines()`
+<br />[Jump to answer](#qa14)   
+15. <a name="q15"></a>Assuming `/squid/food-schedule.csv` exists as a regular non-empty file that a program 
+has access to read, what is correct about the following code snippet? (Choose all that apply.)
+    ````
+    Path path = Paths.get("/squid/food-schedule.csv");
+    Files.lines(path) // r1
+        .flatMap(p -> Stream.of(p.split(","))) // r2
+        .map(s -> s.toUpperCase()) // r3
+        .forEach(System.out::println);
+    ````
+    - A. It compiles but may throw an exception at runtime.
+    - B. The code will not compile because of line r1.
+    - C. The code will not compile because of line r2.
+    - D. The code will not compile because of line r3.
+    - E. It may not print anything at runtime.
+    - F. If it prints anything, it will not include commas.
+<br />[Jump to answer](#qa15)
+16. <a name="q16"></a>Assuming the current directory is `/animals/cute`, which are possible results of 
+executing the following code? (Choose all that apply.)
+    ````
+    Files.walk(Paths.get("..").toRealPath().getParent()) // u1
+        .map(p -> p.toAbsolutePath().toString()) // u2
+        .filter(s -> s.endsWith(".java")) // u3
+        .collect(Collectors.toList())
+        .forEach(System.out::println);
+    ````
+    - A. It compiles but may throw an exception at runtime.
+    - B. The code will not compile because of line u1.
+    - C. The code will not compile because of line u2.
+    - D. The code will not compile because of line u3.
+    - E. It prints all `.java` files in the `/animals` directory tree.
+    - F. It prints all `.java` files in the `/animals/cute` directory tree.
+    - G. It prints all `.java` files in the root directory tree.
+<br />[Jump to answer](#qa16)
+17. <a name="q17"></a>Assuming the directories and files referenced here all exist and are accessible 
+within the file system, what is the result of the following code?
+    ````
+    Path path1 = Paths.get("/lizard/./").resolve(Paths.get("walking.txt"));
+    Path path2 = new File("/lizard/././actions/../walking.txt").toPath();
+    
+    System.out.print(Files.isSameFile(path1,path2));
+    System.out.print(" "+path1.equals(path2));
+    System.out.print(" "+path1.normalize().equals(path2.normalize()));
+    ````
+    - A. `true true true`
+    - B. `false false false`
+    - C. `false true false`
+    - D. `true false true`
+    - E. `true false false`
+    - F. The code does not compile.
+<br />[Jump to answer](#qa17)
+18. <a name="q18"></a>Assuming the current directory is `/seals/harp/food`, what is the result of 
+executing the following code?
+    ````
+    final Path path = Paths.get(".").normalize(); // h1
+    int count = 0;
+    for(int i=0; i<path.getNameCount(); ++i) {
+        count++;
+    }
+    System.out.println(count);
+    ````
+    - A. 0
+    - B. 1
+    - C. 2
+    - D. 3
+    - E. 4
+    - F. The code throws a runtime exception because of line h1.
+<br />[Jump to answer](#qa18)
+
+## <a name="qa"></a>Quiz Answers 4?
+
+1. <a name="qa1"></a>[Jump to question](#q1) - **F.** The code snippet will not compile due to a bug 
+on the first and second lines. The first line should use `Paths.get()`, because there is no method 
+`Path.get()`. The second line passes a `String` to `relativize()` instead of a `Path` object. If both 
+lines were corrected to use `Paths.get()`, then the correct answer would be A. Remember that the `normalize()`
+method, like most methods in the `Path` interface, does not modify the `Path` object,
+but instead it returns a new `Path` object. If it was corrected to reassign the new value to the
+existing path variable, then E would be correct.
+2. <a name="qa2"></a>[Jump to question](#q2) - **B, C.** The code snippet compiles without issue, so 
+F is incorrect. If the value refers to a regular file, `isDirectory()` will return false and the 
+statement will be skipped, so A is incorrect. Likewise, if the directory does not exist, the method 
+also returns false, so E is also incorrect. A symbolic link can point to a real directory, and by 
+default `isDirectory()` follows links, so B is possible. In this case, the symbolic link, not the 
+directory, would be deleted. C is also possible and is the simple case of deleting an empty directory. 
+D would allow the code to reach the execution block of the `if`/then statement, but the method
+`deleteIfExists()` would throw a `DirectoryNotEmptyException` if it had contents.
+3. <a name="qa3"></a>[Jump to question](#q3) - **D.** The `setTimes()` method is available only on 
+`BasicFileAttributeView`, not the readonly `BasicFileAttributes` class, so line 4 will not compile and 
+D is correct. You need to retrieve an instance of the view class to update the data. The rest of the 
+lines compile without issue and only D is correct.
+4. <a name="qa4"></a>[Jump to question](#q4) - **C.** First off, the code compiles without issue, so 
+G is incorrect. Let’s take this one step at a time. First, the `subpath()` method is applied to the 
+absolute path, which returns the relative path `animals/bear`. Next, the `getName()` method is applied 
+to the relative path, and since this is indexed from zero, it returns the relative path `bear`. Finally, 
+the `toAbsolutePath()` method is applied to the relative path `bear`, resulting in the current directory 
+being incorporated into the path. The final output is the absolute path `/user/home/bear`, so C is correct.
+5. <a name="qa5"></a>[Jump to question](#q5) - **B, C, D.** The first clause of the `if`/then statement 
+will be true only if the target of the symbolic link, `/mammal/kangaroo`, exists, since by default 
+`isDirectory()` follows symbolic links, so B is correct. Option A is incorrect because `/mammal/kangaroo` 
+may not exist or `/mammal/kangaroo/joey` may already exist. If `/mammal/kangaroo` does exist, then the
+directory will be created at `/mammal/kangaroo/joey`, and because the symbolic link would
+be accessible as `/kang/joey`, C and D are both correct. E is incorrect, because the code
+compiles without issue. F is incorrect because the code may throw an exception at runtime,
+such as when the file system is unavailable or locked for usage; thus it is not guaranteed to
+throw an exception at runtime.
+6. <a name="qa6"></a>[Jump to question](#q6) - **C.** The code does not compile since the stream output 
+by `Files.walk()` is `Stream<Path>`, therefore we need a `Predictate`, not a `BiPredicate`, on line w1, and 
+the answer is C. If the `Files.find()` method had been used instead, and the lambda had been passed as 
+an argument to the method instead of on `filter()`, the output would be B, `Has Sub-directory`,
+since the directory is given to be empty. For fun, we reversed the expected output of the
+ternary operation to make sure that you understood the process.
+7. <a name="qa7"></a>[Jump to question](#q7) - **F.** The code compiles without issue, so D and E are 
+incorrect. The method `Files.isSameFile()` first checks to see if the `Path` values are the same in 
+terms of `equals()`. Since the first path is relative and the second path is absolute, this comparison 
+will return false, forcing `isSameFile()` to check for the existence of both paths in the file system. 
+Since we know `/zoo/turkey` does not exist, a `NoSuchFileException` is thrown and F is the correct
+answer. A, B, and C are incorrect since an exception is thrown at runtime.
+8. <a name="qa8"></a>[Jump to question](#q8) - **A.** The code compiles and runs without issue, so E 
+is incorrect. For this question, you have to remember two things. First, the `resolve()` method does 
+not normalize any path symbols, so C and D are not correct. Second, calling `resolve()` with an absolute 
+path as a parameter returns the absolute path, so A is correct and B is incorrect.
+9. <a name="qa9"></a>[Jump to question](#q9) - **B, C.** The methods are not the same, because `Files.lines()` 
+returns a `Stream<Path>` and `Files.readAllLines()` returns a `List<String>`, so F is incorrect. A is incorrect, 
+because performance is not often the reason to prefer one to the other. `Files.lines()` reads the
+file in a lazy manner, while `Files.readAllLines()` reads the entire file into memory all at
+once; therefore `Files.lines()` works better on large files with limited memory available,
+and B is correct. Although a List can be converted to a stream with the `stream()` method,
+this requires an extra step; therefore C is correct since the resulting object can be chained
+directly to a stream. Finally, D and E are incorrect because they are not relevant to these
+methods.
+10. <a name="qa10"></a>[Jump to question](#q10) - **C, E.** The `REPLACE_EXISTING` flag was not provided, 
+so if the target exists, it will throw an exception at runtime and A is incorrect. Next, the `NOFOLLOW_LINKS` 
+option means that if the source is a symbolic link, the link itself and not the target will be copied at runtime,
+so B is also incorrect. The option `ATOMIC_MOVE` means that any process monitoring the file
+system will not see an incomplete file during the move, so C is correct. D is incorrect, since
+you could rename a file not to have an extension. Note that in this example, if `monkey.txt`
+is a file, then the resulting `/animals` would be a file, not a directory. Likewise, if the source
+is a directory, the result would also be a directory. E is correct, because moving always preserves
+the metadata even if the `COPY_ATTRIBUTES` flag is not set.
+11. <a name="qa11"></a>[Jump to question](#q11) - **A.** The code compiles and runs without issue, so 
+C, D, E, and F are incorrect. Even though the file is copied with attributes preserved, the file is 
+considered a separate file, so the output is false and A is correct and B is incorrect. Remember, 
+`isSameFile()` returns true only if the files pointed to in the file system are the same, without regard 
+to the file contents.
+12. <a name="qa12"></a>[Jump to question](#q12) - **A, F.** For this question, you need to rule out the 
+answers that can be used to obtain a `Path` instance. D and G both use the `Paths.get()` method, one with 
+optional vararg values. C uses an overloaded version of `Paths.get()` that takes a `URI`. B is a longer 
+form for getting a `Path` using a specific file system, in this case the default file system. Finally, 
+E uses a method added to `java.io.File` to make it easily compatible with `Path`. The remaining
+choices A and F are the correct ones, because they call constructors on `Path` and `FileSystem`,
+respectively, instead of using the underlying factory methods. The rest are invalid since
+they do not use the factory methods to gain access to instances.
+13. <a name="qa13"></a>[Jump to question](#q13) - **B.** The code compiles and runs without issue, 
+so C, D, E, F, and G are incorrect. Note that the sample code creates a stream, collects it as a list, 
+and then converts it back to a stream before outputting the filenames. The key here is that the depth 
+parameter specified as the second argument to `find()` is `0`, meaning the only record that will be searched 
+is the toplevel directory. Since we know that the top directory is regular and not a symbolic link, no
+other paths will be visited and nothing will be printed. For these reasons, B is the correct
+answer and A is incorrect.
+14. <a name="qa14"></a>[Jump to question](#q14) - **E.** First off, recall that the `java.io.File.listFiles()` 
+method retrieves the members of the current directory without traversing any subdirectories. The methods 
+`Path.listFiles()` and `Files.files()` do not exist, so A and D are incorrect. `Files.walk()` and
+`Files.find()` recursively traverse a directory tree rather than list the contents of the
+current directory; therefore, they are not a close match, and B and C are incorrect. Note
+that you could use these methods to perform the same operation if you set the depth limit
+to 1 and used a lambda with `Files.find()` that always returns true, but the question
+was about which method is most similar to `java.io.File.listFiles()`. In that regard,
+`Files.list()` is the closest match since it always reads only a single directory, and E is
+correct. Note that instead of an array, a stream of `Path` values is returned. Finally, F is
+incorrect because it reads the contents of a file, not a directory.
+15. <a name="qa15"></a>[Jump to question](#q15) - **F.** The code compiles without issue, so B, C, and 
+D are incorrect. The code snippet breaks a file into lines and then further separates the lines by commas 
+using the `flatMap()` method. The result is printed with one entry on a single line, but all original 
+line breaks and commas from the file are removed; therefore F is correct. Since we are told that the 
+file is non-empty and regular, and the program has access to read it, A and E are incorrect.
+16. <a name="qa16"></a>[Jump to question](#q16) - **A, G.** The code compiles without issue, so B, C, 
+and D are incorrect. The first line actually resolves to the root path since `..` and `getParent()` 
+are conceptually equivalent. Therefore, G is correct and E and F are incorrect. A is also correct since 
+it may encounter a file that it does not have access to read, which is common when trying to read an 
+entire file system.
+17. <a name="qa17"></a>[Jump to question](#q17) - **D.** The code compiles and runs without issue, 
+so F is incorrect. The one thing to notice about these paths is that they represent the same path 
+within the file system. Therefore, `isSameFile()` would return true and B and C are incorrect. The 
+second output is false, because `Path.equals()` does not resolve the path within the file system, so A 
+is incorrect. Finally, the normalized paths are `equals()`, since all extra symbols have been removed;
+therefore D is correct and E is incorrect.
+18. <a name="qa18"></a>[Jump to question](#q18) - **B.** The `normalize()` method does not convert a 
+relative path into an absolute path; therefore, the path value after the first line is just the current 
+directory symbol. The `for()` loop iterates the name values, but since there is only one entry, the 
+loop terminates after a single iteration. Therefore, B is correct and the rest of the answers are incorrect.
