@@ -1,5 +1,7 @@
 - [9.1 - Develop code that uses parallel streams](#9-1)
 - [9.2 - Implement decomposition and reduction with streams](#9-2)
+- [Quiz](#q)
+- [Quiz Answers](#qa)
 
 ## <a name="9-1"></a>9.1 - Develop code that uses parallel streams
 
@@ -408,3 +410,83 @@ System.out.println(map); // {5=[lions, bears], 6=[tigers]}
 ````
 
 As before, the returned object can be assigned a `ConcurrentMap` reference.
+
+## <a name="q"></a>Quiz
+
+1. <a name="q1"></a>Given an instance of a Stream, `s`, and a Collection, `c`, which are valid ways 
+of creating a parallel stream? (Choose all that apply.)
+    - A. `new ParallelStream(s)`
+    - B. `c.parallel()`
+    - C. `s.parallelStream()`
+    - D. `c.parallelStream()`
+    - E. `new ParallelStream(c)`
+    - F. `s.parallel()`
+<br />[Jump to answer](#qa1)
+2. <a name="q2"></a>What statements about the following code are true? (Choose all that apply.)
+    ````
+   System.out.println(Arrays.asList("duck","chicken","flamingo","pelican")
+        .parallelStream().parallel() // q1
+        .reduce(0,
+           (c1, c2) -> c1.length() + c2.length(), // q2
+           (s1, s2) -> s1 + s2)); // q3
+   ````
+   - A. It compiles and runs without issue, outputting the total length of all strings in the
+   stream.
+   - B. The code will not compile because of line q1.
+   - C. The code will not compile because of line q2.
+   - D. The code will not compile because of line q3.
+   - E. It compiles but throws an exception at runtime.
+<br />[Jump to answer](#qa2)
+3. <a name="q3"></a>What statements about the following code snippet are true? (Choose all that apply.)
+    ````
+   4: Stream<String> cats = Stream.of("leopard","lynx","ocelot","puma").parallel();
+   5: Stream<String> bears = Stream.of("panda","grizzly","polar").parallel();
+   6: ConcurrentMap<Boolean, List<String>> data = Stream.of(cats,bears)
+   7:   .flatMap(s -> s)
+   8:   .collect(Collectors.groupingByConcurrent(s -> !s.startsWith("p")));
+   9: System.out.println(data.get(false).size()+" "+data.get(true).size());
+   ````
+   - A. It outputs 3 4.
+   - B. It outputs 4 3.
+   - C. The code will not compile because of line 6.
+   - D. The code will not compile because of line 7.
+   - E. The code will not compile because of line 8.
+   - F. It compiles but throws an exception at runtime.
+   - G. The `collect()` operation is always executed in a single-threaded fashion.
+<br />[Jump to answer](#qa3)
+4. <a name="q4"></a>Which of the following properties of concurrency are true? (Choose all that apply.)
+    - A. By itself, concurrency does not guarantee which task will be completed first.
+    - B. Concurrency always improves the performance of an application.
+    - C. Computers with a single processor do not benefit from concurrency.
+    - D. Applications with many resource-heavy tasks tend to benefit more from concurrency
+    than ones with CPU-intensive tasks.
+    - E. Concurrent tasks do not share the same memory.
+<br />[Jump to answer](#qa4)
+
+## <a name="qa"></a>Quiz Answers 4?
+
+1. <a name="qa1"></a>[Jump to question](#q1) - **D, F.** There is no such class as ParallelStream, 
+so A and E are incorrect. The method defined in the Stream class to create a parallel stream from an 
+existing stream is `parallel();` therefore F is correct and C is incorrect. The method defined in the 
+Collection class to create a parallel stream from a collection is `parallelStream();` therefore D is 
+correct and B is incorrect.
+2. <a name="qa2"></a>[Jump to question](#q2) - **C.** The code does not compile, so A and E are incorrect. 
+The problem here is that `c1` is a `String` but `c2` is an `int`, so the code fails to combine on line q2, 
+since calling `length()` on an `int` is not allowed, and C is correct. The rest of the lines compile 
+without issue. Note that calling `parallel()` on an already parallel is allowed, and it may in fact return 
+the same object.
+3. <a name="qa3"></a>[Jump to question](#q3) - **A, G.** The code compiles and runs without issue, so 
+C, D, E, and F are incorrect. The `collect()` operation groups the animals into those that do and do 
+not start with the letter p. Note that there are four animals that do not start with the letter p and 
+three animals that do. The negation operator `!` before the `startsWith()` method means that results are
+reversed, so the output is 3 4 and A is correct, making B incorrect. Finally, the stream created
+by `flatMap()` is a new stream that is not parallel by default, even though its elements
+are parallel streams. Therefore, the performance will be single-threaded and G is correct.
+4. <a name="qa4"></a>[Jump to question](#q4) - **A, D.** By itself, concurrency does not guarantee 
+which task will be completed first, so A is correct. Furthermore, applications with numerous resource 
+requests will often be stuck waiting for a resource, which allows other tasks to run. Therefore, they 
+tend to benefit more from concurrency than CPU-intensive tasks, so D is also correct. B is incorrect
+because concurrency may in fact make an application slower if it is truly single-threaded in
+nature. Keep in mind that there is a cost associated with allocating additional memory and
+CPU time to manage the concurrent process. C is incorrect because single-processor CPUs
+have been benefiting from concurrency for decades. Finally, E is incorrect; concurrent tasks share memory. 
