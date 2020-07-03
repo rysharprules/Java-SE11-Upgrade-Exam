@@ -377,42 +377,42 @@ _Note: `-p` is shortened term for `--module-path` and `-m` is shortened term for
 ## <a name="q"></a>Quiz
 
 1. <a name="q1"></a>Which three directories are not present in JDK 9?
-    - A. `jre` (A)
-    - B. `rt.jar` (A)
+    - A. `jre`
+    - B. `rt.jar`
     - C. `bin`
-    - D. `tools.jar` (A)
+    - D. `tools.jar`
     - E. `conf`
 <br />[Jump to answer](#qa1)
 2. <a name="q2"></a>Which are part of the modular graph of `java.base` (Choose two):
     - A. `javax.swing`
-    - B. `java.util` (A)
+    - B. `java.util`
     - C. `java.naming`
-    - D. `java.lang` (A)
+    - D. `java.lang`
     - E. `java.rmi`
 <br />[Jump to answer](#qa2)
 3. <a name="q3"></a>Which is true?
     - A. The installation directory JDK 9 contains the JRE folder
-    - B. The installation directory JDK 9 contains the `conf` folder (A)
+    - B. The installation directory JDK 9 contains the `conf` folder
     - C. Both are true
     - D. Both are false
 <br />[Jump to answer](#qa3)
 4. <a name="q4"></a>Which are part of the modular graph of the `java.se` module? (Choose three):
     - A. `java.net`
     - B. `java.io`
-    - C. `java.naming` (A)
+    - C. `java.naming`
     - D. `java.util`
-    - E. `java.sql` (A)
-    - F. `java.rmi` (A) - See [java.se modular graph here](https://javadoc.scijava.org/Java9/java.se-summary.html).
+    - E. `java.sql`
+    - F. `java.rmi`
 <br />[Jump to answer](#qa4)
 5. <a name="q5"></a>Which statements are true about modular JDK? (Choose two):
-    - A. It helps the application to be more scalable to small devices (A)
+    - A. It helps the application to be more scalable to small devices
     - B. It is integrated with all the APIs, including logging, swing and instrumentation
     - C. It is available from JDK 8
-    - D. It is a well defined functional piece of the JDK (A)
+    - D. It is a well defined functional piece of the JDK
 <br />[Jump to answer](#qa5)
 6. <a name="q6"></a>Which are part of modular JDK's default modules? (Choose two):
-    - A. Oracle-specific modules (A)
-    - B. JDK-specific modules (A)
+    - A. Oracle-specific modules
+    - B. JDK-specific modules
     - C. log4j
     - D. swing
 <br />[Jump to answer](#qa6)
@@ -420,21 +420,21 @@ _Note: `-p` is shortened term for `--module-path` and `-m` is shortened term for
     - A. All the classes in the JAR file are accessible
     - B. JRE continues to search for the last class within the JARs in the classpath if another 
     similarly named class exists
-    - C. JARs in the classpath can have duplicate classes and/or packages (A)
+    - C. JARs in the classpath can have duplicate classes and/or packages
 <br />[Jump to answer](#qa7)
 8. <a name="q8"></a>A module can contain:
     - A. only resources and a module descriptor
-    - B. packages, resources, and a module descriptor (A)
+    - B. packages, resources, and a module descriptor
     - C. only packages and resources
 <br />[Jump to answer](#qa8)
 9. <a name="q9"></a>Which statements are true about the module system (Choose two)
     - A. It supports only small computing devices
-    - B. It addresses reliability, maintainability, and security requirements (A)
-    - C. It supports reusability (A)
+    - B. It addresses reliability, maintainability, and security requirements
+    - C. It supports reusability
     - D. It addresses the need for enhanced networking support
 <br />[Jump to answer](#qa9)
-10. <a name="q10"></a>What two things would you change about this code to set up a `requires` relationship directly 
-from `main` to `gameapi`?<br />
+10. <a name="q10"></a>What two things would you change about this code to set up a `requires` 
+relationship directly from `main` to `gameapi`?<br />
     ![questionFigure 1.1](img/questionFigure1-1.png)
 <br />[Jump to answer](#qa10)
 11. <a name="q11"></a>The `main` module contains a class, which instantiates an object defined in 
@@ -465,7 +465,7 @@ code still compile if the `requires` statement is commented out?
     }
     ````
 13. <a name="q13"></a>Which statement is true about a module descriptor?
-    - A. A module descriptor can contain details of required module dependencies (A)
+    - A. A module descriptor can contain details of required module dependencies
     - B. A module descriptor file must be named module-descriptor.java
     - C. A module descriptor must be stored in the classpath
     - D. A module descriptor does not contain details of services offered by the module owned by it
@@ -512,10 +512,10 @@ code still compile if the `requires` statement is commented out?
        ````
 15. <a name="q15"></a>Which directive makes a package available to all other modules at run time but 
 not at compile time?
-    - A. requires
-    - B. exports
-    - C. opens ... to
-    - D. opens (A) 
+    - A. `requires`
+    - B. `exports`
+    - C. `opens ... to`
+    - D. `opens`
 <br />[Jump to answer](#qa15)
 
 ## <a name="qa"></a>Quiz Answers
