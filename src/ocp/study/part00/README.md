@@ -610,85 +610,85 @@ have to install different versions of the JDK.
 
 ## <a name="q"></a>Quiz
 
-1. <a name="qa1"></a>In Java SE 9, which phase provides an opportunity to perform optimization
+1. <a name="q1"></a>In Java SE 9, which phase provides an opportunity to perform optimization
     - A. Compile time
     - B. Link time
     - C. Run time
 <br />[Jump to answer](#qa1)
-2. <a name="qa2"></a>Identify the set of tasks `jlink` can perform on a set of modules to create a custom runtime image
+2. <a name="q2"></a>Identify the set of tasks `jlink` can perform on a set of modules to create a custom runtime image
     - A. Assemble modules
     - B. Optimize modules
     - C. Both the above
 <br />[Jump to answer](#qa2)
-3. <a name="qa3"></a>What are the advantages of a custom runtime image? (Choose two):
+3. <a name="q3"></a>What are the advantages of a custom runtime image? (Choose two):
     - A. It consists of only those modules that your application uses
     - B. It runs faster because of link time optimization
     - C. It can be used to run an application in the cloud
     - D. It is heavier than the full JDK
 <br />[Jump to answer](#qa3)
-4. <a name="qa4"></a>Which tool is used to create a runtime image?
+4. <a name="q4"></a>Which tool is used to create a runtime image?
     - A. jar
     - B. jshell
     - C. jlink
     - D. javap
 <br />[Jump to answer](#qa4)
-5. <a name="qa5"></a>Which statement is true about custom runtime images?
+5. <a name="q5"></a>Which statement is true about custom runtime images?
     - A. Customized runtime images contain only the application's module
     - B. Customized runtime images can be created by using JDK 8
     - C. Customized runtime images are bundled with the application modules and platform modules of the 
     JVM, and everything else it needs to execute the application
     - D. Customized runtime images contain all the modules of JDK 9
 <br />[Jump to answer](#qa5)
-6. <a name="qa6"></a>In what format are runtime images stored?
+6. <a name="q6"></a>In what format are runtime images stored?
     - A. jimage
     - B. jlink
     - C. javaimage
     - D. jmod
 <br />[Jump to answer](#qa6)
-7. <a name="qa7"></a>Which option in the `jlink` tool can be used to resolve all dependencies transitively for the 
+7. <a name="q7"></a>Which option in the `jlink` tool can be used to resolve all dependencies transitively for the 
 modules specified, as well as to include all the resolved dependent modules into the runtime image?
     - A. module
     - B. add-modules
     - C. list-modules
     - D. module-path
 <br />[Jump to answer](#qa7)
-8. <a name="qa8"></a>If a class `Test.class` contains SE 9 specific code and is in the root directory of an MRJAR, and another
+8. <a name="q8"></a>If a class `Test.class` contains SE 9 specific code and is in the root directory of an MRJAR, and another
 `Test.class` file contains SE 8 specific code and is in `META-INF/versions/9`, what will happen if a 
 JDK 8 runtime is used?
     - A. `Test.class` in the root directory will be used and will fail
     - B. `Test.class` containing SE 8 specific code will be used
     - C. `Test.class` in the root directory will be used
 <br />[Jump to answer](#qa8)
-9. <a name="qa9"></a>In a modular MRJAR file, where should the `module-info.class` be stored?
+9. <a name="q9"></a>In a modular MRJAR file, where should the `module-info.class` be stored?
     - A. In the root directory for the module, under the `META-INF/versions/<version number>` for the 
     appropriate version of the modular application
     - B. In both locations A & B
     - C. In the root directory for the module, under the root directory of the JAR
 <br />[Jump to answer](#qa9)
-10. <a name="qa10"></a>If a `Test.class` exists in the root directory of an MRJAR and under `META-INF/versions/10`, 
+10. <a name="q10"></a>If a `Test.class` exists in the root directory of an MRJAR and under `META-INF/versions/10`, 
 which version of the class will be used with a JDK 9 runtime? (Assuming that `Test.class` is 
 required to run the code in the JAR)
     - A. Neither, the code will fail if no `Test.class` file in a `META-INF/versions/9` directory
     - B. `Test.class` in the `META-INF/versions/10` directory
     - C. `Test.class` in the root directory
 <br />[Jump to answer](#qa10)
-11. <a name="qa11"></a>Do you need to make an import statement before creating an `ArrayList` in JShell
+11. <a name="q11"></a>Do you need to make an import statement before creating an `ArrayList` in JShell
     - A. Yes
     - B. No
 <br />[Jump to answer](#qa11)
-12. <a name="qa12"></a>Which statement is true about JShell?
+12. <a name="q12"></a>Which statement is true about JShell?
     - A. It is an OS Utility
     - B. It is a Java code editor tool
     - C. It is a script tool
     - D. It is a command line interface to execute a single Java command instantly
 <br />[Jump to answer](#qa12)
-13. <a name="qa13"></a>In which situations is the use of JShell beneficial? (Choose two):
+13. <a name="q13"></a>In which situations is the use of JShell beneficial? (Choose two):
     - A. You want to create a test case by using JUnit
     - B. You want to develop a GUI application
     - C. You want to experiment with unfamiliar code
     - D. You want to simulate a scenario
 <br />[Jump to answer](#qa13)
-14. <a name="qa14"></a>Which statements are true? (Choose three):
+14. <a name="q14"></a>Which statements are true? (Choose three):
     - A. The "since" element of the `@Deprecated` annotation indicates the version at which the API 
     was deprecated
     - B. The `@Deprecated` annotation can precede the module, class, method, or member declaration
@@ -696,13 +696,13 @@ required to run the code in the JAR)
     - D. The Java compiler generates warnings about the deprecated APIs
     - E. The `@Deprecated` annotation can precede only the class
 <br />[Jump to answer](#qa14)
-15. <a name="qa15"></a>Which statement is true about the `of` convenience method?
+15. <a name="q15"></a>Which statement is true about the `of` convenience method?
     - A. The `of` method cannot be overloaded
     - B. The size of the smallest collection returned by the `of` method is 1
     - C. The varargs variant is used for greater than 10 elements
     - D. The size of the largest colletion returned by the `of` method is 100
 <br />[Jump to answer](#qa15)
-16. <a name="qa16"></a>Given the code fragment below, what is the result?
+16. <a name="q16"></a>Given the code fragment below, what is the result?
     ````
       List<String> c1 = List.of("B", "C", "D", "A");
       c1.add(4,"E");
@@ -713,7 +713,7 @@ required to run the code in the JAR)
        - C. B, C, D, A, E
        - D. An Exception is thrown at run time
 <br />[Jump to answer](#qa16)
-17. <a name="qa17"></a>Given the code fragment below, what is the result?
+17. <a name="q17"></a>Given the code fragment below, what is the result?
     ````
        List<String> c1 = List.of("B", "C", "D", "A");
        Set<String> c2 = Set.of("B", "C", "C", "A");
@@ -728,45 +728,45 @@ required to run the code in the JAR)
          A, B, C
        - D. An Exception is thrown at run time
 <br />[Jump to answer](#qa17)
-18. <a name="qa18"></a>Given the code fragment below, what is the result?<br />
+18. <a name="q18"></a>Given the code fragment below, what is the result?<br />
     ![Figure 0.14](img/figure0-14.png)
     - A. false true
     - B. false false
     - C. true false
     - D. true true
 <br />[Jump to answer](#qa18)
-19. <a name="qa19"></a>Given the code fragment below, what is the result?<br />
+19. <a name="q19"></a>Given the code fragment below, what is the result?<br />
     ![Figure 0.15](img/figure0-15.png)
     - A. -1 0
     - B. -1 1
     - C. Compilation error
     - D. -2 1
 <br />[Jump to answer](#qa19)
-20. <a name="qa20"></a>Given the code fragment below, what is the result?<br />
+20. <a name="q20"></a>Given the code fragment below, what is the result?<br />
     ![Figure 0.16](img/figure0-16.png)
     - A. 1 -3
     - B. An exception thrown at runtime
     - C. -4 -4
     - D. -1 3
 <br />[Jump to answer](#qa20)
-21. <a name="qa21"></a>Given the code fragment below, what is the result?<br />
+21. <a name="q21"></a>Given the code fragment below, what is the result?<br />
     ![Figure 0.17](img/figure0-17.png)
     - A. false false
     - B. true false
     - C. true true
     - D. false true
 <br />[Jump to answer](#qa21)
-22. <a name="qa22"></a>Which statement is true about the `jdeprscan` tool?
+22. <a name="q22"></a>Which statement is true about the `jdeprscan` tool?
     - A. It helps to know dependencies on deprecated APIs before the APIs are removed from the JDK
     - B. It manages warnings about deprecation
     - C. It reports users if the code uses deprecated APIs from other libraries
     - D. It removes the deprecated APIs
 <br />[Jump to answer](#qa22)
-23. <a name="qa23"></a>Which statement is true?
+23. <a name="q23"></a>Which statement is true?
     - A. In JDK 9, APIs marked as deprecated are deprecated but virtually never removed
     - B. In JDK 9, APIs marked as deprecated are eligible to be removed in the next release of the JDK
 <br />[Jump to answer](#qa23)
-24. <a name="qa24"></a>Which element of the `@Deprecated` annotation generates terminal deprecation warnings?
+24. <a name="q24"></a>Which element of the `@Deprecated` annotation generates terminal deprecation warnings?
     - A. `forRemoval=true`
     - B. `forRemoval=false`
 <br />[Jump to answer](#qa24)
