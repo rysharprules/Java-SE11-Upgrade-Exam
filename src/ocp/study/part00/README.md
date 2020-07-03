@@ -10,6 +10,7 @@ Material which does not map to the exam topics but may be useful nonetheless.
 - [0.6 - Convenience Methods for Arrays](#0-6)
 - [0.7 - Enhanced Deprecation](#0-7)
 - [Quiz](#q)
+- [Quiz Answers](#qa)
 
 ## <a name="0-1"></a>0.1 - Custom Runtime Images
 
@@ -585,8 +586,8 @@ the compiler modification. Starting JDK 9, a new static analysis tool called `jd
 available. This tool performs a static analysis of class files and JAR and reports the use of deprecated APIs.
 
 The benefit of the `jdeprscan`, is that it's important to discover dependencies on a deprecated API 
-before the APIs are removed from the JDK. `jdeprscan` looks for and reports the usage of only deprecated Java 
-SE APIs.
+before the APIs are removed from the JDK. `jdeprscan` looks for and reports the usage of only deprecated 
+Java SE APIs.
 
 #### Running `jdeprscan`
 
@@ -609,148 +610,239 @@ have to install different versions of the JDK.
 
 ## <a name="q"></a>Quiz
 
-1. In Java SE 9, which phase provides an opportunity to perform optimization
-    - Compile time
-    - Link time (A)
-    - Run time
-1. Identify the set of tasks `jlink` can perform on a set of modules to create a custom runtime image
-    - Assemble modules
-    - Optimize modules
-    - Both the above (A)
-1. What are the advantages of a custom runtime image? (Choose two):
-    - It consists of only those modules that your application uses (A)
-    - It runs faster because of link time optimization (A)
-    - It can be used to run an application in the cloud
-    - It is heavier than the full JDK
-1. Which tool is used to create a runtime image?
-    - jar
-    - jshell
-    - jlink (A)
-    - javap
-1. Which statement is true about custom runtime images?
-    - Customized runtime images contain onlyt the application's module
-    - Customized runtime images can be created by using JDK 8
-    - Customized runtime images are bundled with the application modules and platform modules of the 
-    JVM, and everything else it needs to execute the application (A)
-    - Customized runtime images contain all the modules of JDK 9
-1. In what format are runtime images stored?
-    - jimage (A)
-    - jlink
-    - javaimage
-    - jmod
-1. Which option in the `jlink` tool can be used to resolve all dependencies transitively for the 
+1. <a name="qa1"></a>In Java SE 9, which phase provides an opportunity to perform optimization
+    - A. Compile time
+    - B. Link time
+    - C. Run time
+<br />[Jump to answer](#qa1)
+2. <a name="qa2"></a>Identify the set of tasks `jlink` can perform on a set of modules to create a custom runtime image
+    - A. Assemble modules
+    - B. Optimize modules
+    - C. Both the above
+<br />[Jump to answer](#qa2)
+3. <a name="qa3"></a>What are the advantages of a custom runtime image? (Choose two):
+    - A. It consists of only those modules that your application uses
+    - B. It runs faster because of link time optimization
+    - C. It can be used to run an application in the cloud
+    - D. It is heavier than the full JDK
+<br />[Jump to answer](#qa3)
+4. <a name="qa4"></a>Which tool is used to create a runtime image?
+    - A. jar
+    - B. jshell
+    - C. jlink
+    - D. javap
+<br />[Jump to answer](#qa4)
+5. <a name="qa5"></a>Which statement is true about custom runtime images?
+    - A. Customized runtime images contain only the application's module
+    - B. Customized runtime images can be created by using JDK 8
+    - C. Customized runtime images are bundled with the application modules and platform modules of the 
+    JVM, and everything else it needs to execute the application
+    - D. Customized runtime images contain all the modules of JDK 9
+<br />[Jump to answer](#qa5)
+6. <a name="qa6"></a>In what format are runtime images stored?
+    - A. jimage
+    - B. jlink
+    - C. javaimage
+    - D. jmod
+<br />[Jump to answer](#qa6)
+7. <a name="qa7"></a>Which option in the `jlink` tool can be used to resolve all dependencies transitively for the 
 modules specified, as well as to include all the resolved dependent modules into the runtime image?
-    - module
-    - add-modules (A)
-    - list-modules
-    - module-path
-1. If a class `Test.class` contains SE 9 specific code and is in the root directory of an MRJAR, and another
+    - A. module
+    - B. add-modules
+    - C. list-modules
+    - D. module-path
+<br />[Jump to answer](#qa7)
+8. <a name="qa8"></a>If a class `Test.class` contains SE 9 specific code and is in the root directory of an MRJAR, and another
 `Test.class` file contains SE 8 specific code and is in `META-INF/versions/9`, what will happen if a 
 JDK 8 runtime is used?
-    - `Test.class` in the root directory will be used and will fail
-    - `Test.class` containing SE 8 specific code will be used
-    - `Test.class` in the root directory will be used (A)
-1. In a modular MRJAR file, where should the `module-info.class` be stored?
-    - In the root directory for the module, under the `META-INF/versions/<version number>` for the 
+    - A. `Test.class` in the root directory will be used and will fail
+    - B. `Test.class` containing SE 8 specific code will be used
+    - C. `Test.class` in the root directory will be used
+<br />[Jump to answer](#qa8)
+9. <a name="qa9"></a>In a modular MRJAR file, where should the `module-info.class` be stored?
+    - A. In the root directory for the module, under the `META-INF/versions/<version number>` for the 
     appropriate version of the modular application
-    - In both locations A & B
-    - In the root directory for the module, under the root directory of the JAR (A)
-1. If a `Test.class` exists in the root directory of an MRJAR and under `META-INF/versions/10`, 
+    - B. In both locations A & B
+    - C. In the root directory for the module, under the root directory of the JAR
+<br />[Jump to answer](#qa9)
+10. <a name="qa10"></a>If a `Test.class` exists in the root directory of an MRJAR and under `META-INF/versions/10`, 
 which version of the class will be used with a JDK 9 runtime? (Assuming that `Test.class` is 
 required to run the code in the JAR)
-    - Neither, the code will fail if no `Test.class` file in a `META-INF/versions/9` directory
-    - `Test.class` in the `META-INF/versions/10` directory
-    - `Test.class` in the root directory (A)
-1. Do you need to make an import statement before creating an `ArrayList` in JShell
-    - Yes
-    - No (A)
-1. Which statement is true about JShell?
-    - It is an OS Utility
-    - It is a Java code editor tool
-    - It is a script tool
-    - It is a command line interface to execute a single Java command instantly (A)
-1. In which situations is the use of JShell beneficial? (Choose two):
-    - You want to create a test case by using JUnit
-    - You want to develop a GUI application
-    - You want to experiment with unfamiliar code (A)
-    - You want to simulate a scenario (A)
-1. Which command is valid at the JShell prompt?
-    - ````
-       int day
-        while(day < 10) {
-       System.out.println(day);
-       }
-       ````
-   - `package mypack;`
-   - `break`
-   - `import java.nio.file.*` (A)
-1. Which statement is true about the convenience method?
-    - The `of` method cannot be overloaded
-    - The size of the smallest collection returned by the `of` method is 1
-    - The varargs variant is used for greater than 10 elements (A)
-    - The size of the largest colletion returned by the `of` method is 100
-1. Given the code fragment below, what is the result?
+    - A. Neither, the code will fail if no `Test.class` file in a `META-INF/versions/9` directory
+    - B. `Test.class` in the `META-INF/versions/10` directory
+    - C. `Test.class` in the root directory
+<br />[Jump to answer](#qa10)
+11. <a name="qa11"></a>Do you need to make an import statement before creating an `ArrayList` in JShell
+    - A. Yes
+    - B. No
+<br />[Jump to answer](#qa11)
+12. <a name="qa12"></a>Which statement is true about JShell?
+    - A. It is an OS Utility
+    - B. It is a Java code editor tool
+    - C. It is a script tool
+    - D. It is a command line interface to execute a single Java command instantly
+<br />[Jump to answer](#qa12)
+13. <a name="qa13"></a>In which situations is the use of JShell beneficial? (Choose two):
+    - A. You want to create a test case by using JUnit
+    - B. You want to develop a GUI application
+    - C. You want to experiment with unfamiliar code
+    - D. You want to simulate a scenario
+<br />[Jump to answer](#qa13)
+14. <a name="qa14"></a>Which statements are true? (Choose three):
+    - A. The "since" element of the `@Deprecated` annotation indicates the version at which the API 
+    was deprecated
+    - B. The `@Deprecated` annotation can precede the module, class, method, or member declaration
+    - C. In JDK 9, you cannot suppress deprecation warnings
+    - D. The Java compiler generates warnings about the deprecated APIs
+    - E. The `@Deprecated` annotation can precede only the class
+<br />[Jump to answer](#qa14)
+15. <a name="qa15"></a>Which statement is true about the `of` convenience method?
+    - A. The `of` method cannot be overloaded
+    - B. The size of the smallest collection returned by the `of` method is 1
+    - C. The varargs variant is used for greater than 10 elements
+    - D. The size of the largest colletion returned by the `of` method is 100
+<br />[Jump to answer](#qa15)
+16. <a name="qa16"></a>Given the code fragment below, what is the result?
     ````
-   List<String> c1 = List.of("B", "C", "D", "A");
-   c1.add(4,"E");
-   System.out.println(c1);
-   ````
-   - A, B, C, D, E
-   - B, C, D, E
-   - B, C, D, A, E
-   - An Exception is thrown at run time (A)
-1. Given the code fragment below, what is the result?
+      List<String> c1 = List.of("B", "C", "D", "A");
+      c1.add(4,"E");
+      System.out.println(c1);
     ````
-   List<String> c1 = List.of("B", "C", "D", "A");
-   Set<String> c2 = Set.of("B", "C", "C", "A");
-   System.out.println(c1);
-   System.out.println(c2);
-   ````
-   - B, C, D, A
-     A, B, C
-   - B, C, D, A
-     B, A, C
-   - A, B, C, D
-     A, B, C
-   - An Exception is thrown at run time (A)
-1. Given the code fragment below, what is the result?<br />
+       - A. A, B, C, D, E
+       - B. B, C, D, E
+       - C. B, C, D, A, E
+       - D. An Exception is thrown at run time
+<br />[Jump to answer](#qa16)
+17. <a name="qa17"></a>Given the code fragment below, what is the result?
+    ````
+       List<String> c1 = List.of("B", "C", "D", "A");
+       Set<String> c2 = Set.of("B", "C", "C", "A");
+       System.out.println(c1);
+       System.out.println(c2);
+    ````
+       - A. B, C, D, A
+         A, B, C
+       - B. B, C, D, A
+         B, A, C
+       - C. A, B, C, D
+         A, B, C
+       - D. An Exception is thrown at run time
+<br />[Jump to answer](#qa17)
+18. <a name="qa18"></a>Given the code fragment below, what is the result?<br />
     ![Figure 0.14](img/figure0-14.png)
-    - false true
-    - false false (A)
-    - true false
-    - true true
-1. Given the code fragment below, what is the result?<br />
+    - A. false true
+    - B. false false
+    - C. true false
+    - D. true true
+<br />[Jump to answer](#qa18)
+19. <a name="qa19"></a>Given the code fragment below, what is the result?<br />
     ![Figure 0.15](img/figure0-15.png)
-    - -1 0
-    - -1 1
-    - Compilation error
-    - -2 1 (A)
-1. Given the code fragment below, what is the result?<br />
+    - A. -1 0
+    - B. -1 1
+    - C. Compilation error
+    - D. -2 1
+<br />[Jump to answer](#qa19)
+20. <a name="qa20"></a>Given the code fragment below, what is the result?<br />
     ![Figure 0.16](img/figure0-16.png)
-    - 1 -3
-    - An exception thrown at runtime
-    - -4 -4
-    - -1 3 (A)
-1. Given the code fragment below, what is the result?<br />
+    - A. 1 -3
+    - B. An exception thrown at runtime
+    - C. -4 -4
+    - D. -1 3
+<br />[Jump to answer](#qa20)
+21. <a name="qa21"></a>Given the code fragment below, what is the result?<br />
     ![Figure 0.17](img/figure0-17.png)
-    - false false
-    - true false
-    - true true
-    - false true (A)
-1. Which statement is true about the `jdeprscan` tool?
-    - It helps to know dependencies on deprecated APIs before the APIs are removed from the JDK (A)
-    - It manages warnings about deprecation
-    - It reports users if the code uses deprecated APIs from other libraries
-    - It removes the deprecated APIs
-1. Which statement is true?
-    - In JDK 9, APIs marked as deprecated are deprecated but virtually never removed
-    - In JDK 9, APIs marked as deprecated are eligible to be removed in the next release of the JDK (A)
-1. Which element of the `@Deprecated` annotation generates terminal deprecation warnings?
-    - `forRemoval=true` (A)
-    - `forRemoval=false`
-1. Which statements are true? (Choose three):
-    - The "since" element of the `@Deprecated` annotation indicates the version at which the API was deprecated (A)
-    - The `@Deprecated` annotation can precede the module, class, method, or member declaration (A)
-    - In JDK 9, you cannot suppress deprecation warnings
-    - The Java compiler generates warnings about the deprecated APIs (A)
-    - The `@Deprecated` annotation can precede only the class
+    - A. false false
+    - B. true false
+    - C. true true
+    - D. false true
+<br />[Jump to answer](#qa21)
+22. <a name="qa22"></a>Which statement is true about the `jdeprscan` tool?
+    - A. It helps to know dependencies on deprecated APIs before the APIs are removed from the JDK
+    - B. It manages warnings about deprecation
+    - C. It reports users if the code uses deprecated APIs from other libraries
+    - D. It removes the deprecated APIs
+<br />[Jump to answer](#qa22)
+23. <a name="qa23"></a>Which statement is true?
+    - A. In JDK 9, APIs marked as deprecated are deprecated but virtually never removed
+    - B. In JDK 9, APIs marked as deprecated are eligible to be removed in the next release of the JDK
+<br />[Jump to answer](#qa23)
+24. <a name="qa24"></a>Which element of the `@Deprecated` annotation generates terminal deprecation warnings?
+    - A. `forRemoval=true`
+    - B. `forRemoval=false`
+<br />[Jump to answer](#qa24)
+    
+## <a name="qa"></a>Quiz Answers
+
+1. <a name="qa1"></a>[Jump to question](#q1) - **B.** `jlink` is Java's new command line tool which 
+allows you to link sets of modules (and their transitive dependencies) to create a run-time image. 
+Java has always had dynamic linking, but with Java 9 there is now an optional static linking step. 
+This is called link time, and it happens between compile time and run time
+2. <a name="qa2"></a>[Jump to question](#q2) - **C.** `jlink` is a new tool in Java SE 9 that can be 
+used to create a custom platform specific runtime image, **assemble** a set of modules from their 
+dependencies (using a set of dependencies from `module-info.class`), and performing **optimization**.
+3. <a name="qa3"></a>[Jump to question](#q3) - **A, B.** It is smaller in size due to only consisting
+of the modules that your application uses which is beneficial particularly for smaller devices. It can
+also run faster due to optimizations made available by `jlink`
+4. <a name="qa4"></a>[Jump to question](#q4) - **C.** `jlink` is a tool that generates a custom Java 
+runtime image that contains only the platform modules that are required for a given application.
+5. <a name="qa5"></a>[Jump to question](#q5) - **C.** Customized runtime images are bundled with the 
+application modules and platform modules of the JVM, and everything else it needs to execute the 
+application. This became available in Java 9 so B is incorrect.
+6. <a name="qa6"></a>[Jump to question](#q6) - **A.** The runtime image is stored in a special format 
+called JIMAGE, which is optimized for space and speed.
+7. <a name="qa7"></a>[Jump to question](#q7) - **B.** --add-modules: This indicates the modules that 
+needs to be added in the runtime image. It can do this transitively.
+8. <a name="qa8"></a>[Jump to question](#q8) - **C.** For any JDK lower than 9, the root will be used.
+9. <a name="qa9"></a>[Jump to question](#q9) - **C.** The `module-info.class` is stored in the root 
+directory for the module, under the root directory of the JAR.
+10. <a name="qa10"></a>[Jump to question](#q10) - **C.** Since we are running JDK 9, the JVM will look
+for a version that matches (i.e. under `META-INF/versions/9`). As this version does not exist, it will
+fall back to the files stored in the root. `META-INF/versions/10` classes are only considered for 10 
+or above.
+11. <a name="qa11"></a>[Jump to question](#q11) - **B.** JShell includes the Java SE API. Use the 
+`/imports` command to see the packages imported into JShell by default.
+12. <a name="qa12"></a>[Jump to question](#q12) - **D.** D is correct, it is a command line interface 
+to execute a single Java command instantly, referred to as REPL (Read Evaluate Print Loop).
+13. <a name="qa13"></a>[Jump to question](#q13) - **C, D.** JShell is beneficial when you want to write
+code quickly to prove a hypothesis or try something out. There is no need to test such a case so A is 
+incorrect. JShell is command line, which rules out B.
+14. <a name="qa14"></a>[Jump to question](#q14) - **A, B, D.** The `since` element is a string which 
+contains the release or version number when the element was deprecated, so A is correct. The
+`@Deprecation` annotation can precede a module, class, method or member declaration so B is correct and
+E is incorrect. You can supress warnings in versions of Java prior to JDK 9 is C is incorrect. The 
+Java compiler generates warnings about the deprecated APIs in the console during compilation so D is 
+correct.   
+15. <a name="qa15"></a>[Jump to question](#q15) - **C.** A is incorrect because the `of` method is 
+overloaded multiple times. B and D are incorrect as empty list is creatable with `of()` with no arguments.
+After 10 arguments, varargs is used to allow any feasible number of arguments; making C correct and D
+incorrect.
+16. <a name="qa16"></a>[Jump to question](#q16) - **D.** `of` and `ofEntries` return immutable collections. 
+Methods like `add`, `set` and `remove` throw `UnsupportedOperationException`
+17. <a name="qa17"></a>[Jump to question](#q17) - **D.** During the creation of a `Set` using a factory
+method, if duplicate elements are passed as parameters, then `IllegalArgumentException` is thrown at 
+runtime.
+18. <a name="qa18"></a>[Jump to question](#q18) - **B.** Arrays inherit `equals()` from `Object` and 
+hence compare only returns `true` if comparing an array against itself. On the other hand, `Arrays.equals` 
+compares the elements of the arrays. In this example, they are both different objects with different
+contents, so the answer is `false false`. 
+19. <a name="qa19"></a>[Jump to question](#q19) - **D.** `compare` returns an integer, measuring the 
+distance between the fist two elements to differ. In this case, B is -2 characters away from the letter D.
+`mismatch` returns the position of the mismatch which in this case is the second element in the array, 1.
+20. <a name="qa20"></a>[Jump to question](#q20) - **D.** For `compare` if the arrays differ in length 
+then the lexicographic comparison is the result of comparing the two array lengths, so -1 is printed.
+For `mismatch`, the returned index is the length of the smaller array, in this case 3 is printed (the
+length of `numArray1`)
+21. <a name="qa21"></a>[Jump to question](#q21) - **D.** The first `equals` call results in false as
+the arrays have different contents. The second `equals` call uses the overloaded version of the method
+with ranges. The value being compared for equality is now betweem index 4 and 5 in `numArray1` which is 5
+and indexes 0 and 1 for `numArray2` which results in 5 also, therefore the result is true.
+22. <a name="qa22"></a>[Jump to question](#q22) - **A.** Before JDK 9, you had to recompile your 
+source code to find out about the deprecated JDK API from the compiler modification. Starting JDK 9, 
+a new static analysis tool called `jdeprscan` is now available. This tool performs a static analysis 
+of class files and JAR and reports the use of deprecated APIs.
+23. <a name="qa23"></a>[Jump to question](#q23) - **B.** This is a change in philosophy from previous
+versions. Developers are given extra warning with the `forRemoval` element.
+24. <a name="qa24"></a>[Jump to question](#q24) - **A.** The `forRemoval` element marked as true,
+indicates a terminal deprecation with warnings issued that are called removal warnings. This recommends 
+that code should no longer this API.
+
