@@ -2,6 +2,7 @@
 - [1.2 - Declare modules and enable access between modules](#1-2)
 - [1.3 - Describe how a modular project is compiled and run](#1-3)
 - [Quiz](#q)
+- [Quiz Answers](#qa)
 
 ## <a name="1-1"></a>1.1 - Describe the Modular JDK
 
@@ -158,8 +159,10 @@ The layout of files in the JDK and JRE has changed in JDK 9:
 ![Figure 1.13](img/figure1-13.png)
 
 In JDK 9, code that assumes the following abut the JDK layout will fail:
+
 - `lib` directory contains `rt.jar`
 - Presence of `rt.jar` and `tools.jar`
+
 Class and resource files previously stored in `lib/rt.jar`, `lib/tools.jar`, `lib/dt.jar`, and various 
 other internal JAR files are stored in more efficient format in implementation-specific files in the `lib` directory
 
@@ -373,92 +376,102 @@ _Note: `-p` is shortened term for `--module-path` and `-m` is shortened term for
 
 ## <a name="q"></a>Quiz
 
-1. Which three directories are not present in JDK 9?
-    - `jre` (A)
-    - `rt.jar` (A)
-    - `bin`
-    - `tools.jar` (A)
-    - `conf`
-1. Which are part of the modular graph of `java.base` (Choose two):
-    - `javax.swing`
-    - `java.util` (A)
-    - `java.naming`
-    - `java.lang` (A)
-    - `java.rmi`
-1. Which is true?
-    - The installation directory JDK 9 contains the JRE folder
-    - The installation directory JDK 9 contains the `conf` folder (A)
-    - Both are true
-    - Both are false
-1. Which are part of the modular graph of the `java.se` module? (Choose three):
-    - `java.net`
-    - `java.io`
-    - `java.naming` (A)
-    - `java.util`
-    - `java.sql` (A)
-    - `java.rmi` (A) - See [java.se modular graph here](https://javadoc.scijava.org/Java9/java.se-summary.html).
-1. Which statements are true about modular JDK? (Choose two):
-    - It helps the application to be more scalable to small devices (A)
-    - It is integrated with all the APIs, including logging, swing and instrumentation
-    - It is available from JDK 8
-    - It is a broken, well defined functional piece of the JDK (A)
-1. Which are part of modular JDK's default modules? (Choose two):
-    - Oracle-specific modules (A)
-    - JDK-specific modules (A)
-    - log4j
-    - swing
-1. Which statement is true about JARs in the classpath?
-    - All the classes in the JAR file are accessible
-    - JRE continues to search for the last class within the JARs in the classpath if another 
+1. <a name="q1"></a>Which three directories are not present in JDK 9?
+    - A. `jre` (A)
+    - B. `rt.jar` (A)
+    - C. `bin`
+    - D. `tools.jar` (A)
+    - E. `conf`
+<br />[Jump to answer](#qa1)
+2. <a name="q2"></a>Which are part of the modular graph of `java.base` (Choose two):
+    - A. `javax.swing`
+    - B. `java.util` (A)
+    - C. `java.naming`
+    - D. `java.lang` (A)
+    - E. `java.rmi`
+<br />[Jump to answer](#qa2)
+3. <a name="q3"></a>Which is true?
+    - A. The installation directory JDK 9 contains the JRE folder
+    - B. The installation directory JDK 9 contains the `conf` folder (A)
+    - C. Both are true
+    - D. Both are false
+<br />[Jump to answer](#qa3)
+4. <a name="q4"></a>Which are part of the modular graph of the `java.se` module? (Choose three):
+    - A. `java.net`
+    - B. `java.io`
+    - C. `java.naming` (A)
+    - D. `java.util`
+    - E. `java.sql` (A)
+    - F. `java.rmi` (A) - See [java.se modular graph here](https://javadoc.scijava.org/Java9/java.se-summary.html).
+<br />[Jump to answer](#qa4)
+5. <a name="q5"></a>Which statements are true about modular JDK? (Choose two):
+    - A. It helps the application to be more scalable to small devices (A)
+    - B. It is integrated with all the APIs, including logging, swing and instrumentation
+    - C. It is available from JDK 8
+    - D. It is a well defined functional piece of the JDK (A)
+<br />[Jump to answer](#qa5)
+6. <a name="q6"></a>Which are part of modular JDK's default modules? (Choose two):
+    - A. Oracle-specific modules (A)
+    - B. JDK-specific modules (A)
+    - C. log4j
+    - D. swing
+<br />[Jump to answer](#qa6)
+7. <a name="q7"></a>Which statement is true about JARs in the classpath?
+    - A. All the classes in the JAR file are accessible
+    - B. JRE continues to search for the last class within the JARs in the classpath if another 
     similarly named class exists
-    - JARs in the classpath can have duplicate classes and/or packages (A)
-1. A module can contain:
-    - only resources and a module descriptor
-    - packages, resources, and a module descriptor (A)
-    - only packages and resources
-1. Which statements are true about the module system (Choose two)
-    - It supports only small computing devices
-    - It addresses reliability, maintainability, and security requirements (A)
-    - It supports reusability (A)
-    - It addresses the need for enhanced networking support
-1. What two things would you change about this code to set up a `requires` relationship directly 
-from `main` to `gameapi`?
+    - C. JARs in the classpath can have duplicate classes and/or packages (A)
+<br />[Jump to answer](#qa7)
+8. <a name="q8"></a>A module can contain:
+    - A. only resources and a module descriptor
+    - B. packages, resources, and a module descriptor (A)
+    - C. only packages and resources
+<br />[Jump to answer](#qa8)
+9. <a name="q9"></a>Which statements are true about the module system (Choose two)
+    - A. It supports only small computing devices
+    - B. It addresses reliability, maintainability, and security requirements (A)
+    - C. It supports reusability (A)
+    - D. It addresses the need for enhanced networking support
+<br />[Jump to answer](#qa9)
+10. <a name="q10"></a>What two things would you change about this code to set up a `requires` relationship directly 
+from `main` to `gameapi`?<br />
     ![questionFigure 1.1](img/questionFigure1-1.png)
-    (A): Remove transative keyword from `requires transative` from `competition` module and add 
-    `requires gameapi` to `main` module.
-1. The `main` module contains a class, which instantiates an object defined in `competition` module. 
-`competition` exports its packages. `main` requires `competition`. Will this code still compile if the 
-`requires` statement is commented out?
+<br />[Jump to answer](#qa10)
+11. <a name="q11"></a>The `main` module contains a class, which instantiates an object defined in 
+`competition` module. `competition` exports its packages. `main` requires `competition`. Will this 
+code still compile if the `requires` statement is commented out?
     ````
     module main {
         //requires competion
     }
     ````
-    - Yes
-    - No (A) - exporting (with `exports`) packages only specify what material could be read from a 
-    module. One more step is required to specify that one module requires another - `requires`
-1. You want the `gameapi` module to export the `game` package to both the `competition` and `basketball` 
-modules. Which code example shows how this can be done?
-    - A)
-        ````
-      module gameapi {
-            exports game to competition;
-            exports game to basketball;
-      }
-      ````
-    - B) (A) - You can separate the modules you export to with comma
-        ````
-      module gameapi {
-            exports game to competition, basketball;
-      }
-      ````
-1. Which statement is true about a module descriptor?
-    - A module descriptor can contain details of required module dependencies (A)
-    - A module descriptor file must be named module-descriptor.java
-    - A module descriptor must be stored in the classpath
-    - A module descriptor does not contain details of services offered by the module owned by it
-1. Given "order" module contains "Order.java" and "product" module contains "Product.java", which 
-is valid module descriptor file content?
+    - A. Yes
+    - B. No
+<br />[Jump to answer](#qa11)
+12. <a name="q12"></a>You want the `gameapi` module to export the `game` package to both the 
+`competition` and `basketball` modules. Which code example shows how this can be done? - 
+[Jump to answer](#qa12)
+    - A.
+    ````
+    module gameapi {
+        exports game to competition;
+        exports game to basketball;
+    }
+    ````
+    - B.
+    ````
+    module gameapi {
+        exports game to competition, basketball;
+    }
+    ````
+13. <a name="q13"></a>Which statement is true about a module descriptor?
+    - A. A module descriptor can contain details of required module dependencies (A)
+    - B. A module descriptor file must be named module-descriptor.java
+    - C. A module descriptor must be stored in the classpath
+    - D. A module descriptor does not contain details of services offered by the module owned by it
+<br />[Jump to answer](#qa13)
+14. <a name="q14"></a>Given "order" module contains "Order.java" and "product" module contains 
+"`Product.java`", which is valid module descriptor file content? - [Jump to answer](#qa14)
     <br />Order.java
     ````
     package p1;
@@ -472,7 +485,7 @@ is valid module descriptor file content?
     package p2;
     public class Product {}
     ````
-    - A)
+    - A.
         ````
         module order {
             exports Product;
@@ -481,7 +494,7 @@ is valid module descriptor file content?
             requires Order;
         }
         ````
-    - B) (A)
+    - B.
         ````
         module order {
             requires product;
@@ -490,16 +503,70 @@ is valid module descriptor file content?
             exports p2;
         }
         ````
-    - C)
+    - C.
         ````
         module order {
             requires p2.Product;
         }
         module p2.Product{}
-        ````
-1. Which directive makes a package available to all other modules at run time but not at compile time?
-    - requires
-    - exports
-    - opens ... to
-    - opens (A) 
+       ````
+15. <a name="q15"></a>Which directive makes a package available to all other modules at run time but 
+not at compile time?
+    - A. requires
+    - B. exports
+    - C. opens ... to
+    - D. opens (A) 
+<br />[Jump to answer](#qa15)
 
+## <a name="qa"></a>Quiz Answers
+
+1. <a name="qa1"></a>[Jump to question](#q1) - **A, B, D.** `rt.jar` and `tools.jar` are no longer 
+present in the JRE. The "jre" folder has also been removed.
+2. <a name="qa2"></a>[Jump to question](#q2) - **B, D.** `java.util` and `java.lang` are part of the
+[java.base modular graph](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/module-summary.html).
+`javax.swing` is in the `java.desktop` module.`java.naming` is a module itself containing JNDI. Finally,
+the `java.rmi` module sits outside of `java.base`. Note, `java.desktop`, `java.rmi`, and `java.naming`
+reside in the `java.se` module.
+3. <a name="qa3"></a>[Jump to question](#q3) - **B.** In JDK 9, the "jre" folder has been removed, whilst
+the "conf" folder has been added.
+4. <a name="qa4"></a>[Jump to question](#q4) - **C, E, F.** `java.naming`, `java.sql`, and `java.rmi`
+are part of the [java.se modular graph](https://javadoc.scijava.org/Java9/java.se-summary.html).
+`java.net`, `java.io`, and `java.util` packages are available in the `java.base` module. 
+5. <a name="qa5"></a>[Jump to question](#q5) - **A, D.** In JDK 9, the monolithic JDK is broken into 
+modules - therefore B is incorrect. Every module is a well defined piece of functionality of the JDK,
+so D is correct. These modules are split into four major groups: java, javafx, jdk, and Oracle - so B
+is incorrect. Finally, A is correct as the modularization of the JDK means smaller JARs which helps
+small devices.
+6. <a name="qa6"></a>[Jump to question](#q6) - **A, B.** java, javafx, jdk, and Oracle are the four major
+parts of the modular JDK so the answer is A and B.
+7. <a name="qa7"></a>[Jump to question](#q7) - **C.** JARs in the class path can have duplicate classes 
+and/or packages so C is correct. A and B are incorrect as the JRE uses the first class it finds in class 
+path, even if another similarly named class exists.
+8. <a name="qa8"></a>[Jump to question](#q8) - **B.** A module contains one or more packages and other 
+resources such as images or xml files. It is defined in its module descriptor (`module-info.class`), 
+which is stored in the module's root folder.
+9. <a name="qa9"></a>[Jump to question](#q9) - **B, C** The module system is available to all computing
+devices, but has the added benefit of scalability for smaller devices so A is incorrect. B and C are
+correct statements. D is incorrect as although `java.net` is part of `java.base`, enhanced networking 
+support is not a feature of the module system.
+10. <a name="qa10"></a>[Jump to question](#q10) - The solution is to remove the `transative` keyword 
+from `requires transative` from `competition` module and add `requires gameapi` to the `main` module.
+11. <a name="qa11"></a>[Jump to question](#q11) - **B.** Exporting (with `exports`) packages only 
+specify what material could be read from a module. One more step is required to specify that one 
+module requires another - `requires`.
+12. <a name="qa12"></a>[Jump to question](#q12) - **B.** You can separate the modules you export to 
+with comma so B is correct.
+13. <a name="qa13"></a>[Jump to question](#q13) - **A.** The module descriptor must contain the module 
+name. Additionally, the module descriptor can contain details of: Required module dependencies (other 
+modules this module depends on); Packages that this module exports, making them available to other 
+modules (otherwise all packages in the module are implicitly unavailable to other modules); Permissions
+to open content of this module to other modules via the use of reflection; Services this module offers
+to other modules; Services this module consumes. It is defined in `module-info.class`, which is stored
+in the module's root folder.
+14. <a name="qa14"></a>[Jump to question](#q14) - **B.** The `order` module `requires product` as it
+uses the `Product` class from the `p2` package. The `product` module needs to export (via `exports`)
+the `p2` package so that it is available to modules that require it.
+15. <a name="qa15"></a>[Jump to question](#q15) - **D.** The opens directive makes a package available
+to all other modules at run-time but not at compile time. Using `opens` for a package is similar to 
+using `exports`, but it also makes all of its non-public types available via reflection. Modules that 
+contain injectable code should use the `opens` directive, because injections work via reflection.
