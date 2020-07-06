@@ -59,10 +59,9 @@ Examples and notes to aid revision for the Oracle Certified Professional (OCP) U
 
 ## [Extra Reading](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/tree/master/src/ocp/study/part00)
 
-- 0.1 - Custom Runtime Images
-- 0.2 - Multi-Release JAR Files
-- 0.3 - Enhancements to the Stream API
-- 0.4 - JShell
-- 0.5 - Convenience Methods for Collections
-- 0.6 - Convenience Methods for Arrays
-- 0.7 - Enhanced Deprecation
+- 0.1 - Multi-Release JAR Files
+- 0.2 - Enhancements to the Stream API
+- 0.3 - JShell
+- 0.4 - Convenience Methods for Collections
+- 0.5 - Convenience Methods for Arrays
+- 0.6 - Enhanced Deprecation

@@ -1,6 +1,7 @@
 - [2.1 - Describe the components of Services including directives](#2-1)
 - [2.2 - Design a service type, load the services using ServiceLoader, check for dependencies of the services including consumer module and provider module](#2-2)
 - [Quiz](#q)
+- [Quiz Answers](#qa)
 
 ## <a name="2-1"></a>2.1 - Describe the components of Services including directives
 ## <a name="2-2"></a>2.2 - Design a service type, load the services using ServiceLoader, check for dependencies of the services including consumer module and provider module
@@ -100,21 +101,33 @@ do the same for other game types, e.g. `BasketBallProvider` which implements `Ga
 
 ## <a name="q"></a>Quiz
 
-1. What needs to be implemented in a provider module?:
-    - All interfaces in the consumer module
-    - All interfaces declared with "provides ... with"
-    - All interfaces declared with "uses" in the `module-info` file of the consumer module (A)
-1. Which of the following are true? (Choose two):
-    - The consumer module does not need to declare a dependency on the provider module(s) (A)
-    - The consumer module must declare a dependency on the provider module(s)
-    - The provider module does not need to declare a dependency on the consumer module(s) (A)
-    - The provider module must declare a dependency on the consumer module(s)
-1. Which of the following is true?:
-    - The consumer module must declare a dependency on the provider module
-    - The provider module must declare a dependency on the consumer module
-    - Neither consumer or provider modules need declare a dependency on each other (A)
-1. How many service provider implementations can be made to a consumer?
-    - Zero or any number in any module in the module path (A)
-    - Zero or one in the module path
-    - One only in the module path
-    - Zero or one in any module in the module path
+1. <a name="q1"></a>What needs to be implemented in a provider module?:
+    - A. All interfaces in the consumer module
+    - B. All interfaces declared with "provides ... with"
+    - C. All interfaces declared with "uses" in the `module-info` file of the consumer module
+<br />[Jump to answer](#qa1)
+2. <a name="q2"></a>Which of the following are true? (Choose two):
+    - A. The consumer module does not need to declare a dependency on the provider module(s)
+    - B. The consumer module must declare a dependency on the provider module(s)
+    - C. The provider module does not need to declare a dependency on the consumer module(s)
+    - D. The provider module must declare a dependency on the consumer module(s)
+<br />[Jump to answer](#qa2)
+3. <a name="q3"></a>Which of the following is true?:
+    - A. The consumer module must declare a dependency on the provider module
+    - B. The provider module must declare a dependency on the consumer module
+    - C. Neither consumer or provider modules need declare a dependency on each other
+<br />[Jump to answer](#qa3)
+4. <a name="q4"></a>How many service provider implementations can be made to a consumer?
+    - A. Zero or any number in any module in the module path
+    - B. Zero or one in the module path
+    - C. One only in the module path
+    - D. Zero or one in any module in the module path
+<br />[Jump to answer](#qa4)
+
+## <a name="qa"></a>Quiz Answers
+
+1. <a name="qa1"></a>[Jump to question](#q1) - **C.** A service provider must provide (via `provides`) 
+an implementation for consumer modules to use (via `uses`). 
+2. <a name="qa2"></a>[Jump to question](#q2) - **A, C.** 
+3. <a name="qa3"></a>[Jump to question](#q3) - **C.**
+4. <a name="qa4"></a>[Jump to question](#q4) - **A.**

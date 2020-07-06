@@ -1,6 +1,7 @@
 - [6.1 - Migrate the application developed using a Java version prior to SE 9 to SE 11 including top-down and bottom-up migration, splitting a Java SE 8 application into modules for migration](#6-1)
 - [6.2 - Use jdeps to determine dependencies and identify way to address the cyclic dependencies](#6-2)
 - [Quiz](#q)
+- [Quiz Answers](#qa)
 
 ## <a name="6-1"></a>6.1 - Migrate the application developed using a Java version prior to SE 9 to SE 11 including top-down and bottom-up migration, splitting a Java SE 8 application into modules for migration
 ## <a name="6-2"></a>6.2 - Use jdeps to determine dependencies and identify way to address the cyclic dependencies
@@ -177,27 +178,50 @@ that both modules can depend on.
 ## <a name="q"></a>Quiz
 
 1. An unnamed module... (Choose two):
-    - Is run on the module path
-    - Does have a `module-info.class` file
-    - Does not have a `module-info.class` file (A)
-    - Is run on the class path (A)
-1. Which is true? In order to function as a module, a set of class files must:
-    - Be packaged in a JAR file
-    - Be packaged in a modular JAR file
-    - Have a `module-info.class` file (A)
-1. Which of the following are true? Assume that modularized means with a `module-info.class` file 
+    - A. Is run on the module path
+    - B. Does have a `module-info.class` file
+    - C. Does not have a `module-info.class` file
+    - D. Is run on the class path
+<br />[Jump to answer](#qa1)
+2. Which is true? In order to function as a module, a set of class files must:
+    - A. Be packaged in a JAR file
+    - B. Be packaged in a modular JAR file
+    - C. Have a `module-info.class` file
+<br />[Jump to answer](#qa2)
+3. Which of the following are true? Assume that modularized means with a `module-info.class` file 
 and un-modularized means without a `module-info.class` file. (Choose three):
-    - An un-modularized application run on the class path can access a modularized library run on the module path (A)
-    - A modularized application run on the module path can access a library run on the class path (A)
-    - A modularized application run on the module path can access an un-modularized library run on the class path
-    - An un-modularized application run on the module path can access an un-modularized library run on the class path (A)
-1. An un-modularized application consisting of two JARs can be run on (Choose three):
-    - The class path (A)
-    - A combination of the class path and the module path (A)
-    - The application path
-    - The module path (A)
-1. A Java application consisting of two modules can be run on (Choose three):
-    - The module path (A)
-    - The class path (A)
-    - A combination of the class path and the module path (A)
-    - The application path
+    - A. An un-modularized application run on the class path can access a modularized library run on the module path
+    - B. A modularized application run on the module path can access a library run on the class path
+    - C. A modularized application run on the module path can access an un-modularized library run on the class path
+    - D. An un-modularized application run on the module path can access an un-modularized library run on the class path
+<br />[Jump to answer](#qa3)
+4. An un-modularized application consisting of two JARs can be run on (Choose three):
+    - A. The class path
+    - B. A combination of the class path and the module path
+    - C. The application path
+    - D. The module path
+<br />[Jump to answer](#qa4)
+5. A Java application consisting of two modules can be run on (Choose three):
+    - A. The module path
+    - B. The class path
+    - C. A combination of the class path and the module path
+    - D. The application path
+<br />[Jump to answer](#qa5)
+    
+## <a name="qa"></a>Quiz Answers
+
+1. <a name="qa1"></a>[Jump to question](#q1) - **C.** A class which is not a member of a 'named module' 
+is considered to be a member of a special module known as the unnamed module. The unnamed module concept 
+is similar to the unnamed package (the default package). The unnamed module is not a real module. It can 
+be considered as the default module which does not have a name. **All classes found on the classpath will 
+be included in what Java calls the unnamed module**. The unnamed module exports all its packages.
+2. <a name="qa2"></a>[Jump to question](#q2) - **C.** To declare an explicit module, a module declaration 
+needs to be specified. This is done in a file called `module-info.java` which is compiled as `module-info.class`.
+3. <a name="qa3"></a>[Jump to question](#q3) - **A, B, D.** Un-modularized applications are placed into
+the unnamed module. These are only readable by other classes in the unnamed module. No named module can 
+read the classes of the unnamed module so C is incorrect.
+4. <a name="qa4"></a>[Jump to question](#q4) - **A, B, D.** Mixing classpath and module path is absolutely 
+legal. However, modular jars cannot reference non-modular jars on the classpath. Automatic modules 
+(non-modular jars on the modulepath) act as a bridge: modular jars can reference them, and automatic 
+modules can read the classpath.
+5. <a name="qa5"></a>[Jump to question](#q5) - **A, B, C.** See answer [above](#qa4).

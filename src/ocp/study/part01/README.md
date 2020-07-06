@@ -6,16 +6,35 @@
 
 ## <a name="1-1"></a>1.1 - Describe the Modular JDK
 
-In JDK 9, the monolithic JDK is broken into modules. Every module is a well defined piece of 
-functionality of the JDK. All the various frameworks that were part of the prior release of the JDK 
-are now broken down into a bunch of modules, e.g. Logging, Swing, Instrumentation.
+In JDK 9, the monolithic JDK is broken into a set of modules that can be combined at compile time, build time, and run time into a variety of configurations. Every module is a well defined piece of functionality of the JDK. All the various frameworks that were part of the prior release of the JDK are now broken down into a bunch of modules, e.g. Logging, Swing, Instrumentation.
 
-The modular JDK makes it more scalable to small devices. It improves security and maintainability 
-and improves application performance.
+Project Jigsaw aims to design and implement a standard module system for the Java SE Platform and to apply that system to the Platform itself, and to the JDK. Its primary goals are to make implementations of the Platform more easily scalable down to small devices, improve security and maintainability, enable improved application performance, and provide developers with better tools for programming in the large.
+
+The modular structure of the JDK implements the following principles:
+
+1. Standard modules, whose specifications are governed by the JCP, have names starting with the string "`java.`".
+
+1. All other modules are merely part of the JDK, and have names starting with the string "`jdk.`".
+
+1. If a module exports a package that contains a type that contains a public or protected member that, in turn, refers to a type from some other module, then the first module must grant implied readability to the second, via `requires transitive`. (This ensures that method-invocation chaining works in the obvious way.)
+
+1. A standard module may contain both standard and non-standard API packages. If a standard module exports a standard API package then the export may be qualified; if a standard module exports a non-standard API package then the export must be qualified. In either case, if a standard module exports a package with qualification then the export must be to some subset of the modules in the JDK. If a standard module is a Java SE module, i.e., is included in the Java SE Platform Specification, then it must not export any non-SE API packages, at least not without qualification.
+
+1. A standard module may depend upon one or more non-standard modules. It must not grant implied readability to any non-standard module. If it is a Java SE module then it must not grant implied readability to any non-SE module.
+
+1. A non-standard module must not export any standard API packages. A non-standard module may grant implied readability to a standard module.
+
+An important consequence of principles 4 and 5 is that code that depends only upon Java SE modules will depend only upon standard Java SE types, and thus be portable to all Implementations of the Java SE Platform.
+
+### The Module Graph
+
+The modular structure of the JDK can be visualized as a graph: Each module is a node, and there is a directed edge from one module to another if the first depends upon the second. 
 
 ### Java SE Modules
 
-The `java.se` module doesn't contain any code but has only dependencies declared in the module descriptor:
+See [Java SE 11 Module Graph](http://java.boot.by/ocpjd11-upgrade-guide/images/java11-graph.png).
+
+The `java.se` module doesn't contain any code but has only dependencies declared in the module descriptor. This is an example of an _aggregator module_, which collects and re-exports the content of other modules but adds no content of its own:
 
 ````
 module java.se {
@@ -27,23 +46,18 @@ module java.se {
 }
 ````
 
-In the module descriptor, a `requires transitive` clause is listed for every single module that is 
-part of the Java SE specification. When you say requires `java.se` in a module, all these modules 
-will be available to you.
+In the module descriptor, a `requires transitive` clause is listed for every single module that is part of the Java SE specification. When you say requires `java.se` in a module, all these modules will be available to you.
 
-These modules are classified into two categories:
+These modules are classified into two categories briefly referred to previosuly:
 
-1. Standard modules (`java.*` prefix for module names) that are part of the Java SE specification, 
-e.g. `java.sql` for database connectivity, `java.xml` for XML processing and `java.logging` for logging.
-1. Modules not defined in the Java SE 9 platform (`jdk.*` prefix) are specific to the JDK, e.g. 
-`jdk.jshell`, `jdk.policytool`, `jdk.httpserver`
+1. Standard modules (`java.*` prefix for module names) that are part of the Java SE specification, e.g. `java.sql` for database connectivity, `java.xml` for XML processing and `java.logging` for logging.
+2. (Non-standard) modules not defined in the Java SE platform (`jdk.*` prefix) are specific to the JDK, e.g. `jdk.jshell`, `jdk.policytool`, `jdk.httpserver`
 
 ### The Base Module
 
-The base module is `java.base`. Every module depends on `java.base`, but this module doesn't depend 
-on any other modules.
+The base module is `java.base`. Every module depends on `java.base`, but this module doesn't depend on any other modules.
 
-The base module exports all the platform's core packages.
+The base module exports all the platform's core packages and essential classes such as `java.lang.Object` and `java.lang.String`.
 
 ![Figure 1.10](img/figure1-10.png)
 
@@ -65,8 +79,7 @@ You can get a list of the packages a platform module contains with the `--descri
 
 ### Java EE Modules
 
-There are various technologies of Java EE that are shipped with JDK.
-The list of Java EE modules present in JDK 9:
+There are various technologies of Java EE that are shipped with JDK. The list of Java EE modules present in JDK 9:
 
 1. `java.corba`
 1. `java.activation`
@@ -79,10 +92,7 @@ These modules are deprecated for removal in JDK 9 release. Because of this, they
 
 #### Resolving Java EE modules in JDK 9
 
-Java EE modules are not resolved by default when you compile or run code on the class path.
-Code on the class path with references to classes APIs will fail with `NoDefClassFoundError` or 
-`ClassNotFoundException`. The policy of not resolving these modules is the first step towards removing 
-these APIs from Java SE and the JDK in the future.
+Java EE modules are not resolved by default when you compile or run code on the class path. Code on the class path with references to classes APIs will fail with `NoDefClassFoundError` or `ClassNotFoundException`. The policy of not resolving these modules is the first step towards removing these APIs from Java SE and the JDK in the future.
 
 Use the `--add-modules` command line option to ensure the module with the API is resolved at startup.
 
@@ -96,8 +106,7 @@ javax/xml/bind/JAXBException
         at java.base...
 ````
  
-To resolve the `java.xml.bind` module at run time and ensure the module is available at run time, 
-specify the following command line option:
+To resolve the `java.xml.bind` module at run time and ensure the module is available at run time, specify the following command line option:
 
 `java --add-modules java.xml.bind com.example.JAXBCustomer`
 
@@ -125,14 +134,11 @@ by developers and in a few widely used libraries:
 - `sun.misc.BASE64Dencoder`
 - `sun.misc.Unsafe`
 
-JDK 9 encapsulatin policy for JDK internals no longer permits access to `sun.misc.BASE64Encoder` 
-and `sun.misc.BASE64Dencoder`, instead allowing access to `java.util.Base64`.
+JDK 9 encapsulatin policy for JDK internals no longer permits access to `sun.misc.BASE64Encoder` and `sun.misc.BASE64Dencoder`, instead allowing access to `java.util.Base64`.
 
 #### Illegal access to JDK internals in JDK 9
 
-Some tools and libraries use reflection to access parts of JDK internal APIs. This illegal reflective 
-access will be disabled in a future release of the JDK. In JDK 9, it is permitted by default and a 
-warning is issued, e.g. a warning issued when starting Jython:
+Some tools and libraries use reflection to access parts of JDK internal APIs. This illegal reflective access will be disabled in a future release of the JDK. In JDK 9, it is permitted by default and a warning is issued, e.g. a warning issued when starting Jython:
 
 ````
 java -jar jython-standalone-2.7.0.jar
@@ -158,26 +164,15 @@ The layout of files in the JDK and JRE has changed in JDK 9:
 
 ![Figure 1.13](img/figure1-13.png)
 
-In JDK 9, code that assumes the following abut the JDK layout will fail:
+In JDK 9 and above, code that assumes the following abut the JDK layout will fail:
 
 - `lib` directory contains `rt.jar`
 - Presence of `rt.jar` and `tools.jar`
 
 Class and resource files previously stored in `lib/rt.jar`, `lib/tools.jar`, `lib/dt.jar`, and various 
-other internal JAR files are stored in more efficient format in implementation-specific files in the `lib` directory
+other internal JAR files are stored in more efficient format in implementation-specific files in the `lib` directory. The Java Platform Module System (JPMS) has divided the monolithic `rt.jar` and `tools.jar` files into more than 70 distinct modules.
 
-### Why Modules?
-
-Modules are a fundamental new kind of Java programming component. The module system:
-
-- Supports programming in the "large"
-- Is built into the Java language
-- Is usable at all levels:
-    - Applications
-    - Libraries
-    - The JDK itself
-- Addresses reliability, maintainability, and security
-- Supports creation of applications that can be scaled for small computing devices
+Also eliminated is the distinction between the Java Development Kit (JDK) and the Java Runtime Environment (JRE). In the past, there was a sub-directory in the JDK called jre which only contained things that were required to run a Java application.
 
 ### JAR Files and Distribution Issues
 
@@ -243,12 +238,204 @@ Therefore, Java modular applications have the followings traits:
 - No cyclic dependencies
 - No split packages
 
+### Custom Runtime Images
+
+You can create a special distribution of the java runtime containing only the runtime modules, application modules and only those platform modules required by your application. Rather than including all modules, you need only include the `java.base` module (which all runtimes must include by definition) as well as any other modules the application references. All transitive module dependencies must also be included. You can do this with custom runtime images. A custom runtime image is a self contained image that bundles the application modules with the JVM and everything else it needs to execute your application.
+
+### Link Time
+
+In Java SE 9, an optional link time is introduced between the compilation and runtime phase. A link time requries a linking tool that will assemble and optimize a set of modules and their transitive 
+dependencies to create a runtime image.
+
+### Using `jlink` to Create a Custom Runtime Image
+
+`jlink` is a new tool in Java SE 9 that can be used to create a custom platform specific runtime image, assemble a set of modules from their dependencies (using a set of dependencies from `module-info.class`),
+and performing optimization.
+
+A basic invocation of `jlink`:
+
+`jlink [options] --module-path modulepath --add-modules mods --output path`
+
+You will have to specify the following three parameters:
+
+1. `modulepath`: The module path where the platform and application modules to be added to the image 
+are located. Modules can be modular jar files, jmods or exploded directories
+1. `mods`: The list of the modules to be added and their transitive dependencies into your image
+1. `path`: The output directory where the generated runtime image will be stored
+
+#### Example: Using `jlink` to Create a Runtime Image
+
+We have a modular application:
+
+````
+C:\jlink-example
+│   module-info.java
+└───com
+    └───greeting
+            App.java
+````
+
+module-info.java:
+
+````
+module com.greeting {    
+}
+````
+
+App.java:
+````
+package com.greeting;
+
+public class App {
+    public static void main(String[] args) {
+        System.out.println("Hello jlink !");
+    }
+}
+````
+
+Let's compile the code:
+
+`javac -p . module-info.java com/greeting/App.java`
+
+_Note: `--module-path path` or `-p path` specifies where to find application modules. Above we have selected the current directory using `.`_
+
+````
+C:\jlink-example
+│   module-info.class
+│   module-info.java
+│
+└───com
+    └───greeting
+            App.class
+            App.java
+````
+
+_Note: specify `-d` to place `.class` files into a separate directory._
+
+Now, create the modular JAR:
+
+`jar cf Hello.jar -C . .`
+
+_Note: The basic format of the command for creating a JAR file is: `jar cf jar-file input-file(s)`. The `c` option indicates that you want to create a JAR file. The `f` option indicates that you want the output to go to a file rather than to stdout `-C` is used to change directories during execution of the command, e.g. if we have static files to include which reside in a different folder structure. See [Oracle's documentation](https://docs.oracle.com/javase/tutorial/deployment/jar/build.html) for more._
+
+To run this program, we only need `App`, `String`, `System`, and `Object` classes.
+
+With help of `jlink` command line utility we can create our own small JRE that contains only the relevant classes and packages that application needs to use, without wasting memory and disk space.
+
+In order to use `jlink`, we need to know the list of the Java SE modules that the application uses and that we should include in our custom JRE. Let's use the `jdeps` command to list the modules used in the application:
+
+````
+jdeps --list-deps Hello.jar
+   java.base
+````
+
+The following command create a new runtime image:
+
+````
+jlink
+    --module-path dist/Hello.jar:/usr/java/jdk-9/mods
+    --add-modules com.greeting
+    --output myimage
+````
+1. `--module-path`: This constructs a module path where the Hello jlink application is present and the `$JAVA_HOME/jmods` (`%JAVA_HOME%\jmods` in Windows) directory contains the platform modules
+1. `--add-modules`: This comma separated list tells `jlink` which modules to include in the new JRE; e.g.`com.greeting` which is the module name (stated in `module-info.java`) that needs to be added in the runtime image. From our `jdeps` call we know we need `java.base`, so we can add this here too as an alternative to referring to the `jmods` folder in the module path (`--module-path`).
+1. `--output`: This directory is where the runtime image will be generated
+
+_Note: In Windows, the path separator is ; instead of :_
+
+`jlink --module-path Hello.jar --add-modules com.greeting,java.base --output myimage`
+
+The Figure below shows the Hello jlink example on unix (Netbeans compiles jars into a `dist/` folder) with `jmods` folder included in module path.
+![Figure 1.14](img/figure1-14.png)
+
+Note the sizes of the JDK 9 compared to the custom runtime image performed with `du -sh` command 
+(979M in `jdk-9.0.1/` and 45M in `myimage/`). We can do this in Windows with `dir /s`.
+
+The generated image, `myimage`, has the following directory layout:
+
+````
+myimage/
+    conf
+    include
+    legal
+    lib
+    bin
+        java
+````
+
+A custom runtime image is fully self contained. It bundles the application modules with the JVM and everything else it needs to execute your application.
+
+You can check the runtime custom image with the `java -version` command.
+
+You can also execute the `java --list-modules` command to list the modules that are in a custom runtime image.
+
+You can use the `java` command, which is in `myimage`, to launch your application:
+
+````
+cd myimage/bin/
+java --module com.greeting
+````
+
+or
+
+`java -m com.greeting`
+
+You do not need to set the module path. The custom runtime image is in its own module path.
+
+The `jlink` command has a `--launcher` option that creates a platform specific executable in the `bin` directory.
+
+````
+jlink
+    --module-path dist/Hello.jar:/usr/java/jdk-9/mods
+    --add-modules com.greeting
+    --launcher com.greeting=Hello
+    --output myimage
+````
+
+You can use this executable to run your application.
+
+#### `jlink` resolves transitive dependencies
+
+The `jlink` tool will resolve all dependencies transitively for the modules specified using the `--add-modules` option, and includes all the resolved dependent modules in the runtime image.
+
+### Advantages of a Custom Runtime Image
+
+- Ease of use - Can be shipped to your application users who don't have to download and install JRE separately to run the application
+- Reduced footprint - Consists of only those modules that your application uses and is therefore much smaller than a full JDK. It can be used on resource constrained devices and applications on 
+the cloud
+- Performance - Runs faster because of link time optimization
+
+#### JIMAGE format
+
+The runtime image is stored in a special format called JIMAGE, which is optimized for space and speed. It is a much faster way to search and load classes from JAR and JMOD files. JDK 9 ships with 
+the `jimage` tool to let you explore the contents of a JIMAGE file.
+
+### Optimizing a custom runtime image
+
+#### Using plug-ins with the `jlink` tool
+
+To use a plug-in, you need to use the command line option for it. Run the `jlink` tool with the `--list-plugins` options to print the list of all available plug-ins with their descriptions and 
+command line options.
+
+`jlink --list-plugins`
+
+The `compress` plug-in optimizes the custom runtime image by reducing the Java SE 9 runtime image (level 1 is constant string sharing and level 2 is ZIP).
+
+The `strip-debug` plug-in removes all the debugging information from the Java code further reducing the size of the image.
+
+````
+jlink
+    --module-path dist/Hello.jar:/usr/java/jdk-9/mods
+    --add-modules com.greeting
+    --output myimage
+    -strip-debug --compress=2
+````
+
 ## <a name="1-2"></a>1.2 - Declare modules and enable access between modules
 
 ### What is a Module
 
-A module contains one or more packages and other resources such as images or xml files. It is 
-defined in its module descriptor (`module-info.class`), which is stored in the module's root folder.
+A module contains one or more packages and other resources such as images or xml files. It is defined in its module descriptor (`module-info.class`), which is stored in the module's root folder.
 
 The module descriptor must contain the module name. Additionally, the module descriptor can contain details of:
 - Required module dependencies (other modules this module depends on)
@@ -260,19 +447,14 @@ in the module are implicitly unavailable to other modules)
 
 ### Module Dependencies with `requires`
 
-A module defines that it needs another module using the `requires` directive. `requires` specifies a normal module dependency
-(this module needs access to some content provided by another module). `requires transitive` specifies a module dependency
-and makes the module depended on available to other modules. `requires static` indicates module dependency at compile time,
-but not at the runtime.
+A module defines that it needs another module using the `requires` directive. `requires` specifies a normal module dependency (this module needs access to some content provided by another module). `requires transitive` specifies a module dependency and makes the module depended on available to other modules. `requires static` indicates module dependency at compile time, but not at the runtime.
 
 ### Module Package Availability with `exports`
 
-A modules defines what content it makes available for other modules using the `exports` directive. 
-Exporting a package makes all of its public types available to other modules. There are two directives 
+A modules defines what content it makes available for other modules using the `exports` directive. Exporting a package makes all of its public types available to other modules. There are two directives 
 to specify packages to export:
 1. The `exports <package_name>` directive specifies a package whose public types are accessible to all other modules
-1. The `exports <package_name> to` directive restricts the availability of an exported package to a 
-list of specific modules. It accepts a comma separated list of module names after the `to` keyword 
+1. The `exports <package_name> to` directive restricts the availability of an exported package to a list of specific modules. It accepts a comma separated list of module names after the `to` keyword 
 
 ![Figure 1.5](img/figure1-5.png)
 
@@ -280,12 +462,9 @@ list of specific modules. It accepts a comma separated list of module names afte
 
 ### Access to Types via Reflection
 
-A module may set up to allow runtime-only access to a package by using the `opens` directive. The 
-`opens` directive makes a package available to all other modules at run-time but not at compile time. 
-The `opens ... to` directive makes a package available to a list of specific modules at run-time but 
-not compile time. Using `opens` for a package is similar to using `exports`, but it also makes all of 
-its non-public types available via reflection. Modules that contain injectable code should use the
-`opens` directive, because injections work via reflection. All packages in a module can be made 
+A module may set up to allow runtime-only access to a package by using the `opens` directive. The `opens` directive makes a package available to all other modules at run-time but not at compile time. 
+The `opens ... to` directive makes a package available to a list of specific modules at run-time but not compile time. Using `opens` for a package is similar to using `exports`, but it also makes all of 
+its non-public types available via reflection. Modules that contain injectable code should use the `opens` directive, because injections work via reflection. All packages in a module can be made 
 available to access via reflection by using the `open` directive before the module directive.
 
 ![Figure 1.7](img/figure1-7.png)
@@ -315,13 +494,10 @@ Single module compilation:
 
 `javac -d <output folder> <list of source code file paths including module-info>`
 
-_Note: If you don't specify any `-d` options, the class files will be put into directories according 
-to the package structure, relative to the current directory. If you give an `-d` option, the class 
-files will be put relative to the directory given by the option. Non-existing directories will be 
-created here._
+_Note: If you don't specify any `-d` options, the class files will be put into directories according to the package structure, relative to the current directory. If you give an `-d` option, the class 
+files will be put relative to the directory given by the option. Non-existing directories will be created here._
 
-_Note: `module-info.java` is specified first, so the compiler knows this is a modular application and
-will inform you accordingly if any problems exist with the code._
+_Note: `module-info.java` is specified first, so the compiler knows this is a modular application and will inform you accordingly if any problems exist with the code._
 
 Multi-module compilation:
 
@@ -376,68 +552,110 @@ _Note: `-p` is shortened term for `--module-path` and `-m` is shortened term for
 
 ## <a name="q"></a>Quiz
 
-1. <a name="q1"></a>Which three directories are not present in JDK 9?
+1. <a name="q1"></a>In Java SE 9, which phase provides an opportunity to perform optimization
+    - A. Compile time
+    - B. Link time
+    - C. Run time
+<br />[Jump to answer](#qa1)
+2. <a name="q2"></a>Identify the set of tasks `jlink` can perform on a set of modules to create a custom runtime image
+    - A. Assemble modules
+    - B. Optimize modules
+    - C. Both the above
+<br />[Jump to answer](#qa2)
+3. <a name="q3"></a>What are the advantages of a custom runtime image? (Choose two):
+    - A. It consists of only those modules that your application uses
+    - B. It runs faster because of link time optimization
+    - C. It can be used to run an application in the cloud
+    - D. It is heavier than the full JDK
+<br />[Jump to answer](#qa3)
+4. <a name="q4"></a>Which tool is used to create a runtime image?
+    - A. jar
+    - B. jshell
+    - C. jlink
+    - D. javap
+<br />[Jump to answer](#qa4)
+5. <a name="q5"></a>Which statement is true about custom runtime images?
+    - A. Customized runtime images contain only the application's module
+    - B. Customized runtime images can be created by using JDK 8
+    - C. Customized runtime images are bundled with the application modules and platform modules of the 
+    JVM, and everything else it needs to execute the application
+    - D. Customized runtime images contain all the modules of JDK 9
+<br />[Jump to answer](#qa5)
+6. <a name="q6"></a>In what format are runtime images stored?
+    - A. jimage
+    - B. jlink
+    - C. javaimage
+    - D. jmod
+<br />[Jump to answer](#qa6)
+7. <a name="q7"></a>Which option in the `jlink` tool can be used to resolve all dependencies transitively for the 
+modules specified, as well as to include all the resolved dependent modules into the runtime image?
+    - A. module
+    - B. add-modules
+    - C. list-modules
+    - D. module-path
+<br />[Jump to answer](#qa7)
+8. <a name="q8"></a>Which three directories are not present in JDK 9?
     - A. `jre`
     - B. `rt.jar`
     - C. `bin`
     - D. `tools.jar`
     - E. `conf`
-<br />[Jump to answer](#qa1)
-2. <a name="q2"></a>Which are part of the modular graph of `java.base` (Choose two):
+<br />[Jump to answer](#qa8)
+9. <a name="q9"></a>Which are part of the modular graph of `java.base` (Choose two):
     - A. `javax.swing`
     - B. `java.util`
     - C. `java.naming`
     - D. `java.lang`
     - E. `java.rmi`
-<br />[Jump to answer](#qa2)
-3. <a name="q3"></a>Which is true?
+<br />[Jump to answer](#qa9)
+10. <a name="q10"></a>Which is true?
     - A. The installation directory JDK 9 contains the JRE folder
     - B. The installation directory JDK 9 contains the `conf` folder
     - C. Both are true
     - D. Both are false
-<br />[Jump to answer](#qa3)
-4. <a name="q4"></a>Which are part of the modular graph of the `java.se` module? (Choose three):
+<br />[Jump to answer](#qa10)
+11. <a name="q11"></a>Which are part of the modular graph of the `java.se` module? (Choose three):
     - A. `java.net`
     - B. `java.io`
     - C. `java.naming`
     - D. `java.util`
     - E. `java.sql`
     - F. `java.rmi`
-<br />[Jump to answer](#qa4)
-5. <a name="q5"></a>Which statements are true about modular JDK? (Choose two):
+<br />[Jump to answer](#qa11)
+12. <a name="q12"></a>Which statements are true about modular JDK? (Choose two):
     - A. It helps the application to be more scalable to small devices
     - B. It is integrated with all the APIs, including logging, swing and instrumentation
     - C. It is available from JDK 8
     - D. It is a well defined functional piece of the JDK
-<br />[Jump to answer](#qa5)
-6. <a name="q6"></a>Which are part of modular JDK's default modules? (Choose two):
+<br />[Jump to answer](#qa12)
+13. <a name="q13"></a>Which are part of modular JDK's default modules? (Choose two):
     - A. Oracle-specific modules
     - B. JDK-specific modules
     - C. log4j
     - D. swing
-<br />[Jump to answer](#qa6)
-7. <a name="q7"></a>Which statement is true about JARs in the classpath?
+<br />[Jump to answer](#qa13)
+14. <a name="q14"></a>Which statement is true about JARs in the classpath?
     - A. All the classes in the JAR file are accessible
     - B. JRE continues to search for the last class within the JARs in the classpath if another 
     similarly named class exists
     - C. JARs in the classpath can have duplicate classes and/or packages
-<br />[Jump to answer](#qa7)
-8. <a name="q8"></a>A module can contain:
+<br />[Jump to answer](#qa14)
+15. <a name="q15"></a>A module can contain:
     - A. only resources and a module descriptor
     - B. packages, resources, and a module descriptor
     - C. only packages and resources
-<br />[Jump to answer](#qa8)
-9. <a name="q9"></a>Which statements are true about the module system (Choose two)
+<br />[Jump to answer](#qa15)
+16. <a name="q16"></a>Which statements are true about the module system (Choose two)
     - A. It supports only small computing devices
     - B. It addresses reliability, maintainability, and security requirements
     - C. It supports reusability
     - D. It addresses the need for enhanced networking support
-<br />[Jump to answer](#qa9)
-10. <a name="q10"></a>What two things would you change about this code to set up a `requires` 
+<br />[Jump to answer](#qa16)
+17. <a name="q17"></a>What two things would you change about this code to set up a `requires` 
 relationship directly from `main` to `gameapi`?<br />
     ![questionFigure 1.1](img/questionFigure1-1.png)
-<br />[Jump to answer](#qa10)
-11. <a name="q11"></a>The `main` module contains a class, which instantiates an object defined in 
+<br />[Jump to answer](#qa17)
+18. <a name="q18"></a>The `main` module contains a class, which instantiates an object defined in 
 `competition` module. `competition` exports its packages. `main` requires `competition`. Will this 
 code still compile if the `requires` statement is commented out?
     ````
@@ -447,8 +665,8 @@ code still compile if the `requires` statement is commented out?
     ````
     - A. Yes
     - B. No
-<br />[Jump to answer](#qa11)
-12. <a name="q12"></a>You want the `gameapi` module to export the `game` package to both the 
+<br />[Jump to answer](#qa18)
+19. <a name="q19"></a>You want the `gameapi` module to export the `game` package to both the 
 `competition` and `basketball` modules. Which code example shows how this can be done? - 
 [Jump to answer](#qa12)
     - A.
@@ -464,28 +682,29 @@ code still compile if the `requires` statement is commented out?
         exports game to competition, basketball;
     }
     ````
-13. <a name="q13"></a>Which statement is true about a module descriptor?
+    [Jump to answer](#qa19)
+20.   <a name="q20"></a>Which statement is true about a module descriptor?
     - A. A module descriptor can contain details of required module dependencies
     - B. A module descriptor file must be named module-descriptor.java
     - C. A module descriptor must be stored in the classpath
     - D. A module descriptor does not contain details of services offered by the module owned by it
-<br />[Jump to answer](#qa13)
-14. <a name="q14"></a>Given "order" module contains "Order.java" and "product" module contains 
-"`Product.java`", which is valid module descriptor file content? - [Jump to answer](#qa14)
-    <br />Order.java
-    ````
-    package p1;
-    import p2.Product;
-    public class Order {
-        Product product;
-    }
-    ````
-    Product.java
-    ````
-    package p2;
-    public class Product {}
-    ````
-    - A.
+<br />[Jump to answer](#qa20)
+21.  <a name="q21"></a>Given "order" module contains "Order.java" and "product" module contains 
+"`Product.java`", which is valid module descriptor file content?
+    <br />Order.java:
+        ````
+            package p1;
+            import p2.Product;
+            public class Order {
+                Product product;
+            }
+        ````
+        Product.java:
+        ````
+        package p2;
+        public class Product {}
+        ````
+        - A.
         ````
         module order {
             exports Product;
@@ -494,7 +713,7 @@ code still compile if the `requires` statement is commented out?
             requires Order;
         }
         ````
-    - B.
+        - B.
         ````
         module order {
             requires product;
@@ -503,70 +722,90 @@ code still compile if the `requires` statement is commented out?
             exports p2;
         }
         ````
-    - C.
+        - C.
         ````
         module order {
             requires p2.Product;
         }
         module p2.Product{}
-       ````
-15. <a name="q15"></a>Which directive makes a package available to all other modules at run time but 
+        ````
+        [Jump to answer](#qa21)
+22. <a name="q22"></a>Which directive makes a package available to all other modules at run time but 
 not at compile time?
     - A. `requires`
     - B. `exports`
     - C. `opens ... to`
     - D. `opens`
-<br />[Jump to answer](#qa15)
+<br />[Jump to answer](#qa22)
 
 ## <a name="qa"></a>Quiz Answers
 
-1. <a name="qa1"></a>[Jump to question](#q1) - **A, B, D.** `rt.jar` and `tools.jar` are no longer 
+1. <a name="qa1"></a>[Jump to question](#q1) - **B.** `jlink` is Java's new command line tool which 
+allows you to link sets of modules (and their transitive dependencies) to create a run-time image. 
+Java has always had dynamic linking, but with Java 9 there is now an optional static linking step. 
+This is called link time, and it happens between compile time and run time
+2. <a name="qa2"></a>[Jump to question](#q2) - **C.** `jlink` is a new tool in Java SE 9 that can be 
+used to create a custom platform specific runtime image, **assemble** a set of modules from their 
+dependencies (using a set of dependencies from `module-info.class`), and performing **optimization**.
+3. <a name="qa3"></a>[Jump to question](#q3) - **A, B.** It is smaller in size due to only consisting
+of the modules that your application uses which is beneficial particularly for smaller devices. It can
+also run faster due to optimizations made available by `jlink`
+4. <a name="qa4"></a>[Jump to question](#q4) - **C.** `jlink` is a tool that generates a custom Java 
+runtime image that contains only the platform modules that are required for a given application.
+5. <a name="qa5"></a>[Jump to question](#q5) - **C.** Customized runtime images are bundled with the 
+application modules and platform modules of the JVM, and everything else it needs to execute the 
+application. This became available in Java 9 so B is incorrect.
+6. <a name="qa6"></a>[Jump to question](#q6) - **A.** The runtime image is stored in a special format 
+called JIMAGE, which is optimized for space and speed.
+7. <a name="qa7"></a>[Jump to question](#q7) - **B.** --add-modules: This indicates the modules that 
+needs to be added in the runtime image. It can do this transitively.
+8. <a name="qa8"></a>[Jump to question](#q8) - **A, B, D.** `rt.jar` and `tools.jar` are no longer 
 present in the JRE. The "jre" folder has also been removed.
-2. <a name="qa2"></a>[Jump to question](#q2) - **B, D.** `java.util` and `java.lang` are part of the
+9. <a name="qa9"></a>[Jump to question](#q9) - **B, D.** `java.util` and `java.lang` are part of the
 [java.base modular graph](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/module-summary.html).
 `javax.swing` is in the `java.desktop` module.`java.naming` is a module itself containing JNDI. Finally,
 the `java.rmi` module sits outside of `java.base`. Note, `java.desktop`, `java.rmi`, and `java.naming`
 reside in the `java.se` module.
-3. <a name="qa3"></a>[Jump to question](#q3) - **B.** In JDK 9, the "jre" folder has been removed, whilst
+10. <a name="qa10"></a>[Jump to question](#q10) - **B.** In JDK 9, the "jre" folder has been removed, whilst
 the "conf" folder has been added.
-4. <a name="qa4"></a>[Jump to question](#q4) - **C, E, F.** `java.naming`, `java.sql`, and `java.rmi`
+11. <a name="qa11"></a>[Jump to question](#q11) - **C, E, F.** `java.naming`, `java.sql`, and `java.rmi`
 are part of the [java.se modular graph](https://javadoc.scijava.org/Java9/java.se-summary.html).
 `java.net`, `java.io`, and `java.util` packages are available in the `java.base` module. 
-5. <a name="qa5"></a>[Jump to question](#q5) - **A, D.** In JDK 9, the monolithic JDK is broken into 
+12. <a name="qa12"></a>[Jump to question](#q12) - **A, D.** In JDK 9, the monolithic JDK is broken into 
 modules - therefore B is incorrect. Every module is a well defined piece of functionality of the JDK,
 so D is correct. These modules are split into four major groups: java, javafx, jdk, and Oracle - so B
 is incorrect. Finally, A is correct as the modularization of the JDK means smaller JARs which helps
 small devices.
-6. <a name="qa6"></a>[Jump to question](#q6) - **A, B.** java, javafx, jdk, and Oracle are the four major
+13. <a name="qa13"></a>[Jump to question](#q13) - **A, B.** java, javafx, jdk, and Oracle are the four major
 parts of the modular JDK so the answer is A and B.
-7. <a name="qa7"></a>[Jump to question](#q7) - **C.** JARs in the class path can have duplicate classes 
+14. <a name="qa14"></a>[Jump to question](#q14) - **C.** JARs in the class path can have duplicate classes 
 and/or packages so C is correct. A and B are incorrect as the JRE uses the first class it finds in class 
 path, even if another similarly named class exists.
-8. <a name="qa8"></a>[Jump to question](#q8) - **B.** A module contains one or more packages and other 
+15. <a name="qa15"></a>[Jump to question](#q15) - **B.** A module contains one or more packages and other 
 resources such as images or xml files. It is defined in its module descriptor (`module-info.class`), 
 which is stored in the module's root folder.
-9. <a name="qa9"></a>[Jump to question](#q9) - **B, C** The module system is available to all computing
+16. <a name="qa16"></a>[Jump to question](#q16) - **B, C** The module system is available to all computing
 devices, but has the added benefit of scalability for smaller devices so A is incorrect. B and C are
 correct statements. D is incorrect as although `java.net` is part of `java.base`, enhanced networking 
 support is not a feature of the module system.
-10. <a name="qa10"></a>[Jump to question](#q10) - The solution is to remove the `transative` keyword 
+17. <a name="qa17"></a>[Jump to question](#q17) - The solution is to remove the `transative` keyword 
 from `requires transative` from `competition` module and add `requires gameapi` to the `main` module.
-11. <a name="qa11"></a>[Jump to question](#q11) - **B.** Exporting (with `exports`) packages only 
+18. <a name="qa18"></a>[Jump to question](#q18) - **B.** Exporting (with `exports`) packages only 
 specify what material could be read from a module. One more step is required to specify that one 
 module requires another - `requires`.
-12. <a name="qa12"></a>[Jump to question](#q12) - **B.** You can separate the modules you export to 
+19. <a name="qa19"></a>[Jump to question](#q19) - **B.** You can separate the modules you export to 
 with comma so B is correct.
-13. <a name="qa13"></a>[Jump to question](#q13) - **A.** The module descriptor must contain the module 
+20. <a name="qa20"></a>[Jump to question](#q20) - **A.** The module descriptor must contain the module 
 name. Additionally, the module descriptor can contain details of: Required module dependencies (other 
 modules this module depends on); Packages that this module exports, making them available to other 
 modules (otherwise all packages in the module are implicitly unavailable to other modules); Permissions
 to open content of this module to other modules via the use of reflection; Services this module offers
 to other modules; Services this module consumes. It is defined in `module-info.class`, which is stored
 in the module's root folder.
-14. <a name="qa14"></a>[Jump to question](#q14) - **B.** The `order` module `requires product` as it
+21. <a name="qa21"></a>[Jump to question](#q21) - **B.** The `order` module `requires product` as it
 uses the `Product` class from the `p2` package. The `product` module needs to export (via `exports`)
 the `p2` package so that it is available to modules that require it.
-15. <a name="qa15"></a>[Jump to question](#q15) - **D.** The opens directive makes a package available
+22. <a name="qa22"></a>[Jump to question](#q22) - **D.** The opens directive makes a package available
 to all other modules at run-time but not at compile time. Using `opens` for a package is similar to 
 using `exports`, but it also makes all of its non-public types available via reflection. Modules that 
 contain injectable code should use the `opens` directive, because injections work via reflection.

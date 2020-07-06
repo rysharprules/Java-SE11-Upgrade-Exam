@@ -2,162 +2,16 @@
 
 Material which does not map to the exam topics but may be useful nonetheless. 
 
-- [0.1 - Custom Runtime Images](#0-1)
-- [0.2 - Multi-Release JAR Files](#0-2)
-- [0.3 - Enhancements to the Stream API](#0-3)
-- [0.4 - JShell](#0-4)
-- [0.5 - Convenience Methods for Collections](#0-5)
-- [0.6 - Convenience Methods for Arrays](#0-6)
-- [0.7 - Enhanced Deprecation](#0-7)
+- [0.1 - Multi-Release JAR Files](#0-2)
+- [0.2 - Enhancements to the Stream API](#0-3)
+- [0.3 - JShell](#0-4)
+- [0.4 - Convenience Methods for Collections](#0-5)
+- [0.5 - Convenience Methods for Arrays](#0-6)
+- [0.6 - Enhanced Deprecation](#0-7)
 - [Quiz](#q)
 - [Quiz Answers](#qa)
 
-## <a name="0-1"></a>0.1 - Custom Runtime Images
-
-### What is a Custom Runtime Image?
-
-You can create a special distribution of the java runtime containing only the runtime modules, 
-application modules and only those platform modules required by your application. You can do this in 
-Java SE 9 with custom runtime images. A custom runtime image is a self contained image that bundles the
-application modules with the JVM and everything else it needs to execute your application.
-
-### Link Time
-
-In Java SE 9, an optional link time is introduced between the compilation and runtime phase. A link 
-time requries a linking tool that will assemble and optimize a set of modules and their transitive 
-dependencies to create a runtime image.
-
-### Using `jlink` to Create a Custom Runtime Image
-
-`jlink` is a new tool in Java SE 9 that can be used to create a custom platform specific runtime image,
-assemble a set of modules from their dependencies (using a set of dependencies from `module-info.class`),
-and performing optimization.
-
-A basic invocation of `jlink`:
-
-`jlink [options] --module-path modulepath --add-modules mods --output path`
-
-You will have to specify the following three parameters:
-
-1. `modulepath`: The module path where the platform and application modules to be added to the image 
-are located. Modules can be modular jar files, jmods or exploded directories
-1. `mods`: The list of the modules to be added and their transitive dependencies into your image
-1. `path`: The output directory where the generated runtime image will be stored
-
-#### Example: Using `jlink` to Create a Runtime Image
-
-The following command creates a new runtime image:
-
-````
-jlink
-    --module-path dist/Hello.jar:/usr/java/jdk-9/mods
-    --add-modules com.greeting
-    --output myimage
-````
-1. `--module-path`: This constructs a module path where the Hello World application is present and 
-the `$JAVA_HOME/jmods` directory contains the platform modules
-1. `--add-modules`: This indicates that `com.greeting` which is the module that needs to be added 
-in the runtime image
-1. `--output`: This directory is where the runtime image will be generated
-
-_Note: In Windows, the path separator is ; instead of :_
-
-![Figure 0.1](img/figure0-1.png)
-
-Note the sizes of the JDK 9 compared to the custom runtime image performed with `du -sh` command 
-(979M in `jdk-9.0.1/` and 45M in `myimage/`).
-
-The generated image, `myimage`, has the following directory layout:
-
-````
-myimage/
-    conf
-    include
-    legal
-    lib
-    bin
-        java
-````
-
-A custom runtime image is fully self contained. It bundles the application modules with the JVM and 
-everything else it needs to execute your application.
-
-You can check the runtime custom image with the `java -version` command.
-
-You can also execute the `./java --list-modules` command to list the modules that are in a custom 
-runtime image.
-
-You can use the `java` command, which is in `myimage`, to launch your application:
-
-````
-cd myimage/bin/
-./java --module com.greeting
-````
-
-or
-
-`./java -m com.greeting`
-
-You do not need to set the module path. The custom runtime image is in its own module path.
-
-The `jlink` command has a `--launcher` option that creates a platform specific executable in the 
-`bin` directory.
-
-````
-jlink
-    --module-path dist/Hello.jar:/usr/java/jdk-9/mods
-    --add-modules com.greeting
-    --launcher com.greeting=Hello
-    --output myimage
-````
-
-You can use this executable to run your application.
-
-#### `jlink` resolves transitive dependencies
-
-The `jlink` tool will resolve all dependencies transitively for the modules specified using the 
-`--add-modules` option, and includes all the resolved dependent modules in the runtime image.
-
-### Advantages of a Custom Runtime Image
-
-- Ease of use - Can be shipped to your application users who don't have to download and install 
-JRE separately to run the application
-- Reduced footprint - Consists of only those modules that your application uses and is therefore 
-much smaller than a full JDK. It can be used on resource constrained devices and applications on 
-the cloud
-- Performance - Runs faster because of link time optimization
-
-#### JIMAGE format
-
-The runtime image is stored in a special format called JIMAGE, which is optimized for space and 
-speed. It is a much faster way to search and load classes from JAR and JMOD files. JDK 9 ships with 
-the `jimage` tool to let you explore the contents of a JIMAGE file.
-
-### Optimizing a custom runtime image
-
-#### Using plug-ins with the `jlink` tool
-
-To use a plug-in, you need to use the command line option for it. Run the `jlink` tool with the 
-`--list-plugins` options to print the list of all available plug-ins with their descriptions and 
-command line options.
-
-`jlink --list-plugins`
-
-The `compress` plug-in optimizes the custom runtime image by reducing the Java SE 9 runtime image 
-(level 1 is constant string sharing and level 2 is ZIP).
-
-The `strip-debug` plug-in removes all the debugging information from the Java code further reducing 
-the size of the image.
-
-````
-jlink
-    --module-path dist/Hello.jar:/usr/java/jdk-9/mods
-    --add-modules com.greeting
-    --output myimage
-    -strip-debug --compress=2
-````
-
-## <a name="0-2"></a>0.2 - Multi-Release JAR Files
+## <a name="0-1"></a>0.1 - Multi-Release JAR Files
 
 ### Packaging an Application for Different JDKs
 
@@ -270,7 +124,7 @@ run it on the module path:
 
 `java -p modular_foo.jar -m mymod`
 
-## <a name="0-3"></a>0.3 - Enhancements to the Stream API
+## <a name="0-2"></a>0.2 - Enhancements to the Stream API
 
 New `Stream` interfaces from Java 9 with code examples:
 
@@ -282,7 +136,7 @@ New `Stream` interfaces from Java 9 with code examples:
 
 _Note: `iterate` existed in Java 8 but is now overloaded since Java 9._
 
-## <a name="0-4"></a>0.4 JShell
+## <a name="0-3"></a>0.3 - JShell
 
 Normal execution:
 - You enter all your code ahead of time
@@ -363,7 +217,7 @@ The `/imports` command shows you the packages imported into JShell by default.
 
 `/help` provides a list of all the commands.
 
-## <a name="0-5"></a>0.5 - Convenience Methods for Collections
+## <a name="0-4"></a>0.4 - Convenience Methods for Collections
 
 Many convenience methods have been added in Java SE 9:
 
@@ -448,7 +302,7 @@ Set<String> testSet2 = Collections.unmodifiableSet(testSet);
 
 `testSet` can be altered which changes `testSet2`, despite it being "unmodifiable"!
 
-## <a name="0-6"></a>0.6 - Convenience Methods for Arrays
+## <a name="0-5"></a>0.5 - Convenience Methods for Arrays
 
 `equals` was introduced in Java SE 8. Java SE 9 introduced `compare`, `compareUnsigned`, and `mismatch`
 plus overloads for `equals`.
@@ -518,7 +372,7 @@ Arrays.mismatch(DNAStrand5, DNAStrand6); // 3
 The 3 returned also allows us to know the length of the prefix, i.e. the elements that were matched 
 before a mismatch was found.
 
-## <a name="0-7"></a>0.7 - Enhanced Deprecation
+## <a name="0-6"></a>0.6 - Enhanced Deprecation
 
 Java offers a couple of mechanisms to depracate the API. One is `@deprecated` in the Javadoc that's 
 introduced JDK 1.1. The other one is `@Depracated` with a capital D, which was introduced in JDK 5.
@@ -606,114 +460,72 @@ Example: `com.example.foo.class`<br />
 `jdeprscan` can be version-specific with the `--release` setting - from JDK 6 and up. Note, you don't 
 have to install different versions of the JDK.
 
-![Figure 0.24](img/figure0-24.png)
+![Figure 0.1](img/figure0-1.png)
 
 ## <a name="q"></a>Quiz
 
-1. <a name="q1"></a>In Java SE 9, which phase provides an opportunity to perform optimization
-    - A. Compile time
-    - B. Link time
-    - C. Run time
-<br />[Jump to answer](#qa1)
-2. <a name="q2"></a>Identify the set of tasks `jlink` can perform on a set of modules to create a custom runtime image
-    - A. Assemble modules
-    - B. Optimize modules
-    - C. Both the above
-<br />[Jump to answer](#qa2)
-3. <a name="q3"></a>What are the advantages of a custom runtime image? (Choose two):
-    - A. It consists of only those modules that your application uses
-    - B. It runs faster because of link time optimization
-    - C. It can be used to run an application in the cloud
-    - D. It is heavier than the full JDK
-<br />[Jump to answer](#qa3)
-4. <a name="q4"></a>Which tool is used to create a runtime image?
-    - A. jar
-    - B. jshell
-    - C. jlink
-    - D. javap
-<br />[Jump to answer](#qa4)
-5. <a name="q5"></a>Which statement is true about custom runtime images?
-    - A. Customized runtime images contain only the application's module
-    - B. Customized runtime images can be created by using JDK 8
-    - C. Customized runtime images are bundled with the application modules and platform modules of the 
-    JVM, and everything else it needs to execute the application
-    - D. Customized runtime images contain all the modules of JDK 9
-<br />[Jump to answer](#qa5)
-6. <a name="q6"></a>In what format are runtime images stored?
-    - A. jimage
-    - B. jlink
-    - C. javaimage
-    - D. jmod
-<br />[Jump to answer](#qa6)
-7. <a name="q7"></a>Which option in the `jlink` tool can be used to resolve all dependencies transitively for the 
-modules specified, as well as to include all the resolved dependent modules into the runtime image?
-    - A. module
-    - B. add-modules
-    - C. list-modules
-    - D. module-path
-<br />[Jump to answer](#qa7)
-8. <a name="q8"></a>If a class `Test.class` contains SE 9 specific code and is in the root directory of an MRJAR, and another
+1. <a name="q1"></a>If a class `Test.class` contains SE 9 specific code and is in the root directory of an MRJAR, and another
 `Test.class` file contains SE 8 specific code and is in `META-INF/versions/9`, what will happen if a 
 JDK 8 runtime is used?
     - A. `Test.class` in the root directory will be used and will fail
     - B. `Test.class` containing SE 8 specific code will be used
     - C. `Test.class` in the root directory will be used
-<br />[Jump to answer](#qa8)
-9. <a name="q9"></a>In a modular MRJAR file, where should the `module-info.class` be stored?
+<br />[Jump to answer](#qa1)
+2. <a name="q2"></a>In a modular MRJAR file, where should the `module-info.class` be stored?
     - A. In the root directory for the module, under the `META-INF/versions/<version number>` for the 
     appropriate version of the modular application
     - B. In both locations A & B
     - C. In the root directory for the module, under the root directory of the JAR
-<br />[Jump to answer](#qa9)
-10. <a name="q10"></a>If a `Test.class` exists in the root directory of an MRJAR and under `META-INF/versions/10`, 
+<br />[Jump to answer](#qa2)
+3. <a name="q3"></a>If a `Test.class` exists in the root directory of an MRJAR and under `META-INF/versions/10`, 
 which version of the class will be used with a JDK 9 runtime? (Assuming that `Test.class` is 
 required to run the code in the JAR)
     - A. Neither, the code will fail if no `Test.class` file in a `META-INF/versions/9` directory
     - B. `Test.class` in the `META-INF/versions/10` directory
     - C. `Test.class` in the root directory
-<br />[Jump to answer](#qa10)
-11. <a name="q11"></a>Do you need to make an import statement before creating an `ArrayList` in JShell
+<br />[Jump to answer](#qa3)
+4. <a name="q4"></a>Do you need to make an import statement before creating an `ArrayList` in JShell
     - A. Yes
     - B. No
-<br />[Jump to answer](#qa11)
-12. <a name="q12"></a>Which statement is true about JShell?
+<br />[Jump to answer](#qa4)
+5. <a name="q5"></a>Which statement is true about JShell?
     - A. It is an OS Utility
     - B. It is a Java code editor tool
     - C. It is a script tool
     - D. It is a command line interface to execute a single Java command instantly
-<br />[Jump to answer](#qa12)
-13. <a name="q13"></a>In which situations is the use of JShell beneficial? (Choose two):
+<br />[Jump to answer](#qa5)
+6. <a name="q6"></a>In which situations is the use of JShell beneficial? (Choose two):
     - A. You want to create a test case by using JUnit
     - B. You want to develop a GUI application
     - C. You want to experiment with unfamiliar code
     - D. You want to simulate a scenario
-<br />[Jump to answer](#qa13)
-14. <a name="q14"></a>Which statements are true? (Choose three):
+<br />[Jump to answer](#qa6)
+7. <a name="q7"></a>Which statements are true? (Choose three):
     - A. The "since" element of the `@Deprecated` annotation indicates the version at which the API 
     was deprecated
     - B. The `@Deprecated` annotation can precede the module, class, method, or member declaration
     - C. In JDK 9, you cannot suppress deprecation warnings
     - D. The Java compiler generates warnings about the deprecated APIs
     - E. The `@Deprecated` annotation can precede only the class
-<br />[Jump to answer](#qa14)
-15. <a name="q15"></a>Which statement is true about the `of` convenience method?
+<br />[Jump to answer](#qa7)
+8. <a name="q8"></a>Which statement is true about the `of` convenience method?
     - A. The `of` method cannot be overloaded
     - B. The size of the smallest collection returned by the `of` method is 1
     - C. The varargs variant is used for greater than 10 elements
     - D. The size of the largest colletion returned by the `of` method is 100
-<br />[Jump to answer](#qa15)
-16. <a name="q16"></a>Given the code fragment below, what is the result?
+<br />[Jump to answer](#qa8)
+9. <a name="q9"></a>Given the code fragment below, what is the result?
     ````
       List<String> c1 = List.of("B", "C", "D", "A");
       c1.add(4,"E");
       System.out.println(c1);
     ````
-       - A. A, B, C, D, E
-       - B. B, C, D, E
-       - C. B, C, D, A, E
-       - D. An Exception is thrown at run time
-<br />[Jump to answer](#qa16)
-17. <a name="q17"></a>Given the code fragment below, what is the result?
+    - A. A, B, C, D, E
+    - B. B, C, D, E
+    - C. B, C, D, A, E
+    - D. An Exception is thrown at run time
+<br />[Jump to answer](#qa9)
+10. <a name="q10"></a>Given the code fragment below, what is the result?
     ````
        List<String> c1 = List.of("B", "C", "D", "A");
        Set<String> c2 = Set.of("B", "C", "C", "A");
@@ -727,73 +539,54 @@ required to run the code in the JAR)
        - C. A, B, C, D
          A, B, C
        - D. An Exception is thrown at run time
-<br />[Jump to answer](#qa17)
-18. <a name="q18"></a>Given the code fragment below, what is the result?<br />
+<br />[Jump to answer](#qa10)
+11. <a name="q11"></a>Given the code fragment below, what is the result?<br />
     ![Figure 0.14](img/figure0-14.png)
     - A. false true
     - B. false false
     - C. true false
     - D. true true
-<br />[Jump to answer](#qa18)
-19. <a name="q19"></a>Given the code fragment below, what is the result?<br />
+<br />[Jump to answer](#qa11)
+12. <a name="q12"></a>Given the code fragment below, what is the result?<br />
     ![Figure 0.15](img/figure0-15.png)
     - A. -1 0
     - B. -1 1
     - C. Compilation error
     - D. -2 1
-<br />[Jump to answer](#qa19)
-20. <a name="q20"></a>Given the code fragment below, what is the result?<br />
+<br />[Jump to answer](#qa12)
+13. <a name="q13"></a>Given the code fragment below, what is the result?<br />
     ![Figure 0.16](img/figure0-16.png)
     - A. 1 -3
     - B. An exception thrown at runtime
     - C. -4 -4
     - D. -1 3
 <br />[Jump to answer](#qa20)
-21. <a name="q21"></a>Given the code fragment below, what is the result?<br />
+14. <a name="q14"></a>Given the code fragment below, what is the result?<br />
     ![Figure 0.17](img/figure0-17.png)
     - A. false false
     - B. true false
     - C. true true
     - D. false true
-<br />[Jump to answer](#qa21)
-22. <a name="q22"></a>Which statement is true about the `jdeprscan` tool?
+<br />[Jump to answer](#qa14)
+15. <a name="q15"></a>Which statement is true about the `jdeprscan` tool?
     - A. It helps to know dependencies on deprecated APIs before the APIs are removed from the JDK
     - B. It manages warnings about deprecation
     - C. It reports users if the code uses deprecated APIs from other libraries
     - D. It removes the deprecated APIs
-<br />[Jump to answer](#qa22)
-23. <a name="q23"></a>Which statement is true?
+<br />[Jump to answer](#qa15)
+16. <a name="q16"></a>Which statement is true?
     - A. In JDK 9, APIs marked as deprecated are deprecated but virtually never removed
     - B. In JDK 9, APIs marked as deprecated are eligible to be removed in the next release of the JDK
-<br />[Jump to answer](#qa23)
-24. <a name="q24"></a>Which element of the `@Deprecated` annotation generates terminal deprecation warnings?
+<br />[Jump to answer](#qa16)
+17. <a name="q17"></a>Which element of the `@Deprecated` annotation generates terminal deprecation warnings?
     - A. `forRemoval=true`
     - B. `forRemoval=false`
-<br />[Jump to answer](#qa24)
+<br />[Jump to answer](#qa17)
     
 ## <a name="qa"></a>Quiz Answers
 
-1. <a name="qa1"></a>[Jump to question](#q1) - **B.** `jlink` is Java's new command line tool which 
-allows you to link sets of modules (and their transitive dependencies) to create a run-time image. 
-Java has always had dynamic linking, but with Java 9 there is now an optional static linking step. 
-This is called link time, and it happens between compile time and run time
-2. <a name="qa2"></a>[Jump to question](#q2) - **C.** `jlink` is a new tool in Java SE 9 that can be 
-used to create a custom platform specific runtime image, **assemble** a set of modules from their 
-dependencies (using a set of dependencies from `module-info.class`), and performing **optimization**.
-3. <a name="qa3"></a>[Jump to question](#q3) - **A, B.** It is smaller in size due to only consisting
-of the modules that your application uses which is beneficial particularly for smaller devices. It can
-also run faster due to optimizations made available by `jlink`
-4. <a name="qa4"></a>[Jump to question](#q4) - **C.** `jlink` is a tool that generates a custom Java 
-runtime image that contains only the platform modules that are required for a given application.
-5. <a name="qa5"></a>[Jump to question](#q5) - **C.** Customized runtime images are bundled with the 
-application modules and platform modules of the JVM, and everything else it needs to execute the 
-application. This became available in Java 9 so B is incorrect.
-6. <a name="qa6"></a>[Jump to question](#q6) - **A.** The runtime image is stored in a special format 
-called JIMAGE, which is optimized for space and speed.
-7. <a name="qa7"></a>[Jump to question](#q7) - **B.** --add-modules: This indicates the modules that 
-needs to be added in the runtime image. It can do this transitively.
-8. <a name="qa8"></a>[Jump to question](#q8) - **C.** For any JDK lower than 9, the root will be used.
-9. <a name="qa9"></a>[Jump to question](#q9) - **C.** The `module-info.class` is stored in the root 
+1. <a name="qa8"></a>[Jump to question](#q8) - **C.** For any JDK lower than 9, the root will be used.
+2. <a name="qa9"></a>[Jump to question](#q9) - **C.** The `module-info.class` is stored in the root 
 directory for the module, under the root directory of the JAR.
 10. <a name="qa10"></a>[Jump to question](#q10) - **C.** Since we are running JDK 9, the JVM will look
 for a version that matches (i.e. under `META-INF/versions/9`). As this version does not exist, it will
