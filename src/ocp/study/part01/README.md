@@ -1,9 +1,41 @@
-- [1.1 - Describe the Modular JDK](#1-1)
-- [1.2 - Declare modules and enable access between modules](#1-2)
-- [1.3 - Describe how a modular project is compiled and run](#1-3)
-- [Quiz](#q)
-- [Quiz Answers](#qa)
-
+- [<a name="1-1"></a>1.1 - Describe the Modular JDK](#11---describe-the-modular-jdk)
+  - [The Module Graph](#the-module-graph)
+  - [Java SE Modules](#java-se-modules)
+  - [The Base Module](#the-base-module)
+    - [Finding the right platform module](#finding-the-right-platform-module)
+    - [Location of some tools in JDK 9](#location-of-some-tools-in-jdk-9)
+  - [Java EE Modules](#java-ee-modules)
+    - [Resolving Java EE modules in JDK 9](#resolving-java-ee-modules-in-jdk-9)
+  - [Using JDK Internal APIs](#using-jdk-internal-apis)
+    - [Illegal access to JDK internals in JDK 9](#illegal-access-to-jdk-internals-in-jdk-9)
+  - [Changed JDK and JRE layout](#changed-jdk-and-jre-layout)
+  - [JAR Files and Distribution Issues](#jar-files-and-distribution-issues)
+    - [Class Path Problems](#class-path-problems)
+    - [JAR Dependency Problems](#jar-dependency-problems)
+  - [Accessibility](#accessibility)
+  - [Module System: Advantages](#module-system-advantages)
+  - [Custom Runtime Images](#custom-runtime-images)
+  - [Link Time](#link-time)
+  - [Using `jlink` to Create a Custom Runtime Image](#using-jlink-to-create-a-custom-runtime-image)
+    - [Example: Using `jlink` to Create a Runtime Image](#example-using-jlink-to-create-a-runtime-image)
+    - [`jlink` resolves transitive dependencies](#jlink-resolves-transitive-dependencies)
+  - [Advantages of a Custom Runtime Image](#advantages-of-a-custom-runtime-image)
+    - [JIMAGE format](#jimage-format)
+  - [Optimizing a custom runtime image](#optimizing-a-custom-runtime-image)
+    - [Using plug-ins with the `jlink` tool](#using-plug-ins-with-the-jlink-tool)
+- [<a name="1-2"></a>1.2 - Declare modules and enable access between modules](#12---declare-modules-and-enable-access-between-modules)
+  - [What is a Module](#what-is-a-module)
+  - [Creating an application module](#creating-an-application-module)
+  - [Module Dependencies with `requires`](#module-dependencies-with-requires)
+  - [Module Package Availability with `exports`](#module-package-availability-with-exports)
+  - [Access to Types via Reflection with `opens`](#access-to-types-via-reflection-with-opens)
+  - [Example Hello World Modular Application Code](#example-hello-world-modular-application-code)
+  - [Summary of Keywords](#summary-of-keywords)
+- [<a name="1-3"></a>1.3 - Describe how a modular project is compiled and run](#13---describe-how-a-modular-project-is-compiled-and-run)
+    - [Creating a Modular JAR](#creating-a-modular-jar)
+  - [Running a Modular Application](#running-a-modular-application)
+- [<a name="q"></a>Quiz](#quiz)
+- [<a name="qa"></a>Quiz Answers](#quiz-answers)
 ## <a name="1-1"></a>1.1 - Describe the Modular JDK
 
 In JDK 9, the monolithic JDK is broken into a set of modules that can be combined at compile time, build time, and run time into a variety of configurations. Every module is a well defined piece of functionality of the JDK. All the various frameworks that were part of the prior release of the JDK are now broken down into a bunch of modules, e.g. Logging, Swing, Instrumentation.
@@ -48,7 +80,7 @@ module java.se {
 
 In the module descriptor, a `requires transitive` clause is listed for every single module that is part of the Java SE specification. When you say requires `java.se` in a module, all these modules will be available to you.
 
-These modules are classified into two categories briefly referred to previosuly:
+These modules are classified into two categories briefly referred to previously:
 
 1. Standard modules (`java.*` prefix for module names) that are part of the Java SE specification, e.g. `java.sql` for database connectivity, `java.xml` for XML processing and `java.logging` for logging.
 2. (Non-standard) modules not defined in the Java SE platform (`jdk.*` prefix) are specific to the JDK, e.g. `jdk.jshell`, `jdk.policytool`, `jdk.httpserver`
@@ -186,8 +218,6 @@ entries, multi-release flags
 - Added to the class path in order that their contents (classes) to be made available to the JDK for 
 compilation and running - some applications may have hundreds of JAR files in the class path
 
-![Figure 1.1](img/figure1-1.png)
-
 #### Class Path Problems
 
 - JARs in the class path can have duplicate classes and/or packages
@@ -300,7 +330,7 @@ Let's compile the code:
 _Note: `--module-path path` or `-p path` specifies where to find application modules. Above we have selected the current directory using `.`_
 
 ````
-C:\jlink-example
+C:\...\jlink-example
 │   module-info.class
 │   module-info.java
 │
@@ -316,7 +346,7 @@ Now, create the modular JAR:
 
 `jar cf Hello.jar -C . .`
 
-_Note: The basic format of the command for creating a JAR file is: `jar cf jar-file input-file(s)`. The `c` option indicates that you want to create a JAR file. The `f` option indicates that you want the output to go to a file rather than to stdout `-C` is used to change directories during execution of the command, e.g. if we have static files to include which reside in a different folder structure. See [Oracle's documentation](https://docs.oracle.com/javase/tutorial/deployment/jar/build.html) for more._
+_Note: The basic format of the command for creating a JAR file is: `jar cf jar-file input-file(s)`. The `c` option indicates that you want to create a JAR file. The `f` option indicates that you want the output to go to a file rather than to stdout. `-C` is used to change directories during execution of the command, e.g. if we have static files to include which reside in a different folder structure. See [Oracle's documentation](https://docs.oracle.com/javase/tutorial/deployment/jar/build.html) for more._
 
 To run this program, we only need `App`, `String`, `System`, and `Object` classes.
 
@@ -337,15 +367,15 @@ jlink
     --add-modules com.greeting
     --output myimage
 ````
-1. `--module-path`: This constructs a module path where the Hello jlink application is present and the `$JAVA_HOME/jmods` (`%JAVA_HOME%\jmods` in Windows) directory contains the platform modules
-1. `--add-modules`: This comma separated list tells `jlink` which modules to include in the new JRE; e.g.`com.greeting` which is the module name (stated in `module-info.java`) that needs to be added in the runtime image. From our `jdeps` call we know we need `java.base`, so we can add this here too as an alternative to referring to the `jmods` folder in the module path (`--module-path`).
+1. `--module-path`: This constructs a module path where the "Hello jlink" application is present and the `$JAVA_HOME/jmods` (`%JAVA_HOME%\jmods` in Windows) directory contains the platform modules
+1. `--add-modules`: This comma separated list tells `jlink` which modules to include in the new JRE; e.g. `com.greeting` which is the module name (stated in `module-info.java`) that needs to be added in the runtime image. From our `jdeps` call we know we need `java.base`, so we can add this here too as an alternative to referring to the `jmods` folder in the module path (`--module-path`).
 1. `--output`: This directory is where the runtime image will be generated
 
 _Note: In Windows, the path separator is ; instead of :_
 
 `jlink --module-path Hello.jar --add-modules com.greeting,java.base --output myimage`
 
-The Figure below shows the Hello jlink example on unix (Netbeans compiles jars into a `dist/` folder) with `jmods` folder included in module path.
+The Figure below shows the "Hello jlink" example on Unix (Netbeans compiles jars into a `dist/` folder) with the `jmods` folder included in the module path.
 ![Figure 1.14](img/figure1-14.png)
 
 Note the sizes of the JDK 9 compared to the custom runtime image performed with `du -sh` command 
@@ -435,9 +465,68 @@ jlink
 
 ### What is a Module
 
+A Java platform module consists of:
+
+- A collection of packages
+- Optionally, resource files and other files such as native libraries
+- A list of the accessible packages in the module
+- A list of all modules on which this module depends
+
+There are **four** types of modules in the Java Platform Module System (JPMS):
+
+1. System Modules
+
+    These are the modules listed when we run the java --list-modules command. They include the Java SE (`java.`) and JDK (`jdk.`) modules.
+
+1. Application Modules
+
+    These modules are what we usually want to build. They are named and defined in the `module-info.java` file, which compiled into `module-info.class` file and included in JAR file. See [Creating an application module](#creating-an-application-module)
+
+1. Automatic Modules
+
+    The module system automatically creates an automatic module for plain JARs (with no module descriptor).
+
+    If the JAR defines the `Automatic-Module-Name` header in its manifest (`META-INF/MANIFEST.MF`), it defines the module's name, otherwise the JAR file name is used to determine the name.
+
+    Since the JAR contains no information which packages are considered public APIs and which are not, the module system `exports` all packages and also `opens` them for deep reflection.
+
+    Since a plain JAR expresses no `requires` clauses, the module system lets automatic modules read all other modules.
+
+    #### Automatic module name derivation
+
+    If the JAR file has the attribute "`Automatic-Module-Name`" in its main manifest (META-INF/MANIFEST.MF) then its value is the module name. The module name is otherwise derived from the name of the JAR file.
+
+    The version, and the module name when the attribute "Automatic-Module-Name" is not present, are derived from the file name of the JAR file as follows:
+
+    The "`.jar`" suffix is removed.
+
+    If the name matches the regular expression "-(\\d+(\\.|$))" then the module name will be derived from the subsequence preceding the hyphen of the first occurrence. The subsequence after the hyphen is parsed as a Version and ignored if it cannot be parsed as a Version.
+
+    All non-alphanumeric characters ([^A-Za-z0-9]) in the module name are replaced with a dot ("."), all repeating dots are replaced with one dot, and all leading and trailing dots are removed.
+
+    As an example, a JAR file named "foo-bar.jar" will derive a module name "foo.bar" and no version. A JAR file named "foo-bar-1.2.3-SNAPSHOT.jar" will derive a module name "foo.bar" and "1.2.3-SNAPSHOT" as the version
+
+    The set of packages in the module is derived from the non-directory entries in the JAR file that have names ending in ".class". A candidate package name is derived from the name using the characters up to, but not including, the last forward slash. All remaining forward slashes are replaced with dot ("."). If the resulting string is a legal package name then it is assumed to be a package name. For example, if the JAR file contains the entry "p/q/Foo.class" then the package name derived is "p.q".
+
+    The contents of entries starting with META-INF/services/ are assumed to be service configuration files. If the name of a file (that follows META-INF/services/) is a legal class name then it is assumed to be the fully-qualified class name of a service type. The entries in the file are assumed to be the fully-qualified class names of provider classes.
+
+    If the JAR file has a Main-Class attribute in its main manifest, its value is a legal class name, and its package is in the set of packages derived for the module, then the value is the module main class.
+
+1. Unnamed Module
+
+    When a class or JAR is loaded onto the classpath, but not the module path, it is automatically added to the unnamed module. It is a catch-all module to maintain backward compatibility with previously-written Java code.
+
+    All classes within the unnamed module can read all other module (named or unnamed) without any explicit declaration of any kind.
+
+    The packages exported by unnamed module can only be read by another unnamed module. It is not possible that a named module can read (`requires`) the unnamed module. Because to explicitly use `requires` clause in a `module-info.java` or use a command line option to add the module, we need a module name.
+
+### Creating an application module
+
 A module contains one or more packages and other resources such as images or xml files. It is defined in its module descriptor (`module-info.class`), which is stored in the module's root folder.
 
-The module descriptor must contain the module name. Additionally, the module descriptor can contain details of:
+The module descriptor must contain the module name (it is expected that module names will follow the "reverse domain name" convention to ensure uniqueness). A module name can be the same as package name, however it can be different too, for example `java.sql` module contains `java.sql` and `javax.sql` packages.
+
+Additionally, the module descriptor can contain details of:
 - Required module dependencies (other modules this module depends on)
 - Packages that this module exports, making them available to other modules (otherwise all packages 
 in the module are implicitly unavailable to other modules)
@@ -445,27 +534,74 @@ in the module are implicitly unavailable to other modules)
 - Services this module offers to other modules
 - Services this module consumes
 
+To declare an application module, a module declaration needs to be specified. This is done in a special file called `module-info.java`. As you can see from the file extension, this is a `.java` file that gets compiled into a `.class` file by the Java compiler.
+
+````
+module org.ryan.logger {
+}
+````
+
+There could be additional directives between curly braces, but all of them are optional.
+
+_Note: A module may not have classes from within the unnamed package (i.e. those which belong to "default" package)_
+
+The `module-info.java` file must be at the root of the Java class packages. e.g.:
+
+````
+C:\...\create-module
+└───mod1
+    │   module-info.java
+    └───org
+        └───ryan
+               └───logger
+                        MyLogger.java
+````
+
+MyLogger.java:
+````
+package by.boot.java.pkg.logger;
+
+public class MyLogger {
+    public static void main(String[] args) {
+        System.out.println("MyLogger - main() method called");
+    }
+}
+````
+
 ### Module Dependencies with `requires`
 
-A module defines that it needs another module using the `requires` directive. `requires` specifies a normal module dependency (this module needs access to some content provided by another module). `requires transitive` specifies a module dependency and makes the module depended on available to other modules. `requires static` indicates module dependency at compile time, but not at the runtime.
+A module defines that it needs another module using the `requires` directive. `requires` specifies a normal module dependency (this module needs access to some content provided by another module). 
+
+All standard Java SE modules have implicit and mandatory dependency on `java.base`. You do not need to define dependency on `java.base` explicitly.
+
+It is not allowed to have circular dependencies between modules. If module `A` requires module `B`, then module `B` cannot also require module `A`.
+
+`requires transitive` specifies a module dependency and makes the module depended on available to other modules. The transitive modules that a module depends on are readable by any module that depends upon this module. This is called _implicit readability_.
+
+`requires static` indicates module dependency at compile time, but not at the runtime.
+
+Static dependencies are useful for frameworks and libraries. Suppose that you are building a library to work with different kinds of databases. The library module can use static dependencies to require different kinds of JDBC drivers. At compile time, the library’s code can access types defined in those drivers. At runtime, users of the library can add only the drivers they want to use. If the dependencies are not static, users of the library have to add all supported drivers to pass the module resolution checks.
 
 ### Module Package Availability with `exports`
 
-A modules defines what content it makes available for other modules using the `exports` directive. Exporting a package makes all of its public types available to other modules. There are two directives 
-to specify packages to export:
+A modules defines what content it makes available for other modules using the `exports` directive. Exporting a package makes all of its public types available to other modules. There are two directives to specify packages to export:
+
 1. The `exports <package_name>` directive specifies a package whose public types are accessible to all other modules
-1. The `exports <package_name> to` directive restricts the availability of an exported package to a list of specific modules. It accepts a comma separated list of module names after the `to` keyword 
+1. The `exports <package_name> to` directive restricts the availability of an exported package to a list of specific modules. It accepts a comma separated list of module names after the `to` keyword
+
+_Note: When you export a package, you only export types in this package but not types in its subpackages._
 
 ![Figure 1.5](img/figure1-5.png)
 
 ![Figure 1.6](img/figure1-6.png)
 
-### Access to Types via Reflection
+The same Java package can only be exported by a single Java module at runtime. You cannot have two (or more) modules that export the same package in use at the same time. The JVM will complain at startup if you do. A Java package may not split members (classes, interfaces, enums) between multiple modules.
+
+### Access to Types via Reflection with `opens`
 
 A module may set up to allow runtime-only access to a package by using the `opens` directive. The `opens` directive makes a package available to all other modules at run-time but not at compile time. 
-The `opens ... to` directive makes a package available to a list of specific modules at run-time but not compile time. Using `opens` for a package is similar to using `exports`, but it also makes all of 
-its non-public types available via reflection. Modules that contain injectable code should use the `opens` directive, because injections work via reflection. All packages in a module can be made 
-available to access via reflection by using the `open` directive before the module directive.
+
+The `opens ... to` directive makes a package available to a list of specific modules at run-time but not compile time. Using `opens` for a package is similar to using `exports`, but it also makes all of its non-public types available via reflection. Modules that contain injectable code should use the `opens` directive, because injections work via reflection. All packages in a module can be made available to access via reflection by using the `open` directive before the module directive.
 
 ![Figure 1.7](img/figure1-7.png)
 
@@ -474,6 +610,8 @@ available to access via reflection by using the `open` directive before the modu
 ![Figure 1.8](img/figure1-8.png)
 
 ![Figure 1.9](img/figure1-9.png)
+
+As stated previously, all standard Java SE modules have implicit and mandatory dependency on `java.base`. This does not include the `java.util.logging` package which resides in the `java.logging` module. It must be explicitly requested, or we'll receive `IllegalAccessError` when running. See this [example module](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/blob/master/src/ocp/study/part01/mods/hello/src/module-info.java) which has both a runtime and a compile-time dependency on the `java.logging` module.
 
 ### Summary of Keywords
 
@@ -503,15 +641,13 @@ Multi-module compilation:
 
 ````
 javac -d <output folder>
-    --module-source-path <root directory of the module source> \
-    <list of source code file paths>
+    --module-source-path <root directory of the module source> <list of source code file paths>
 ````
 
 Get description of the compiled module:
 
 ````
-java --module-path <path to the compiled module> \
-    --describe-module <module name>
+java --module-path <path to the compiled module> --describe-module <module name>
 ````
 
 #### Creating a Modular JAR
@@ -531,24 +667,30 @@ jar --create -f jars/world.jar -C mods/world .
 jar --create -f jars/hello.jar --main-class greeting.Hello -C mods/greeting/ .
 ````
 
-### Run a Modular Application
+### Running a Modular Application
 
-Running an unpackaged module application:
+To run an unpackaged module application, you specify the module path, which is similar to the class path, but contains modules. You also specify the main class in the format "modulename\mainclassname":
 
-````
-java --module-path <path to compiled module or modules> \
-    --module <module name>\<package name>.<main class name>
-````
+`java --module-path <path to compiled module or modules> --module <module name>\<package name>.<main class name>`
+
+_Note: Use forward slash `/` between module and package name for `--module` on Windows_
 
 Running an application packaged into modular JARs (assuming main class specified when creating JARs):
 
 `java --module-path <path to JARs> --module <module name>`
 
-Running Hello World example
+Running the example:
 
-`java -p jars -m greeting`
+`java -p ./log.jar -m org.ryan.logger`
 
 _Note: `-p` is shortened term for `--module-path` and `-m` is shortened term for `-module`._
+
+If the main class was not defined, you can provide it explicitly:
+
+````
+java -p ./log.jar -m org.ryan.logger/org.ryan.logger.MyLogger
+MyLogger - main() method called
+````
 
 ## <a name="q"></a>Quiz
 
@@ -653,9 +795,9 @@ modules specified, as well as to include all the resolved dependent modules into
 <br />[Jump to answer](#qa16)
 17. <a name="q17"></a>What two things would you change about this code to set up a `requires` 
 relationship directly from `main` to `gameapi`?<br />
-    ![questionFigure 1.1](img/questionFigure1-1.png)
+    ![Figure 1.1](img/figure1-1.png)
 <br />[Jump to answer](#qa17)
-18. <a name="q18"></a>The `main` module contains a class, which instantiates an object defined in 
+1.  <a name="q18"></a>The `main` module contains a class, which instantiates an object defined in 
 `competition` module. `competition` exports its packages. `main` requires `competition`. Will this 
 code still compile if the `requires` statement is commented out?
     ````
