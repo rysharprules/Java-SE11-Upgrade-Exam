@@ -1,4 +1,5 @@
 # Java-SE11-Upgrade-Exam
+
 Examples and notes to aid revision for the Oracle Certified Professional (OCP) Upgrade Exam for Java SE 8 to 11 (1Z0-817).
 
 - Duration:	180 Minutes
@@ -6,6 +7,8 @@ Examples and notes to aid revision for the Oracle Certified Professional (OCP) U
 - Passing Score: 61%
 
 <a href="https://education.oracle.com/upgrade-java-se-7-to-java-se-8-ocp-programmer/pexam_1Z0-810" ><img src="https://raw.githubusercontent.com/rysharprules/Java-SE8-Upgrade-Exam/master/ocp_logo.gif" /></a>
+
+_This documentation is an aggregation of multiple sources and is intended as a study guide for my personal use and such, wording and examples may jump between perspectives or may appear incomplete. I make no personal gain from this other than learning._
 
 ## Exam Topics
 
@@ -65,3 +68,8 @@ Examples and notes to aid revision for the Oracle Certified Professional (OCP) U
 - 0.4 - Convenience Methods for Collections
 - 0.5 - Convenience Methods for Arrays
 - 0.6 - Enhanced Deprecation
+
+## Bibliography and Resources
+
+- [Study Guide from java.boot.by](http://java.boot.by/ocpjd11-upgrade-guide/index.html)
+- [Project Jigsaw](https://openjdk.java.net/projects/jigsaw/)
