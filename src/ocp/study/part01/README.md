@@ -1096,75 +1096,73 @@ not at compile time?
     - C. `opens ... to`
     - D. `opens`
 <br />[Jump to answer](#qa22)
+23. <a name="q23"></a>Given the code fragment:
+    ````
+    try (
+        Connection conn = DriverManager.getConnection(...);
+        Statement stmt = conn.createStatement();) {
+        // ...
+    }
+    ````
+    Which two actions when done simultaneously will allow the code compile successfully? (Choose two):
+    - A. Add to the class definition: `import java.sql.*;`
+    - B. Add to the class definition: `requires java.sql.*;`
+    - C. Add to the module definition: `requires java.base;`
+    - D. Add to the module definition: `requires java.se;`
+    - E. Add to the module definition: `open java.sql;`
+<br />[Jump to answer](#qa23)
+24. <a name="q24"></a>You are writing a modular application for Java 11 platform which uses SAX XML parser. From the JavaDoc you know that the `javax.xml.parsers.SAXParser` parser class belongs to the `java.xml` module. Which step you must do in order to use this class in your application?
+    - A. Add the option to `java` and `javac`: `-p java.xml`
+    - B. Add the option to java and `javac`: `-cp java.xml.mod`
+    - C. Add directive to the module definition: `requires java.xml;`
+    - D. Add directive to the module definition: `requires java.base;`
+<br />[Jump to answer](#qa24)
+25. <a name="q25"></a>While compiling your modular application you got the error from `javac`:
+    ````
+    import java.sql.Connection;
+           ^
+        (package java.sql is declared in module java.sql, but module mod does not read it)
+    1 error	
+    ````
+    Which two changes when done independently will resolve this error? (Choose two):
+    - A. Run `javac` with option: `--module-path java.sql`
+    - B. Run `javac` with option: `-modulepath java.sql`
+    - C. Run `javac` with option: `-mp java.sql`
+    - D. Add directive to the module definition: `requires java.sql;`
+    - E. Add directive to the module definition: `requires transitive java.sql;`
+<br />[Jump to answer](#qa25)
 
 # Quiz Answers
 
-1. <a name="qa1"></a>[Jump to question](#q1) - **B.** `jlink` is Java's new command line tool which 
-allows you to link sets of modules (and their transitive dependencies) to create a run-time image. 
-Java has always had dynamic linking, but with Java 9 there is now an optional static linking step. 
-This is called link time, and it happens between compile time and run time
-2. <a name="qa2"></a>[Jump to question](#q2) - **C.** `jlink` is a new tool in Java SE 9 that can be 
-used to create a custom platform specific runtime image, **assemble** a set of modules from their 
-dependencies (using a set of dependencies from `module-info.class`), and performing **optimization**.
-3. <a name="qa3"></a>[Jump to question](#q3) - **A, B.** It is smaller in size due to only consisting
-of the modules that your application uses which is beneficial particularly for smaller devices. It can
-also run faster due to optimizations made available by `jlink`
-4. <a name="qa4"></a>[Jump to question](#q4) - **C.** `jlink` is a tool that generates a custom Java 
-runtime image that contains only the platform modules that are required for a given application.
-5. <a name="qa5"></a>[Jump to question](#q5) - **C.** Customized runtime images are bundled with the 
-application modules and platform modules of the JVM, and everything else it needs to execute the 
-application. This became available in Java 9 so B is incorrect.
-6. <a name="qa6"></a>[Jump to question](#q6) - **A.** The runtime image is stored in a special format 
-called JIMAGE, which is optimized for space and speed.
-7. <a name="qa7"></a>[Jump to question](#q7) - **B.** --add-modules: This indicates the modules that 
-needs to be added in the runtime image. It can do this transitively.
-8. <a name="qa8"></a>[Jump to question](#q8) - **A, B, D.** `rt.jar` and `tools.jar` are no longer 
-present in the JRE. The "jre" folder has also been removed.
-9. <a name="qa9"></a>[Jump to question](#q9) - **B, D.** `java.util` and `java.lang` are part of the
-[java.base modular graph](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/module-summary.html).
-`javax.swing` is in the `java.desktop` module.`java.naming` is a module itself containing JNDI. Finally,
-the `java.rmi` module sits outside of `java.base`. Note, `java.desktop`, `java.rmi`, and `java.naming`
-reside in the `java.se` module.
-10. <a name="qa10"></a>[Jump to question](#q10) - **B.** In JDK 9, the "jre" folder has been removed, whilst
-the "conf" folder has been added.
-11. <a name="qa11"></a>[Jump to question](#q11) - **C, E, F.** `java.naming`, `java.sql`, and `java.rmi`
-are part of the [java.se modular graph](https://javadoc.scijava.org/Java9/java.se-summary.html).
-`java.net`, `java.io`, and `java.util` packages are available in the `java.base` module. 
-12. <a name="qa12"></a>[Jump to question](#q12) - **A, D.** In JDK 9, the monolithic JDK is broken into 
-modules - therefore B is incorrect. Every module is a well defined piece of functionality of the JDK,
-so D is correct. These modules are split into four major groups: java, javafx, jdk, and Oracle - so B
-is incorrect. Finally, A is correct as the modularization of the JDK means smaller JARs which helps
-small devices.
-13. <a name="qa13"></a>[Jump to question](#q13) - **A, B.** java, javafx, jdk, and Oracle are the four major
-parts of the modular JDK so the answer is A and B.
-14. <a name="qa14"></a>[Jump to question](#q14) - **C.** JARs in the class path can have duplicate classes 
-and/or packages so C is correct. A and B are incorrect as the JRE uses the first class it finds in class 
-path, even if another similarly named class exists.
-15. <a name="qa15"></a>[Jump to question](#q15) - **B.** A module contains one or more packages and other 
-resources such as images or xml files. It is defined in its module descriptor (`module-info.class`), 
-which is stored in the module's root folder.
-16. <a name="qa16"></a>[Jump to question](#q16) - **B, C** The module system is available to all computing
-devices, but has the added benefit of scalability for smaller devices so A is incorrect. B and C are
-correct statements. D is incorrect as although `java.net` is part of `java.base`, enhanced networking 
-support is not a feature of the module system.
-17. <a name="qa17"></a>[Jump to question](#q17) - The solution is to remove the `transative` keyword 
-from `requires transative` from `competition` module and add `requires gameapi` to the `main` module.
-18. <a name="qa18"></a>[Jump to question](#q18) - **B.** Exporting (with `exports`) packages only 
-specify what material could be read from a module. One more step is required to specify that one 
-module requires another - `requires`.
-19. <a name="qa19"></a>[Jump to question](#q19) - **B.** You can separate the modules you export to 
-with comma so B is correct.
-20. <a name="qa20"></a>[Jump to question](#q20) - **A.** The module descriptor must contain the module 
-name. Additionally, the module descriptor can contain details of: Required module dependencies (other 
-modules this module depends on); Packages that this module exports, making them available to other 
-modules (otherwise all packages in the module are implicitly unavailable to other modules); Permissions
-to open content of this module to other modules via the use of reflection; Services this module offers
-to other modules; Services this module consumes. It is defined in `module-info.class`, which is stored
-in the module's root folder.
-21. <a name="qa21"></a>[Jump to question](#q21) - **B.** The `order` module `requires product` as it
-uses the `Product` class from the `p2` package. The `product` module needs to export (via `exports`)
-the `p2` package so that it is available to modules that require it.
-22. <a name="qa22"></a>[Jump to question](#q22) - **D.** The opens directive makes a package available
-to all other modules at run-time but not at compile time. Using `opens` for a package is similar to 
-using `exports`, but it also makes all of its non-public types available via reflection. Modules that 
-contain injectable code should use the `opens` directive, because injections work via reflection.
+1. <a name="qa1"></a>[Jump to question](#q1) - **B.** `jlink` is Java's new command line tool which allows you to link sets of modules (and their transitive dependencies) to create a run-time image. Java has always had dynamic linking, but with Java 9 there is now an optional static linking step. This is called link time, and it happens between compile time and run time
+2. <a name="qa2"></a>[Jump to question](#q2) - **C.** `jlink` is a new tool in Java SE 9 that can be used to create a custom platform specific runtime image, **assemble** a set of modules from their dependencies (using a set of dependencies from `module-info.class`), and performing **optimization**.
+3. <a name="qa3"></a>[Jump to question](#q3) - **A, B.** It is smaller in size due to only consisting of the modules that your application uses which is beneficial particularly for smaller devices. It can also run faster due to optimizations made available by `jlink`
+4. <a name="qa4"></a>[Jump to question](#q4) - **C.** `jlink` is a tool that generates a custom Java runtime image that contains only the platform modules that are required for a given application.
+5. <a name="qa5"></a>[Jump to question](#q5) - **C.** Customized runtime images are bundled with the application modules and platform modules of the JVM, and everything else it needs to execute the application. This became available in Java 9 so B is incorrect.
+6. <a name="qa6"></a>[Jump to question](#q6) - **A.** The runtime image is stored in a special format called JIMAGE, which is optimized for space and speed.
+7. <a name="qa7"></a>[Jump to question](#q7) - **B.** --add-modules: This indicates the modules that needs to be added in the runtime image. It can do this transitively.
+8. <a name="qa8"></a>[Jump to question](#q8) - **A, B, D.** `rt.jar` and `tools.jar` are no longer present in the JRE. The "jre" folder has also been removed.
+9. <a name="qa9"></a>[Jump to question](#q9) - **B, D.** `java.util` and `java.lang` are part of the [java.base modular graph](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/module-summary.html). `javax.swing` is in the `java.desktop` module.`java.naming` is a module itself containing JNDI. Finally, the `java.rmi` module sits outside of `java.base`. Note, `java.desktop`, `java.rmi`, and `java.naming` reside in the `java.se` module.
+10. <a name="qa10"></a>[Jump to question](#q10) - **B.** In JDK 9, the "jre" folder has been removed, whilst the "conf" folder has been added.
+11. <a name="qa11"></a>[Jump to question](#q11) - **C, E, F.** `java.naming`, `java.sql`, and `java.rmi` are part of the [java.se modular graph](https://javadoc.scijava.org/Java9/java.se-summary.html). `java.net`, `java.io`, and `java.util` packages are available in the `java.base` module. 
+12. <a name="qa12"></a>[Jump to question](#q12) - **A, D.** In JDK 9, the monolithic JDK is broken into modules - therefore B is incorrect. Every module is a well defined piece of functionality of the JDK, so D is correct. These modules are split into four major groups: java, javafx, jdk, and Oracle - so B is incorrect. Finally, A is correct as the modularization of the JDK means smaller JARs which helps small devices.
+13. <a name="qa13"></a>[Jump to question](#q13) - **A, B.** java, javafx, jdk, and Oracle are the four major parts of the modular JDK so the answer is A and B.
+14. <a name="qa14"></a>[Jump to question](#q14) - **C.** JARs in the class path can have duplicate classes and/or packages so C is correct. A and B are incorrect as the JRE uses the first class it finds in class path, even if another similarly named class exists.
+15. <a name="qa15"></a>[Jump to question](#q15) - **B.** A module contains one or more packages and other resources such as images or xml files. It is defined in its module descriptor (`module-info.class`), which is stored in the module's root folder.
+16. <a name="qa16"></a>[Jump to question](#q16) - **B, C** The module system is available to all computing devices, but has the added benefit of scalability for smaller devices so A is incorrect. B and C are correct statements. D is incorrect as although `java.net` is part of `java.base`, enhanced networking support is not a feature of the module system.
+17. <a name="qa17"></a>[Jump to question](#q17) - The solution is to remove the `transative` keyword from `requires transative` from `competition` module and add `requires gameapi` to the `main` module.
+18. <a name="qa18"></a>[Jump to question](#q18) - **B.** Exporting (with `exports`) packages only specify what material could be read from a module. One more step is required to specify that one module requires another - `requires`.
+19. <a name="qa19"></a>[Jump to question](#q19) - **B.** You can separate the modules you export to with comma so B is correct.
+20. <a name="qa20"></a>[Jump to question](#q20) - **A.** The module descriptor must contain the module name. Additionally, the module descriptor can contain details of: Required module dependencies (other modules this module depends on); Packages that this module exports, making them available to other modules (otherwise all packages in the module are implicitly unavailable to other modules); Permissions to open content of this module to other modules via the use of reflection; Services this module offers to other modules; Services this module consumes. It is defined in `module-info.class`, which is stored in the module's root folder.
+21. <a name="qa21"></a>[Jump to question](#q21) - **B.** The `order` module `requires product` as it uses the `Product` class from the `p2` package. The `product` module needs to export (via `exports`) the `p2` package so that it is available to modules that require it.
+22. <a name="qa22"></a>[Jump to question](#q22) - **D.** The opens directive makes a package available to all other modules at run-time but not at compile time. Using `opens` for a package is similar to using `exports`, but it also makes all of its non-public types available via reflection. Modules that contain injectable code should use the `opens` directive, because injections work via reflection.
+23. <a name="qa23"></a>[Jump to question](#q23) - **A, D.** Standard Java SE modules start with `java.` prefix, ideally your application should "require" only `java.*` modules. The non-standard JDK modules start with `jdk.` prefix, they  include debugging and serviceability tools and APIs, development tools, and various service providers, which are made available to other modules via the existing `java.util.ServiceLoader` mechanism. A is correct, even if you "require" a correct Java SE module, you still need to import the package (or individual classes) in order to use short form of class name (`Connection` vs. `java.sql.Connection`). Note that two packages are always implicitly imported in Java applications: current package where the class is located, and `java.lang` package (which contains such common classes as `String`, `Object`, `System`, etc.). B is wrong, you need to use "import" keyword in order to import package/class. C is incorrect because the `java.base` standard Java SE module indeed contains some common packages (e.g. `java.io`, `java.lang`, `java.nio`, `java.util`, `java.time`, and many more), but the JDBC classes are placed into their own `java.sql` module. D is correct. Java SE has a special aggregator module named `java.se`, which does not contain any own package, rather `requires transitive` all standard `java.*` modules. The `transitive` modifier means that what is "required" in `java.se` (i.e. all standard Java SE modules) will be required to client code as soon as client module definition has `requires java.se;`. Another approach to compile the code would be to require specifically the SQL module: `requires java.sql;`. Finally, E is incorrect because a module is allowed to `open` only its own packages. It does not make sense and violates encapsulation to `open` a package from some third-party module - and the `open` directive will not provide visibility of JDBC classes to the application.
+24. <a name="qa24"></a>[Jump to question](#q24) - **C.** A is incorrect. It does not cause an error, but it is useless and does not make sense. The `-p` is a short form of the `--module-path` option, which defines location where modules are looked up when creating a module graph during compile time or runtime. Standard Java SE modules start with `java.` prefix (e.g. `java.xml`) and they are avalable by design, without need to add them to module path.
+B is also wrong. It does not cause error, but it is useless. The `-cp` is a short form of `--class-path` (or `-classpath`) option, which defines the location where classes are looked up when the classloader needs to load a class to JVM. There is a problem with this option for several reasons: 
+    - Standard Java modules are available by design without adding to classpath or module path 
+    - Modules are added to modulepath
+    - To classpath you can add `.jar` files or directories
+    - When something is added and loaded later via classpath it becomes part of unnamed module in Java 9 and higher, the unnamed module cannot be accessed from a named module (the opposite direction access is possible).
+  
+    C is correct. When we define some module as "required" in module definition, it will be added to modules graph at compile time or runtime, and classes/interfaces from this module can be seen by JVM classloader. Finally, D is incorrect. The `java.base` module is always implicitly added in modular applications, even if you do not "require" it. But `java.base` contains only some common packages (e.g. `java.lang`). The XML parsing classes/interfaces are stored in a separate module (`java.xml`) which must be direcly or indirectly "required". A possible option which would work can be requiring Java SE aggregator module in module definition: `requires java.se;`
+25. <a name="qa25"></a>[Jump to question](#q25) - **D, E.** A is wrong. It does not cause error, but it is useless and does not make sense. The `--module-path` option defines location where modules are looked up when creating a module graph during compile time or runtime. Standard Java SE modules start with `java.` prefix (e.g. `java.sql`) and they are avalable by design, without need to add them to module path. B and C are both incorrect as they are invalid options (flags) for the `javac` compiler. D is correct. When we define some module as "required" in moodule definition, it will be added to modules graph at compile time or runtime, and classes/interfaces from this module can be seen by JVM classloader. The `requires` directive specifies the name of a module (i.e. `java.sql`) on which the current module has a dependence. E is also correct. The `requires` keyword may be followed by the modifier `transitive`. This causes any module which `requires` the current module to have an implicitly declared dependence on the module specified by the `requires transitive` directive. In other words, when some other module "requires" our application module, it will implicitly "require" `java.sql` module and will not need to require it explicitly via separate requires `java.sql;` directive.
