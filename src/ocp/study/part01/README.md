@@ -200,12 +200,12 @@ WARNING: All illegal access operations will be denied in a future release
 ...
 ````
 
-_Note: warnings can be disabled on a library-by-library basis with the `--add-opens` command line 
+<img src="../img/note.png" alt="Note" width="20"/> _Note: warnings can be disabled on a library-by-library basis with the `--add-opens` command line 
 flag, e.g.:_
 
 `java --add-opens java.base/sun.nio.ch=ALL-UNNAMED --add-opens java.base/java.io=ALL_UNNAMED -jar jython-standalone-2.7.0.jar`
 
-_Note: `--add-exports`, `--add-opens`, `--add-modules`, `--add-reads`, and `--patch-module` are NOT part of the Java 11 exam._
+<img src="../img/note.png" alt="Note" width="20"/> _Note: `--add-exports`, `--add-opens`, `--add-modules`, `--add-reads`, and `--patch-module` are NOT part of the Java 11 exam._
 
 ## Changed JDK and JRE layout
 
@@ -294,10 +294,12 @@ are located. Modules can be modular jar files, jmods or exploded directories
 
 #### Example: Using `jlink` to Create a Runtime Image
 
+Examples referred to in this section use source code from the [jlink-example application](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/blob/master/src/ocp/study/part01/jlink-example/).
+
 We have a modular application:
 
 ````
-C:\jlink-example
+C:\...\jlink-example
 │   module-info.java
 └───com
     └───greeting
@@ -326,7 +328,7 @@ Let's compile the code:
 
 `javac -p . module-info.java com/greeting/App.java`
 
-_Note: `--module-path path` or `-p path` specifies where to find application modules. Above we have selected the current directory using `.`_
+<img src="../img/note.png" alt="Note" width="20"/> _Note: `--module-path path` or `-p path` specifies where to find application modules. Above we have selected the current directory using `.`_
 
 ````
 C:\...\jlink-example
@@ -339,13 +341,13 @@ C:\...\jlink-example
             App.java
 ````
 
-_Note: specify `-d` to place `.class` files into a separate directory._
+<img src="../img/note.png" alt="Note" width="20"/> _Note: specify `-d` to place `.class` files into a separate directory._
 
 Now, create the modular JAR:
 
 `jar cf Hello.jar -C . .`
 
-_Note: The basic format of the command for creating a JAR file is: `jar cf jar-file input-file(s)`. The `c` option indicates that you want to create a JAR file. The `f` option indicates that you want the output to go to a file rather than to stdout. `-C` is used to change directories during execution of the command, e.g. if we have static files to include which reside in a different folder structure. See [Oracle's documentation](https://docs.oracle.com/javase/tutorial/deployment/jar/build.html) for more._
+<img src="../img/note.png" alt="Note" width="20"/> _Note: The basic format of the command for creating a JAR file is: `jar cf jar-file input-file(s)`. The `c` option indicates that you want to create a JAR file. The `f` option indicates that you want the output to go to a file rather than to stdout. `-C` is used to change directories during execution of the command, e.g. if we have static files to include which reside in a different folder structure. See [Oracle's documentation](https://docs.oracle.com/javase/tutorial/deployment/jar/build.html) for more._
 
 To run this program, we only need `App`, `String`, `System`, and `Object` classes.
 
@@ -367,10 +369,10 @@ jlink
     --output myimage
 ````
 1. `--module-path`: This constructs a module path where the "Hello jlink" application is present and the `$JAVA_HOME/jmods` (`%JAVA_HOME%\jmods` in Windows) directory contains the platform modules
-1. `--add-modules`: This comma separated list tells `jlink` which modules to include in the new JRE; e.g. `com.greeting` which is the module name (stated in `module-info.java`) that needs to be added in the runtime image. From our `jdeps` call we know we need `java.base`, so we can add this here too as an alternative to referring to the `jmods` folder in the module path (`--module-path`).
-1. `--output`: This directory is where the runtime image will be generated
+2. `--add-modules`: This comma separated list tells `jlink` which modules to include in the new JRE; e.g. `com.greeting` which is the module name (stated in `module-info.java`) that needs to be added in the runtime image. From our `jdeps` call we know we need `java.base`, so we can add this here too as an alternative to referring to the `jmods` folder in the module path (`--module-path`).
+3. `--output`: This directory is where the runtime image will be generated
 
-_Note: In Windows, the path separator is ; instead of :_
+<img src="../img/note.png" alt="Note" width="20"/> _Note: In Windows, the path separator is ; instead of :_
 
 `jlink --module-path Hello.jar --add-modules com.greeting,java.base --output myimage`
 
@@ -620,7 +622,7 @@ java -p greeter.jar --add-modules MOD -jar client.jar
 Greeting from Java 9 !
 ````
 
-_Note: When you are trying to launch an application from a non-modular JAR, you have to explicitly resolve required modules with `--add-modules`. The required named modules have to be on module graph, e.g. add by `--module-path` (or by `-p`)_
+<img src="../img/note.png" alt="Note" width="20"/> _Note: When you are trying to launch an application from a non-modular JAR, you have to explicitly resolve required modules with `--add-modules`. The required named modules have to be on module graph, e.g. add by `--module-path` (or by `-p`)_
 
 ## Creating an application module
 
@@ -648,7 +650,7 @@ module hello {
 
 There could be additional directives between curly braces, but all of them are optional.
 
-_Note: A module may not have classes from within the unnamed package (i.e. those which belong to "default" package)_
+<img src="../img/note.png" alt="Note" width="20"/> _Note: A module may not have classes from within the unnamed package (i.e. those which belong to "default" package)_
 
 The `module-info.java` file must be at the root of the Java class packages. e.g.:
 
@@ -703,7 +705,7 @@ A modules defines what content it makes available for other modules using the `e
 1. The `exports <package_name>` directive specifies a package whose public types are accessible to all other modules
 1. The `exports <package_name> to` directive restricts the availability of an exported package to a list of specific modules. It accepts a comma separated list of module names after the `to` keyword
 
-_Note: When you export a package, you only export types in this package but not types in its subpackages._
+<img src="../img/note.png" alt="Note" width="20"/> _Note: When you export a package, you only export types in this package but not types in its subpackages._
 
 ![Figure 1.5](img/figure1-5.png)
 
@@ -756,10 +758,10 @@ We'll be referring to examples from the [Project Jigsaw guide](https://openjdk.j
 
 `javac -d <output folder> <list of source code file paths including module-info>`
 
-_Note: If you don't specify any `-d` options, the class files will be put into directories according to the package structure, relative to the current directory. If you give an `-d` option, the class 
+<img src="../img/note.png" alt="Note" width="20"/> _Note: If you don't specify any `-d` options, the class files will be put into directories according to the package structure, relative to the current directory. If you give an `-d` option, the class 
 files will be put relative to the directory given by the option. Non-existing directories will be created here._
 
-_Note: `module-info.java` is specified first, so the compiler knows this is a modular application and will inform you accordingly if any problems exist with the code._
+<img src="../img/note.png" alt="Note" width="20"/> _Note: `module-info.java` is specified first, so the compiler knows this is a modular application and will inform you accordingly if any problems exist with the code._
 
 ## Multi-module compilation:
 
@@ -776,7 +778,7 @@ Use the `jar` command to crete a modular JAR:
 
 `jar --create -f <path and name of JAR file> --main-class <package name>.<main class name> -C <path to compiled module code> .`
 
-_Note: `jar cf` can be used as shorthand for `jar --create --file`_
+<img src="../img/note.png" alt="Note" width="20"/> _Note: `jar cf` can be used as shorthand for `jar --create --file`_
 
 Example from [Project Jigsaw](https://openjdk.java.net/projects/jigsaw/quick-start#packaging):
 
@@ -786,7 +788,7 @@ jar --create --file=mlib/org.astro@1.0.jar --module-version=1.0 -C mods/org.astr
 jar --create --file=mlib/com.greetings.jar --main-class=com.greetings.Main -C mods/com.greetings .
 ````
 
-_Note: `--file mlib/org.astro@1.0.jar` and `--file=mlib/org.astro@1.0.jar` are both valid syntaxes._
+<img src="../img/note.png" alt="Note" width="20"/> _Note: `--file mlib/org.astro@1.0.jar` and `--file=mlib/org.astro@1.0.jar` are both valid syntaxes._
 
 ## Running a Modular Application
 
@@ -794,7 +796,7 @@ To run an unpackaged module application, you specify the module path, which is s
 
 `java --module-path <path to compiled module or modules> --module <module name>\<package name>.<main class name>`
 
-_Note: Use forward slash `/` between module and package name for `--module` on Windows_
+<img src="../img/note.png" alt="Note" width="20"/> _Note: Use forward slash `/` between module and package name for `--module` on Windows_
 
 Running an application packaged into modular JARs (assuming main class specified when creating JARs):
 
@@ -804,7 +806,7 @@ Running the example:
 
 `java -p mlib -m com.greetings`
 
-_Note: `-p` is shortened term for `--module-path` and `-m` is shortened term for `-module`._
+<img src="../img/note.png" alt="Note" width="20"/> _Note: `-p` is shortened term for `--module-path` and `-m` is shortened term for `-module`._
 
 If the main class was not defined, you can provide it explicitly:
 

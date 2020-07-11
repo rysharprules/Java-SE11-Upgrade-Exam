@@ -134,7 +134,7 @@ New `Stream` interfaces from Java 9 with code examples:
 | static <T> Stream<T> | iterate​(T seed, Predicate<? super T> hasNext, UnaryOperator<T> next) | Returns a sequential ordered Stream produced by iterative application of the given next function to an initial element, conditioned on satisfying the given hasNext predicate. | [Example](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/blob/master/src/ocp/study/part00/IterateExample.java) |
 | default Stream<T> | takeWhile​(Predicate<? super T> predicate) | Returns, if this stream is ordered, a stream consisting of the longest prefix of elements taken from this stream that match the given predicate. | [Example](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/blob/master/src/ocp/study/part00/TakeWhileExample.java) |
 
-_Note: `iterate` existed in Java 8 but is now overloaded since Java 9._
+<img src="../img/note.png" alt="Note" width="20"/> _Note: `iterate` existed in Java 8 but is now overloaded since Java 9._
 
 ## <a name="0-3"></a>0.3 - JShell
 
