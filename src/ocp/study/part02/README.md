@@ -22,15 +22,21 @@
 
 # 2.1 - Describe the components of Services including directives
 
-Java since version 6 supported service-provider loading facility via the `java.util.ServiceLoader` class. Using Service Loader you can have a service provider interface (SPI) simply called Service, and multiple implementations of the SPI simply called Service Providers. These Service Providers in Java 8 and earlier are located in the classpath and loaded at run time.
+Since version 6 Java has supported service-provider loading via the `java.util.ServiceLoader` class facility. Using Service Loader you can have a service provider interface (SPI) - simply called Service, and multiple implementations of the SPI - simply called Service Providers. These Service Providers in Java 8 and earlier are located in the classpath and are loaded at run time.
 
-Since Java 9 you can develop Services and Service Providers as modules. A service module declares one or more interfaces whose implementations will be provided at run time by some provider modules. A provider module declares what implementations of service interfaces it `provides`.The module that discovers and loads service providers must contain a `uses` directive in its declaration.
+Since Java 9 you can develop Services and Service Providers as modules. A service module declares one or more interfaces whose implementations will be provided at run time by some provider modules. A provider module declares what implementations of service interfaces it `provides`. The module that discovers and loads service providers must contain a `uses` directive in its declaration.
 
 ## Service Module
 
 We have a [GreeterIntf interface](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/blob/master/src/ocp/study/part02/greeting_1/service/p1/GreeterIntf.java) with one method, `greet()`, which resides in package `p1`. This is exported by `modS` defined in the service [module-info.java](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/blob/master/src/ocp/study/part02/greeting_1/service/module-info.java).
 
-We can compile this with: `javac service/module-info.java service/p1/GreeterIntf.java` and package as a JAR with: `jar --create --file service.jar -C service .`
+We can compile this with: 
+
+`javac service/module-info.java service/p1/GreeterIntf.java` 
+
+and package as a JAR with: 
+
+`jar --create --file service.jar -C service .`
 
 ## Service Provider Module
 
@@ -44,11 +50,17 @@ A service provider will use `provides ... with ...` directive to declare what se
 
 <img src="../img/note.png" alt="Note" width="20"/> _Note: We don't have to specify the service implementation in a file under the resource directory `META-INF/services` as of Java 9._
 
-We can compile this with: `javac -p service.jar provider/module-info.java provider/p2/GreeterImpl.java` and package as a provider JAR with: `jar --create --file provider.jar -C provider .`
+We can compile this with: 
+
+`javac -p service.jar provider/module-info.java provider/p2/GreeterImpl.java` 
+
+and package as a provider JAR with: 
+
+`jar --create --file provider.jar -C provider .`
 
 ## Service Client Application
 
-In order for a service to be used, its providers need to be discovered and loaded. The `ServiceLoader` class does the work of discovering and loading the service providers. The module that discovers and loads service providers must contain a `uses <service interface name>` directive in its declaration. In our example, [module-info.java](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/blob/master/src/ocp/study/part02/greeting_1/service-client/module-info.java) we see `modC` declares it `uses p1.GreeterIntf`.
+In order for a service to be used, its providers need to be discovered and loaded. The `ServiceLoader` class does the work of discovering and loading the service providers. The module that discovers and loads service providers must contain a `uses <service interface name>` directive in its declaration. In our example, [module-info.java](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/blob/master/src/ocp/study/part02/greeting_1/service-client/module-info.java), we see `modC` declares it `uses p1.GreeterIntf`. It also `requires modS` (the service module).
 
 If a module uses the `ServiceLoader<GreeterIntf>` class to load the instances of service providers for a service interface named `p1.GreeterIntf`, the module declaration must contain the `uses p1.GreeterIntf` declaration.
 
@@ -59,7 +71,11 @@ ServiceLoader<GreeterIntf> services = ServiceLoader.load(GreeterIntf.class);
 services.findFirst().ifPresent(s -> s.greet());
 ````
 
-We can compile this with: `javac -p service.jar service-client/module-info.java service-client/app/Client.java` and run the client code: 
+We can compile this with: 
+
+`javac -p service.jar service-client/module-info.java service-client/app/Client.java` 
+
+and run the client code: 
 
 ````
 java -p service.jar;provider.jar;service-client -m modC/app.Client
@@ -175,7 +191,7 @@ exports p1
 requires java.base mandated	
 ````
 
-As you can see is depends on `java.base` module in our case (it always implicitly added).
+As you can see is depends on `java.base` module in our case (it is always implicitly added).
 
 ## Provider module dependency
 
