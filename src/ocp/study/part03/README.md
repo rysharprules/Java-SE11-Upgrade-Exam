@@ -1,14 +1,53 @@
-- [3.1 - Create and use methods in interfaces](#3-1)
-- [3.2 - Define and write functional interfaces](#3-2)
-- [Quiz](#q)
-- [Quiz Answers](#qa)
+- [3.1 - Create and use methods in interfaces](#31---create-and-use-methods-in-interfaces)
+  - [Introduction](#introduction)
+    - [Types of methods in interfaces](#types-of-methods-in-interfaces)
+  - [Interface Basics](#interface-basics)
+  - [`static` methods in interfaces](#static-methods-in-interfaces)
+  - [`private` methods in interfaces](#private-methods-in-interfaces)
+    - [Java SE 7 Interfaces](#java-se-7-interfaces)
+      - [Example: Implementing `abstract` methods](#example-implementing-abstract-methods)
+      - [Example: Duplicated logic](#example-duplicated-logic)
+    - [Java SE 8 Interfaces with `default`](#java-se-8-interfaces-with-default)
+    - [What about problems in multiple inheritance?](#what-about-problems-in-multiple-inheritance)
+    - [Inheritance rules of `default` methods](#inheritance-rules-of-default-methods)
+    - [Interfaces don't replace abstract classes](#interfaces-dont-replace-abstract-classes)
+    - [What if `default` methods duplicate logic?](#what-if-default-methods-duplicate-logic)
+    - [Introducing `private` methods in interface](#introducing-private-methods-in-interface)
+  - [`private` `static` methods in interfaces](#private-static-methods-in-interfaces)
+- [3.2 - Define and write functional interfaces](#32---define-and-write-functional-interfaces)
+  - [Applying the `@FunctionalInterface` Annotation](#applying-the-functionalinterface-annotation)
+- [Quiz](#quiz)
+- [Quiz Answers](#quiz-answers)
 
-## <a name="3-1"></a>3.1 Create and use methods in interfaces
+# 3.1 - Create and use methods in interfaces
 
-An interface is an abstract data type, similar to a class that defines a
-list of public abstract methods that any class implementing the interface must provide. An
-interface may also include constant public static final variables, default methods, and
-static methods. The following is an example of an interface and a class that implements it:
+## Introduction
+
+An interface is an abstract data type, similar to a class that defines a list of public abstract methods that any class implementing the interface must provide. An interface can have seven different things:
+
+1. Constant variables (since Java 1.0) - Every field declaration in the body of an interface is implicitly `public`, `static`, and `final`. It is permitted to redundantly specify any or all of these modifiers for such fields.
+2. `abstract` methods (since Java 1.0) - Every method declaration in an interface with body represented by a semicolon (`;`) is implicitly `public` and `abstract`. See [Basics](#basics)
+3. Nested types (classes and interfaces) (since Java 2.0) - Interfaces may contain member type declarations. A member type declaration in an interface is implicitly static and public. It is permitted to redundantly specify either or both of these modifiers.
+4. `default` methods (since Java 8.0) - The default methods are implicitly public — there's no need to specify the public modifier. See [Java SE 8 Interfaces with `default`](#java-se-8-interfaces-with-default)
+5. `static` methods (since Java 8.0) - See [`static` methods in interfaces](#static-methods-in-interfaces)
+6. `private` methods (since Java 9.0) - [`private` methods in interfaces](#private-methods-in-interfaces)
+7. `private static` methods (since Java 9.0) - See [`private` `static` methods in interfaces](#private-static-methods-in-interfaces)
+
+### Types of methods in interfaces
+
+| Access modifier and method type | Supported? |
+| --- | --- |
+| `public abstract` | Yes |
+| `private abstract` | Compiler error |
+| `public default` | Yes |
+| `private default` | Compiler error |
+| `public static` | Yes |
+| `private static` | Yes |
+| `private` | Yes |
+
+## Interface Basics
+
+The following is an example of an interface and a class that implements it:
 
 ````
 public interface Fly {
@@ -108,17 +147,38 @@ In this example, the `Frog` class implements both the `Swim` and `Hop` interface
 An instance of `Frog` may be passed to any method that accepts `Swim`, `Hop`, `Frog`, or
 `java.lang.Object` as an input parameter. As shown in this example, you can also
 construct interfaces that have neither methods nor class members, traditionally referred
-to as marker interfaces. The `java.io.Serializable`
-interface, which contains no methods, is an example of a marker interface.
+to as marker interfaces. The `java.io.Serializable` interface, which contains no methods, is an example of a marker interface.
 
-There are numerous rules associated with implementing interfaces that you should know
-quite well at this point. For example, interfaces cannot extend classes, nor can classes
-extend interfaces. Interfaces may also not be marked final or instantiated directly. There
-are additional rules for default methods, such as Java failing to compile if a class or
-interface inherits two default methods with the same signature and doesn’t provide its
-own implementation.
+## `static` methods in interfaces
 
-### Private methods in interfaces
+In Java 8 and later you can define `static` methods in interfaces. Like `static` methods in classes, you specify that a method definition in an interface is a `static` method with the `static` keyword at the beginning of the method signature.
+
+````
+public interface Greeter {
+    static void greet() {
+        System.out.print("Greetings from an Interface");    
+    }
+}
+````
+
+````
+public class Client {
+    public static void main(String... args) {
+      Greeter.greet();
+    }
+}
+````
+
+A `static` method can be invoked from other `static` or from `default` method.
+
+A `static` method cannot be overridden or changed in the implementation class.
+
+A `static` method cannot be shadowed too, as it part of the interface, not part of implementing the class.
+
+
+Finally, the `static` methods are implicitly `public` — there's no need to specify the `public` modifier.
+
+## `private` methods in interfaces
 
 Java SE 9 introduces the ability to implement `private` methods in interfaces:
 
@@ -130,15 +190,11 @@ public interface ExampleInterface {
 }
 ````
 
-This is the latest step in the evolution of Java interfaces. To fully understand why this is beneficial,
-we'll need to re-examine the original purpose of interfaces and how they were written in Java SE 7 and earlier.
+This is the latest step in the evolution of Java interfaces. To fully understand why this is beneficial, we'll need to re-examine the original purpose of interfaces and how they were written in Java SE 7 and earlier.
 
-#### Java SE 7 Interfaces
+### Java SE 7 Interfaces
 
-Interfaces are Java's solution to safely facilitate multiple inheritance. Interfaces originally only 
-contained `static` variables and `abstract` methods. An example is the `Accessible` interface below. 
-This interface is meant to be implemented in classes for financial products where people access money 
-through deposits and withdrawls.
+Interfaces are Java's solution to safely facilitate multiple inheritance. Interfaces originally only contained `static` variables and `abstract` methods. An example is the `Accessible` interface below. This interface is meant to be implemented in classes for financial products where people access money through deposits and withdrawls.
 
 ````
 public interface Accessible {
@@ -149,12 +205,9 @@ public interface Accessible {
 }
 ````
 
-`abstract` methods must be implemented later. If one class implements an interface, you'll write your 
-implementation logic inside that class. If many classes implement the same interface, you'll write 
-your implementation logic many times.
+`abstract` methods must be implemented later. If one class implements an interface, you'll write your implementation logic inside that class. If many classes implement the same interface, you'll write your implementation logic many times.
 
-What if most classes implement the exact same logic? Must you duplicate the same code in many places? 
-Isn't code duplication bad?
+What if most classes implement the exact same logic? Must you duplicate the same code in many places? Isn't code duplication bad?
 
 #### Example: Implementing `abstract` methods
 
@@ -195,13 +248,14 @@ public class RestrictedChecking implements Accessible {
 }
 ````
 
-#### Java SE 8 Interfaces
+### Java SE 8 Interfaces with `default`
 
 In Java SE 8, you're allowed to implement special types of methods within interfaces: `static` 
 methods and `default` methods.
 
-`default` methods help minimize code duplication. They provide a single location to write and edit. 
-They can be overridden later if necessary. They're overridden with per-class precision.
+`default` methods help minimize code duplication. They provide a single location to write and edit. They can be overridden later if necessary. They're overridden with per-class precision.
+
+Default methods enable you to add new functionality to the interfaces of your libraries and ensure binary backward compatibility with code written for older versions of those interfaces.
 
 Previously duplicated logic can be written once in `Accessible`:
 
@@ -234,31 +288,31 @@ public class RestrictedChecking implements Accessible {
 }
 ````
 
-#### What about problems in multiple inheritance?
+### What about problems in multiple inheritance?
 
 ![Figure 3.1](img/figure3-1.png)
 
-#### Inheritance rules of `default` methods
+### Inheritance rules of `default` methods
 
-1. A superclass method takes priority over an interface `default` method<br />
+1. A superclass method takes priority over an interface `default` method - See [Example](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/blob/master/src/ocp/study/part03/defaultRule1/)<br />
 ![Figure 3.2](img/figure3-2.png)<br />
     - The superclass method may be concrete or abstract
     - Only consider the interface `default` if no method exists from the superclass
 1. A subtype interface's `default` method takes priority over a super-type interface `default` 
-method<br />
+method - See [Example](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/blob/master/src/ocp/study/part03/defaultRule1/)<br />
 ![Figure 3.3](img/figure3-3.png)<br />
-1. If there is a conflict, treat the `default` method as abstract
+1. If there is a conflict, treat the `default` method as abstract - See [Example](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/blob/master/src/ocp/study/part03/defaultRule1/)
     - The concrete class must provide its own implementation. This may include a call to a specific 
     interface's implementation
 
-#### Interfaces don't replace abstract classes
+### Interfaces don't replace abstract classes
 
 - An interface doesn't let you store the state of an instance
 - An `abstract` class may contain instance fields
 - To avoid complications caused by multiple inheritance of state, a class cannot extend multiple 
 `abstract` classes
 
-#### What if `default` methods duplicate logic?
+### What if `default` methods duplicate logic?
 
 See `Verify the PIN` and `Verify amount is greater than 0` below.
 
@@ -302,7 +356,7 @@ It's dangerous if the method returns information you don't want exposed.
 
 They can also be overridden at any time. The result of the calling method may not be predictable.
 
-#### Introducing `private` methods in interface
+### Introducing `private` methods in interface
 
 - A better strategy is to make the method `private`
 - `private` interface methods are more secure
@@ -332,19 +386,35 @@ public interface Accessible {
 }
 ````
 
-#### Types of methods in interfaces
+## `private` `static` methods in interfaces
 
-| Access modifier and method type | Supported? |
-| --- | --- |
-| `public abstract` | Yes |
-| `private abstract` | Compiler error |
-| `public default` | Yes |
-| `private default` | Compiler error |
-| `public static` | Yes |
-| `private static` | Yes |
-| `private` | Yes |
+````
+public interface Greeter {
+    static void greet() {
+        System.out.print(Greeter.getGreeting());    
+    }
+    
+    private static String getGreeting() {
+        return "Greetings from an Interface";
+    }
+}
+````
 
-## <a name="3-2"></a>3.2 Define and write functional interfaces
+````
+public class Client {
+    public static void main(String[] args) {
+      Greeter.greet();
+    }
+}	
+````
+
+The `private` `static` methods are useful when you have multiple `public` `static` methods that share some common code. So, you can only extract that shared code into a `private` `static` method, but not into an instance method (because `static` method cannot access instance method without creating an instance of type).
+
+`private` `static` methods can be called from an instance (i.e. `default` or `private` non-static) method or a `static` method inside the interface.
+
+A `private` non-static method is not allowed to be called from `static` or `private` `static` method within the interface (unless an instance of the interface is passed in).
+
+# 3.2 - Define and write functional interfaces
 
 Let’s take a look at an example of a functional interface and a class that implements it:
 
@@ -410,7 +480,7 @@ functional interface.
 In these examples, applying the `@FunctionalInterface` annotation to any of these interfaces would 
 result in a compiler error, as would attempting to use them implicitly as functional interfaces in a lambda expression.
 
-### Applying the `@FunctionalInterface` Annotation
+## Applying the `@FunctionalInterface` Annotation
 
 While it is a good practice to mark a functional interface with the `@FunctionalInterface`
 annotation for clarity, it is not required with functional programming. The Java compiler
@@ -432,7 +502,7 @@ interfaces down the road.
 The exam writers aren’t likely to use this annotation, as they expect you to be able to
 determine whether an interface is a functional interface on your own.
 
-## <a name="q"></a>Quiz
+# Quiz
 
 1. <a name="q1"></a>What is true about code duplication?
     - A. Duplication makes your code longer. This is good because it makes colleagues believe you're 
@@ -625,7 +695,7 @@ determine whether an interface is a functional interface on your own.
        methods.
 <br />[Jump to answer](#qa12)  
     
-## <a name="qa"></a>Quiz Answers
+# Quiz Answers
 
 1. <a name="qa1"></a>[Jump to question](#q1) - **C.** Duplicate code makes your program lengthy and bulky, 
 and decreases your code quality
