@@ -16,6 +16,10 @@
   - [`private` `static` methods in interfaces](#private-static-methods-in-interfaces)
 - [3.2 - Define and write functional interfaces](#32---define-and-write-functional-interfaces)
   - [Applying the `@FunctionalInterface` Annotation](#applying-the-functionalinterface-annotation)
+  - [Non-SAM methods in functional interfaces](#non-sam-methods-in-functional-interfaces)
+    - [`default` methods](#default-methods)
+    - [`static` methods](#static-methods)
+  - [Public methods of `java.lang.Object` in functional interfaces](#public-methods-of-javalangobject-in-functional-interfaces)
 - [Quiz](#quiz)
 - [Quiz Answers](#quiz-answers)
 
@@ -416,6 +420,8 @@ A `private` non-static method is not allowed to be called from `static` or `priv
 
 # 3.2 - Define and write functional interfaces
 
+Functional interfaces provide target types for lambda expressions and method references. Each functional interface has a **single abstract method** (SAM), called the functional method for that functional interface, to which the lambda expression's parameter and return types are matched or adapted.
+
 Let’s take a look at an example of a functional interface and a class that implements it:
 
 ```
@@ -430,10 +436,10 @@ public class Tiger implements Sprint {
 }
 ```
 
-In this example, the Sprint class is a functional interface, because it contains exactly
-one abstract method, and the Tiger class is a valid class that implements the interface.
+In this example, the `Sprint` class is a functional interface, because it contains exactly
+one `abstract` method, and the `Tiger` class is a valid class that implements the interface.
 
-Consider the following three interfaces. Assuming Sprint is our previously defined
+Consider the following three interfaces. Assuming `Sprint` is our previously defined
 functional interface, which ones would also be functional interfaces?
 
 ```
@@ -448,13 +454,10 @@ public interface Skip extends Sprint {
 ```
 
 The answer? All three are valid functional interfaces! The first interface, `Run`, defines no
-new methods, but since it extends `Sprint`, which defines a single abstract method, it is also
+new methods, but since it extends `Sprint`, which defines a single `abstract` method, it is also
 a functional interface. The second interface, `SprintFaster`, extends `Sprint` and defines
-an abstract method, but this is an override of the parent `sprint()` method; therefore, the
-resulting interface has only one abstract method, and it is considered a functional interface.
-The third interface, `Skip`, extends `Sprint` and defines a static method and a default
-method, each with an implementation. Since neither of these methods is abstract, the resulting
-interface has only one abstract method and is a functional interface.
+an `abstract` method, but this is an override of the parent `sprint()` method; therefore, the
+resulting interface has only one `abstract` method, and it is considered a functional interface. The third interface, `Skip`, extends `Sprint` and defines a static method and a default method, each with an implementation. Since neither of these methods is `abstract`, the resulting interface has only one `abstract` method and is a functional interface.
 
 Now that you’ve seen some variations of valid functional interfaces, let’s look at some
 invalid ones using our previous `Sprint` functional interface definition:
@@ -470,28 +473,22 @@ public interface Crawl {
 }
 ```
            
-Although all three of these interfaces will compile, none of them are considered functional interfaces. 
-The Walk interface neither extends any functional interface classes nor defines any methods, so it 
-is not a functional interface. The `dance` method extends `Sprint`, which already includes a single 
-abstract method, bringing the total to two abstract methods; therefore, `dance` is not a functional 
-interface. Finally, the `crawl` method defines two abstract methods; therefore it cannot be a 
-functional interface.
+Although all three of these interfaces will compile, none of them are considered functional interfaces. The `Walk` interface neither extends any functional interface classes nor defines any methods, so it is not a functional interface. The `dance` method extends `Sprint`, which already includes a single abstract method, bringing the total to two abstract methods; therefore, `dance` is not a functional interface. Finally, the `crawl` method defines two abstract methods; therefore it cannot be a functional interface.
  
-In these examples, applying the `@FunctionalInterface` annotation to any of these interfaces would 
-result in a compiler error, as would attempting to use them implicitly as functional interfaces in a lambda expression.
+In these examples, applying the `@FunctionalInterface` annotation to any of these interfaces would result in a compiler error, as would attempting to use them implicitly as functional interfaces in a lambda expression.
 
 ## Applying the `@FunctionalInterface` Annotation
 
 While it is a good practice to mark a functional interface with the `@FunctionalInterface`
 annotation for clarity, it is not required with functional programming. The Java compiler
-implicitly assumes that any interface that contains exactly one abstract method is
+implicitly assumes that any interface that contains exactly one `abstract` method is
 a functional interface. Conversely, if a class marked with the `@FunctionalInterface`
-annotation contains more than one abstract method, or no abstract methods at all, then
+annotation contains more than one `abstract` method, or no `abstract` methods at all, then
 the compiler will detect this error and not compile.
 
 One problem with not always marking your functional interfaces with this annotation is
 that another developer may treat any interface you create that has only one method as
-a functional interface. If you later modify the interface to have other abstract methods,
+a functional interface. If you later modify the interface to have other `abstract` methods,
 suddenly their code will break since it will no longer be a functional interface.
 
 Therefore, it is recommend that you explicitly mark the interface with the
@@ -499,8 +496,131 @@ Therefore, it is recommend that you explicitly mark the interface with the
 can safely apply lambdas to without the possibility that they may stop being functional
 interfaces down the road.
 
-The exam writers aren’t likely to use this annotation, as they expect you to be able to
-determine whether an interface is a functional interface on your own.
+We've established the `@FunctionalInterface` annotation is optional; it is a "hint" for Java compiler and a statement of intent to other developers. If it is added, the compiler will raise an error if there is no abstract method. It says that "MyInterface is not a functional interface" as "no abstract method was found". It will also error if we try and add a second method.
+
+````
+// Compilation fails !
+@FunctionalInterface
+    public interface MyInterface {
+}
+````
+
+````
+// Compilation fails !
+@FunctionalInterface
+public interface MyInterface {
+    void doIt();
+    void doItNow();
+}
+````
+
+## Non-SAM methods in functional interfaces
+
+### `default` methods
+
+Since Java 8 interfaces support `default` and `public` `static` methods. A `default` method is an instance method defined in an interface whose method header begins with the `default` keyword; it also provides a **code body**. Every class that implements the interface inherits the interface's `default` methods and can override them.
+
+Since functional interface requires a single `abstract` method, this code will NOT compile, as it is invalid functional interface:
+
+````
+// Compilation fails !
+@FunctionalInterface
+public interface MyDefInterface {
+    default void doIt() { /* cool implementation */ }
+}
+````
+
+But this functional interface will compile successfully:
+
+````
+@FunctionalInterface
+public interface MyDefInterface {
+    default void doIt() { /* cool implementation */ }
+    void doItNow(); // Single Abstract Method (SAM)
+}
+````
+
+### `static` methods
+
+A `static` method is a method that's associated with the class in which it's defined, rather than with any object created from that class. Every instance of the class shares the `static` methods of the class. Java since release 8 also lets `public` `static` methods be defined in interfaces where they can assist `default` methods.
+
+Like `static` methods in classes, you specify that a method definition in an interface is a `static` method with the `static` keyword at the beginning of the method signature. All method declarations in an interface, including `static` methods, are implicitly `public`, so you can omit the `public` modifier.
+
+When you implement an interface that contains a `static` method, the `static` method is still part of the interface and not part of the implementing class. For this reason, you cannot prefix the method with the class name. Instead, you must prefix the method with the interface name.
+
+Since functional interface requires a single `abstract` method, this code will NOT compile, as it is invalid functional interface:
+
+````
+// Compilation fails !
+@FunctionalInterface
+public interface MyStatInterface {
+    static void doIt() { /* cool implementation */ }
+}
+````
+
+But this functional interface will compile successfully:
+
+````
+@FunctionalInterface
+public interface MyStatInterface {
+    static void doIt() { /* cool implementation */ }
+    void doItNow();
+}
+````
+
+## Public methods of `java.lang.Object` in functional interfaces
+
+If an interface declares an `abstract` method overriding one of the `public` methods of `java.lang.Object`, that also DOES NOT count toward the interface's `abstract` method count since any implementation of the interface will have an implementation from `java.lang.Object` or elsewhere.
+
+For example, `java.util.Comparator` is a functional interface even though it declared two `abstract` methods:
+
+````
+package java.util;
+
+@FunctionalInterface
+public interface Comparator<T> {
+
+    int compare(T o1, T o2); // This is SAM
+
+    boolean equals(Object obj); // ignored as it's a public method from java.lang.Object
+
+    ...
+}
+````
+
+The reason is because one of these `abstract` methods - `equals()` -- has a signature identical to a public method in the `java.lang.Object` class:
+
+````
+public class Object {
+    ...
+    public boolean equals(Object obj) {
+        return (this == obj);
+    }
+    ...
+}
+````
+
+This is NOT a funtional interface:
+
+````
+// Compilation fails !
+@FunctionalInterface
+interface MyInterface {
+    int doIt(); 
+    Object clone(); // not ignored, as it's not a public (but protected) method from java.lang.Object
+}
+````
+
+Although only `doIt()` is an `abstract` method which is not part of the `java.lang.Object`, the interface is not functional, as `clone()` method is not `public` in the `Object` class:
+
+````
+public class Object {
+    ...
+    @HotSpotIntrinsicCandidate
+    protected native Object clone() throws CloneNotSupportedException;
+    ...
+}
+````
 
 # Quiz
 
