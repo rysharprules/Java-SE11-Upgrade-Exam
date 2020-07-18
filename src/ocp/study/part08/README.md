@@ -1,13 +1,36 @@
-- [8.1 - Create and use lambda expressions](#8-1)
-- [8.2 - Use lambda expressions and method references](#8-2)
-- [8.3 - Use built-in functional interfaces including Predicate, Consumer, Function, and Supplier](#8-3)
-- [8.4 - Use primitive and binary variations of base interfaces of java.util.function package](#8-4)
-- [Quiz](#q)
-- [Quiz Answers](#qa)
+- [8.1 - Create and use lambda expressions](#81---create-and-use-lambda-expressions)
+  - [Implementing Functional Interfaces with Lambdas](#implementing-functional-interfaces-with-lambdas)
+  - [Understanding Lambda Syntax](#understanding-lambda-syntax)
+    - [Spotting Invalid Lambdas](#spotting-invalid-lambdas)
+  - [Using Variables in Lambdas](#using-variables-in-lambdas)
+- [8.2 - Use lambda expressions and method references](#82---use-lambda-expressions-and-method-references)
+  - [Using Method References](#using-method-references)
+- [8.3 - Use built-in functional interfaces including Predicate, Consumer, Function, and Supplier](#83---use-built-in-functional-interfaces-including-predicate-consumer-function-and-supplier)
+  - [Working with Built-In Functional Interfaces](#working-with-built-in-functional-interfaces)
+  - [Applying the `Predicate` Interface](#applying-the-predicate-interface)
+    - [Implementing `Predicate` and `BiPredicate`](#implementing-predicate-and-bipredicate)
+    - [Real World Scenario - Default Methods on Functional Interfaces](#real-world-scenario---default-methods-on-functional-interfaces)
+  - [Implementing `Supplier`](#implementing-supplier)
+  - [Implementing `Consumer` and `BiConsumer`](#implementing-consumer-and-biconsumer)
+  - [Implementing `Function` and `BiFunction`](#implementing-function-and-bifunction)
+  - [Implementing `UnaryOperator` and `BinaryOperator`](#implementing-unaryoperator-and-binaryoperator)
+  - [Checking Functional Interfaces](#checking-functional-interfaces)
+- [8.4 - Use primitive and binary variations of base interfaces of `java.util.function package](#84---use-primitive-and-binary-variations-of-base-interfaces-of-javautilfunction-package)
+    - [Creating Primitive Streams](#creating-primitive-streams)
+      - [Using Optional with Primitive Streams](#using-optional-with-primitive-streams)
+      - [Summarizing Statistics](#summarizing-statistics)
+      - [Learning the Functional Interfaces for Primitives](#learning-the-functional-interfaces-for-primitives)
+      - [Functional Interfaces for boolean](#functional-interfaces-for-boolean)
+      - [Functional Interfaces for `double`, `int`, and `long`](#functional-interfaces-for-double-int-and-long)
+    - [Working with Advanced Stream Pipeline Concepts](#working-with-advanced-stream-pipeline-concepts)
+      - [Linking Streams to the Underlying Data](#linking-streams-to-the-underlying-data)
+      - [Chaining Optionals](#chaining-optionals)
+- [Quiz](#quiz)
+- [Quiz Answers](#quiz-answers)
 
-## <a name="8-1"></a>8.1 - Create and use lambda expressions
+# 8.1 - Create and use lambda expressions
 
-### Implementing Functional Interfaces with Lambdas
+## Implementing Functional Interfaces with Lambdas
 
 Now that we have defined a functional interface, we’ll show you how to implement them
 using lambda expressions. As we said earlier, a lambda expression is a block of code that
@@ -73,7 +96,7 @@ Since this interface’s method takes an `Animal`, it means the lambda parameter
 an `Animal`. And since that interface’s method returns a boolean, we know that the lambda
 returns a boolean.
 
-### Understanding Lambda Syntax
+## Understanding Lambda Syntax
 
 The syntax of lambda expressions is tricky because many parts are optional. These two
 lines are equivalent and do the exact same thing:
@@ -135,7 +158,7 @@ returns whatever the return type of `quack()` is. The last lambda expression can
 a functional interface that takes as input `Animal` and `Duck` objects and returns whatever the
 return type of `quack()` is.
 
-#### Spotting Invalid Lambdas
+### Spotting Invalid Lambdas
 
 Can you figure out why each of the following lambda expressions is invalid and will not
 compile when used as an argument to a method?
@@ -241,7 +264,7 @@ because it uses a different variable name:
 
 `(a, b) -> { int c = 0; return 5;}`
 
-### Using Variables in Lambdas
+## Using Variables in Lambdas
 
 Lambda expressions can access static variables, instance variables, effectively final
 method parameters, and effectively final local variables. How many of those can you find in
@@ -275,9 +298,9 @@ The normal rules for access control still apply. For example, a lambda can’t a
 private variables in another class. Remember that lambdas can access a subset of variables
 that are accessible, but never more than that.
 
-## <a name="8-2"></a>8.2 - Use lambda expressions and method references
+# 8.2 - Use lambda expressions and method references
 
-### Using Method References
+## Using Method References
 
 Method references are a way to make the code shorter by reducing some of the code that
 can be inferred and simply mentioning the name of the method. Like lambdas, it takes time
@@ -322,8 +345,7 @@ There are four formats for method references:
 1. Constructors
 
 Remember that `Predicate` is a functional interface that takes a single parameter of any type and 
-returns a boolean. Another functional interface is `Consumer`, which takes a single parameter of any
-type and has a void return type. Finally, `Supplier` doesn’t take any parameters and returns any type.
+returns a boolean. Another functional interface is `Consumer`, which takes a single parameter of any type and has a void return type. Finally, `Supplier` doesn’t take any parameters and returns any type.
 
 Let’s look at some examples from the Java API. In each set, we show the lambda equivalent.
 Remember that none of these method references are actually called in the code that
@@ -335,11 +357,9 @@ follows. They are simply available to be called in the future. Let’s start wit
 ````
 
 On line 14, we call a method with one parameter, and Java knows that it should create a
-lambda with one parameter and pass it to the method. Wait a minute. We know that the sort method is
-overloaded. How does Java know that we want to call the version that omits the comparator? 
+lambda with one parameter and pass it to the method. Wait a minute. We know that the sort method is overloaded. How does Java know that we want to call the version that omits the comparator? 
 With both lambdas and method references, Java is inferring information from the context. In this 
-case, we said that we were declaring a `Consumer`, which takes only one parameter. Java looks for a
-method that matches that description.
+case, we said that we were declaring a `Consumer`, which takes only one parameter. Java looks for a method that matches that description.
 
 Next up is calling an instance method on a specific instance:
 
@@ -371,9 +391,9 @@ the method is called. Finally, we have a constructor reference:
 A constructor reference is a special type of method reference that uses new instead of a
 method, and it creates a new object.
 
-## <a name="8-3"></a>8.3 - Use built-in functional interfaces including Predicate, Consumer, Function, and Supplier
+# 8.3 - Use built-in functional interfaces including Predicate, Consumer, Function, and Supplier
 
-### Working with Built-In Functional Interfaces
+## Working with Built-In Functional Interfaces
 
 As you remember, a functional interface has exactly one abstract method. All of the
 functional interfaces in Table 8.1 were introduced in Java 8 and are provided in the
@@ -400,7 +420,7 @@ _Note: There’s an interface called `Runnable` used for concurrency the majorit
 However, it may show up on the exam when you are asked to recognize which functional interface to use.
 All you need to know is that `Runnable` doesn’t take any parameters, return any data, or use generics._
 
-### Applying the `Predicate` Interface
+## Applying the `Predicate` Interface
 
 In our earlier example, we created a simple functional interface to test an `Animal` trait:
 
@@ -442,7 +462,7 @@ public class FindMatchingAnimals {
 
 This is very similar to our original program, except that we wrote it with one less interface.
 
-#### Implementing `Predicate` and `BiPredicate`
+### Implementing `Predicate` and `BiPredicate`
 
 `Predicate` is often used when filtering or matching. Both are very common operations. A 
 `BiPredicate` is just like a `Predicate` except that it takes two parameters instead of one. 
@@ -481,7 +501,7 @@ as the instance on which to call the method. The second parameter is passed to t
 `startsWith()` method itself. This is another example of how method references save a
 good bit of typing.
 
-#### Real World Scenario - Default Methods on Functional Interfaces
+### Real World Scenario - Default Methods on Functional Interfaces
 
 By definition, all functional interfaces have a single abstract method. This doesn’t mean
 that they have only one method, though. Several of the common functional interfaces
@@ -520,7 +540,7 @@ shorter and clearer what the relationship is between the `Predicate`s. We can al
 the spelling of egg in one place, and the other two objects will have new logic because
 they reference it.
 
-### Implementing `Supplier`
+## Implementing `Supplier`
 
 A `Supplier` is used when you want to generate or supply values without taking any input.
 The `Supplier` interface is defined as:
@@ -582,7 +602,7 @@ something. Our test class is named `BuiltIns`, and it is in a package that we cr
 `functionalinterface`. Then comes `$$`, which means that the class doesn’t exist in a class
 file on the file system. It exists only in memory. You don’t need to worry about the rest.
 
-### Implementing `Consumer` and `BiConsumer`
+## Implementing `Consumer` and `BiConsumer`
 
 You use a `Consumer` when you want to do something with a parameter but not return anything.
 `BiConsumer` does the same thing except that it takes two parameters. Omitting the default methods,
@@ -642,7 +662,7 @@ System.out.println(map);
 The output is `{chicken=Cluck, chick=Tweep}`, which shows that a `BiConsumer` can use
 the same type for both the `T` and `U` generic parameters.
 
-### Implementing `Function` and `BiFunction`
+## Implementing `Function` and `BiFunction`
 
 A `Function` is responsible for turning one parameter into a value of a potentially different
 type and returning it. Similarly, a `BiFunction` is responsible for turning two parameters
@@ -682,7 +702,7 @@ The first two types in the `BiFunction` are the input types. The third is the re
 For the method reference, the first parameter is the instance that `concat()` is called on and
 the second is passed to `concat()`.
 
-### Implementing `UnaryOperator` and `BinaryOperator`
+## Implementing `UnaryOperator` and `BinaryOperator`
 
 `UnaryOperator` and `BinaryOperator` are a special case of a function. They require all type
 parameters to be the same type. A `UnaryOperator` transforms its value into one of the
@@ -731,7 +751,7 @@ Notice that this does the same thing as the `BiFunction` example. The code is mo
 which shows the importance of using the correct functional interface. It’s nice to have
 one generic type specified instead of three.
 
-### Checking Functional Interfaces
+## Checking Functional Interfaces
 
 It’s really important to know the number of parameters, types, return value, and method
 name for each of the functional interfaces. Now would be a good time to memorize
@@ -790,36 +810,25 @@ Line 8 is missing the generic for `Predicate`. This makes the parameter that was
 an `Object` rather than a `String`. The lambda expects a `String` because it calls a method
 that exists on `String` rather than `Object`. Therefore, it doesn’t compile.
 
-## <a name="8-4"></a>8.4 - Use primitive and binary variations of base interfaces of `java.util.function package
+# 8.4 - Use primitive and binary variations of base interfaces of `java.util.function package
 `
-Up until now, we have been using wrapper classes when we needed primitives to go into
-streams. With streams, there are also equivalents that work with the `int`, `double`, and `long` 
-primitives. Let’s take a look at why this is needed. Suppose that we want to calculate the sum of 
-numbers in a finite stream:
+With streams, there are also equivalents that work with the `int`, `double`, and `long` primitives. Let’s take a look at why this is needed. Suppose that we want to calculate the sum of numbers in a finite stream:
 
 ````
 Stream<Integer> stream = Stream.of(1, 2, 3);
 System.out.println(stream.reduce(0, (s, n) -> s + n));
 ````
 
-Not bad. It wasn’t hard to write a reduction. We started the accumulator with zero. We
-then added each number to that running total as it came up in the stream. There is another
-way of doing that:
+Not bad. It wasn’t hard to write a reduction. We started the accumulator with zero. We then added each number to that running total as it came up in the stream. There is another way of doing that:
 
 ````
 Stream<Integer> stream = Stream.of(1, 2, 3);
 System.out.println(stream.mapToInt(x -> x).sum());
 ````
 
-This time, we converted our `Stream<Integer>` to an `IntStream` and asked the `IntStream`
-to calculate the sum for us. The primitive streams know how to perform certain common
-operations automatically.
+This time, we converted our `Stream<Integer>` to an `IntStream` and asked the `IntStream` to calculate the sum for us. The primitive streams know how to perform certain common operations automatically.
 
-So far, this seems like a nice convenience but not terribly important. Now think about
-how you would compute an average. You need to divide the sum by the number of elements.
-The problem is that streams allow only one pass. Java recognizes that calculating an
-average is a common thing to do, and it provides a method to calculate the average on the
-stream classes for primitives:
+So far, this seems like a nice convenience but not terribly important. Now think about how you would compute an average. You need to divide the sum by the number of elements. The problem is that streams allow only one pass. Java recognizes that calculating an average is a common thing to do, and it provides a method to calculate the average on the stream classes for primitives:
 
 ````
 IntStream intStream = IntStream.of(1, 2, 3);
@@ -827,11 +836,7 @@ OptionalDouble avg = intStream.average();
 System.out.println(avg.getAsDouble());
 ````
 
-Not only is it possible to calculate the average, but it is also easy to do so. Clearly primitive
-streams are important. We will look at creating and using such streams, including optionals and 
-functional interfaces.
-
-#### Creating Primitive Streams
+### Creating Primitive Streams
 
 Here are three types of primitive streams:
 
@@ -839,19 +844,17 @@ Here are three types of primitive streams:
 1. `LongStream`: Used for the primitive type `long`
 1. `DoubleStream`: Used for the primitive types `double` and `float`
 
-Why doesn’t each primitive type have its own primitive stream? These three are the most
-common, so the API designers went with them.
+Why doesn’t each primitive type have its own primitive stream? These three are the most common, so the API designers went with them.
 
-Some of the methods for creating a primitive stream are equivalent to how we created
-the source for a regular Stream. You can create an empty stream with this:
+Some of the methods for creating a primitive stream are equivalent to how we created the source for a regular Stream. You can create an empty stream with this:
 
 `DoubleStream empty = DoubleStream.empty();`
 
 Another way is to use the `of()` factory method from a single value or by using the varargs overload:
 
 ````
-DoubleStream oneValue = DoubleStream. of (3.14);
-DoubleStream varargs = DoubleStream. of (1.0, 1.1, 1.2);
+DoubleStream oneValue = DoubleStream.of(3.14);
+DoubleStream varargs = DoubleStream.of(1.0, 1.1, 1.2);
 oneValue.forEach(System.out::println);
 System.out.println();
 varargs.forEach(System.out::println);
@@ -867,21 +870,17 @@ This code outputs the following:
 1.2
 ````
 
-It works the same way for each type of primitive stream. You can also use the two methods for 
-creating infinite streams, just like we did with Stream:
+It works the same way for each type of primitive stream. You can also use the two methods for creating infinite streams, just like we did with `Stream`:
 
 ````
-DoubleStream random = DoubleStream. generate (Math::random);
-DoubleStream fractions = DoubleStream. iterate (.5, d -> d / 2);
+DoubleStream random = DoubleStream.generate(Math::random);
+DoubleStream fractions = DoubleStream.iterate(.5, d -> d / 2);
 random.limit(3).forEach(System.out::println);
 System.out.println();
 fractions.limit(3).forEach(System.out::println);
 ````
 
-Since the streams are infinite, we added a limit intermediate operation so that the output
-doesn’t print values forever. The first stream calls a static method on Math to get a random
-double. Since the numbers are random, your output will obviously be different. The second
-stream keeps creating smaller numbers, dividing the previous value by two each time. The
+Since the streams are infinite, we added a limit intermediate operation so that the output doesn’t print values forever. The first stream calls a `static` method on `Math` to get a random `double`. Since the numbers are random, your output will obviously be different. The second stream keeps creating smaller numbers, dividing the previous value by two each time. The
 output from when we ran this code was as follows:
 
 ````
@@ -893,74 +892,66 @@ output from when we ran this code was as follows:
 0.125
 ````
 
-You don’t need to know this for the exam, but the `Random` class provides a method to get
-primitives streams of random numbers directly. Fun fact! For example, `ints()` generates an
-infinite stream of int primitives.
+You don’t need to know this for the exam, but the `Random` class provides a method to get primitives streams of random numbers directly. Fun fact! For example, `ints()` generates an infinite stream of `int` primitives.
 
-When dealing with `int` or `long` primitives, it is common to count. Suppose that we
-wanted a stream with the numbers from 1 through 5. We could write this using what we’ve
-explained so far:
+When dealing with `int` or `long` primitives, it is common to count. Suppose that we wanted a stream with the numbers from `1` through `5`. We could write this using what we’ve explained so far:
 
 ````
 IntStream count = IntStream.iterate(1, n -> n+1).limit(5);
 count.forEach(System.out::println);
 ````
 
-This code does print out the numbers 1–5, one per line. However, it is a lot of code to do
-something so simple. Java provides a method that can generate a range of numbers:
+This code does print out the numbers `1`–`5`, one per line. However, it is a lot of code to do something so simple. Java provides a method that can generate a range of numbers:
 
 ````
 IntStream range = IntStream.range(1, 6);
 range.forEach(System.out::println);
 ````
 
-This is better. The `range()` method indicates that we want the numbers 1–6, not including
-the number 6. However, it still could be clearer. We want the numbers 1–5. We should
-be able to type the number 5, and we can do so as follows:
+This is better. The `range()` method indicates that we want the numbers `1`–`6`, not including the number `6`. However, it still could be clearer. We want the numbers `1`–`5`. We should be able to type the number `5`, and we can do so as follows:
 
 ````
 IntStream rangeClosed = IntStream.rangeClosed(1, 5);
 rangeClosed.forEach(System.out::println);
 ````
 
-Even better. This time we expressed that we want a closed range, or an inclusive
-range. This method better matches how we express a range of numbers in plain English.
+Even better. This time we expressed that we want a closed range, or an inclusive range. This method better matches how we express a range of numbers in plain English.
 
-The final way to create a primitive stream is by mapping from another stream type.
-Table 8.2 shows that there is a method for mapping between any stream types.;
-
-TABLE 8.2 Mapping methods between types of streams
+The final way to create a primitive stream is by mapping from another stream type. The table below shows the mapping methods between types of streams. The most common methods you will use to convert a stream to a primitive specialized version are `Stream.mapToInt()`, `Stream.mapToDouble()`, and `Stream.mapToLong()`. These methods work exactly like the method `Stream.map()` that you saw earlier but return a specialized stream instead of a `Stream<T>`.
 
 ![Table 8.2](img/table8-2.png)
 
-Obviously, they have to be compatible types for this to work. Java requires a mapping
-function to be provided as a parameter, for example:
+Obviously, they have to be compatible types for this to work. Java requires a mapping function to be provided as a parameter, for example:
 
 ````
 Stream<String> objStream = Stream.of("penguin", "fish");
 IntStream intStream = objStream.mapToInt(s -> s.length())
 ````
 
-This function that takes an `Object`, which is a `String` in this case. The function returns
-an `int`. The function mappings are intuitive here. They take the source type and return the
-target type. In this example, the actual function type is `ToIntFunction`. Table 8.3 shows
-the mapping function names. As you can see, they do what you might expect.
+This function that takes an `Object`, which is a `String` in this case. The function returns an `int`. The function mappings are intuitive here. They take the source type and return the target type. In this example, the actual function type is `ToIntFunction`. As you can see, they do what you might expect. 
 
-TABLE 8.3 Function parameters when mapping between types of streams
+A second example:
+
+````
+Stream<Employee> emps = Stream.of(new Employee("Mikalai"), new Employee("Volha"), new Employee("Ivan"));
+Stream<String> names = emps.map(e -> e.getName());
+IntStream lengths = names.mapToInt(n -> n.length());
+int i = lengths.max().getAsInt();
+System.out.print(i);
+````
+
+Here, the method `mapToInt()` extracts all the lengths from each name (represented as an `int`) and returns an `IntStream` as the result (rather than a `Stream<Integer>`). You can then call the `max()` method defined on the `IntStream` interface to calculate the longest name. `IntStream` also supports other convenience methods such as `sum()`, `min()`, and `average()`.
+
+The below table shows `Function` parameters when mapping between types of streams:
 
 ![Table 8.3](img/table8-3.png)
 
-You do have to memorize Table 8.2 and Table 8.3 . It’s not as hard as it might seem. There
-are patterns in the names if you remember a few rules. For Table 8.2, mapping to the same
-type you started with is just called `map()`. When returning an object stream, the method is
-`mapToObj()`. Beyond that, it’s the name of the primitive type in the map method name.
+You do have to memorize these tables. There are patterns in the names if you remember a few rules. For the first table, mapping to the same
+type you started with is just called `map()`. When returning an object stream, the method is `mapToObj()`. Beyond that, it’s the name of the primitive type in the map method name.
 
-For Table 8.3 , you can start by thinking about the source and target types. When the target
-type is an object, you drop the To from the name. When the mapping is to the same type
-you started with, you use a unary operator instead of a function for the primitive streams.
+For the second table, you can start by thinking about the source and target types. When the target type is an object, you drop the `To` from the name. When the mapping is to the same type you started with, you use a unary operator instead of a function for the primitive streams.
 
-_Note: You can also create a primitive stream from a Stream using `flatMapToInt()`,
-`flatMapToDouble()`, or `flatMapToLong()`. For example,_ 
+_Note: You can also create a primitive stream from a Stream using `flatMapToInt()`, `flatMapToDouble()`, or `flatMapToLong()`. For example,_ 
 
 `IntStream ints = list.stream().flatMapToInt(x -> IntStream.of(x));`
 
@@ -1223,7 +1214,8 @@ This one works because `flatMap` removes the unnecessary layer. In other words, 
 the result. Chaining calls to `flatMap()` is useful when you want to transform one
 `Optional` type to another.
 
-## <a name="q"></a>Quiz
+# Quiz
+
 1. <a name="q1"></a>Which of the following are valid lambda expressions? (Choose all that apply.)
     - A. `() -> ""`
     - B. `x,y -> x+y`
@@ -1384,7 +1376,7 @@ and not produce any output? (Choose all that apply.)
     - E. The provided code does not compile.
 <br />[Jump to answer](#qa12)
 
-## <a name="qa"></a>Quiz Answers
+# Quiz Answers
 
 1. <a name="qa1"></a>[Jump to question](#q1) - **A, D.** The first lambda expression is valid, taking no 
 arguments and returning the empty string, so A is correct. B is incorrect, as more than one parameter 

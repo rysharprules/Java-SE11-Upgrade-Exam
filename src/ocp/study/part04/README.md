@@ -1,51 +1,68 @@
-- [4.1 - Extract stream data using map, peek and flatMap methods](#4-1)
-- [4.2 - Search stream data using search findFirst, findAny, anyMatch, allMatch and noneMatch methods](#4-2)
-- [4.3 - Use the Optional class](#4-3)
-- [4.4 - Perform calculations using count, max, min, average and sum stream operations](#4-4)
-- [4.5 - Sort a collection using lambda expressions](#4-5)
-- [4.6 - Use Collectors with streams, including the groupingBy and partitioningBy operation](#4-6)
-- [Quiz](#q)
-- [Quiz Answers](#qa)
+- [Using Streams](#using-streams)
+  - [Creating Stream Sources](#creating-stream-sources)
+  - [Using Common Terminal Operations](#using-common-terminal-operations)
+    - [`forEach()`](#foreach)
+    - [`reduce()`](#reduce)
+    - [`collect()`](#collect)
+  - [Using Common Intermediate Operations](#using-common-intermediate-operations)
+    - [`filter()`](#filter)
+    - [`distinct()`](#distinct)
+    - [`limit()` and `skip()`](#limit-and-skip)
+  - [Putting Together the Pipeline](#putting-together-the-pipeline)
+- [4.1 - Extract stream data using map, peek and flatMap methods](#41---extract-stream-data-using-map-peek-and-flatmap-methods)
+  - [`map()`](#map)
+  - [`flatMap()`](#flatmap)
+  - [`peek()`](#peek)
+- [4.2 - Search stream data using search findFirst, findAny, anyMatch, allMatch and noneMatch methods](#42---search-stream-data-using-search-findfirst-findany-anymatch-allmatch-and-nonematch-methods)
+  - [`findAny()` and `findFirst()`](#findany-and-findfirst)
+  - [`anyMatch()`, `allMatch()` and `noneMatch()`](#anymatch-allmatch-and-nonematch)
+- [4.3 - Use the Optional class](#43---use-the-optional-class)
+  - [Converting an `Optional` into a Stream](#converting-an-optional-into-a-stream)
+    - [The `or` method](#the-or-method)
+- [4.4 - Perform calculations using count, max, min, average and sum stream operations](#44---perform-calculations-using-count-max-min-average-and-sum-stream-operations)
+  - [`count()`](#count)
+  - [`min()` and `max()`](#min-and-max)
+- [4.5 - Sort a collection using lambda expressions](#45---sort-a-collection-using-lambda-expressions)
+  - [`Comparator` vs. `Comparable`](#comparator-vs-comparable)
+    - [`Comparable`](#comparable)
+    - [`Comparator`](#comparator)
+  - [Searching and Sorting](#searching-and-sorting)
+  - [Sorting lists](#sorting-lists)
+  - [Sorting maps](#sorting-maps)
+  - [`sorted()`](#sorted)
+- [4.6 - Use Collectors with streams, including the groupingBy and partitioningBy operation](#46---use-collectors-with-streams-including-the-groupingby-and-partitioningby-operation)
+    - [Collecting Results](#collecting-results)
+    - [Collecting Using Basic Collectors](#collecting-using-basic-collectors)
+    - [Collecting into Maps](#collecting-into-maps)
+    - [Collecting Using Grouping, Partitioning, and Mapping](#collecting-using-grouping-partitioning-and-mapping)
+- [Quiz](#quiz)
+- [Quiz Answers](#quiz-answers)
 
-### Using Streams
+# Using Streams
 
-A stream in Java is a sequence of data. A stream pipeline is the operations that run on a
+A stream in Java is a sequence of data/elements from a source supporting sequential and parallel aggregate operations. A stream pipeline is the operations that run on a
 stream to produce a result. Think of a stream pipeline as an assembly line in a factory.
 Suppose that we were running an assembly line to make signs for the animal exhibits at
-the zoo. We have a number of jobs. It is one person’s job to take signs out of a box. It is a
-second person’s job to paint the sign. It is a third person’s job to stencil the name of the animal
-on the sign. It is a fourth person’s job to put the completed sign in a box to be carried
-to the proper exhibit.
+the zoo. We have a number of jobs. It is one person’s job to take signs out of a box. It is a second person’s job to paint the sign. It is a third person’s job to stencil the name of the animal on the sign. It is a fourth person’s job to put the completed sign in a box to be carried to the proper exhibit.
 
 Notice that the second person can’t do anything until one sign has been taken out of the
-box by the first person. Similarly, the third person can’t do anything until one sign has been
-painted, and the fourth person can’t do anything until it is stenciled.
+box by the first person. Similarly, the third person can’t do anything until one sign has been painted, and the fourth person can’t do anything until it is stenciled.
 
 The assembly line for making signs is finite. Once we process the contents of our box of
-signs, we are finished. Finite streams have a limit. Other assembly lines essentially run forever,
-like one for food production. Of course, they do stop at some point when the factory
-closes down, but pretend that doesn’t happen. Or think of a sunrise/sunset cycle as infinite,
-since it doesn’t end for an inordinately large period of time.
+signs, we are finished. Finite streams have a limit. Other assembly lines essentially run forever, like one for food production. Of course, they do stop at some point when the factory closes down, but pretend that doesn’t happen. Or think of a sunrise/sunset cycle as infinite, since it doesn’t end for an inordinately large period of time.
 
 Another important feature of an assembly line is that each person touches each element
 to do their operation and then that piece of data is gone. It doesn’t come back. The next
-person deals with it at that point. This is different than the lists and queues that you saw in
-the last chapter. With a list, you can access any element at any time. With a queue, you are
-limited in which elements you can access, but all of the elements are there. With streams,
-the data isn’t generated up front—it is created when needed.
+person deals with it at that point. This is different to lists and queues. With a list, you can access any element at any time. With a queue, you are limited in which elements you can access, but all of the elements are there. With streams, the data isn’t generated up front—it is created when needed.
 
 Many things can happen in the assembly line stations along the way. In programming,
 these are called stream operations. Just like with the assembly line, operations occur in a
 pipeline. Someone has to start and end the work, and there can be any number of stations
-in between. After all, a job with one person isn’t an assembly line! There are three parts to
-a stream pipeline, as shown in Figure 4.2:
+in between. After all, a job with one person isn’t an assembly line! There are three parts to a stream pipeline, as shown in Figure 4.2:
 
-- Source: Where the stream comes from.
-- Intermediate operations: Transforms the stream into another one. There can be as few
-or as many intermediate operations as you’d like. Since streams use lazy evaluation, the
-intermediate operations do not run until the terminal operation runs.
-- Terminal operation: Actually produces a result. Since streams can be used only once,
-the stream is no longer valid after a terminal operation completes.
+- Source: Where the stream comes from. The source typically refers to a Collection (e.g. `java.util.List`, `java.util.Set`) or an array which provides data to a Stream. The Stream keeps the order of the data as it is in the source.
+- Zero or more intermediate operations: Transforms the stream into another one. There can be as few or as many intermediate operations as you’d like. Since streams use lazy evaluation, the intermediate operations do not run until the terminal operation runs.
+- Terminal operation: Actually produces a result or side-effect. Since streams can be used only once, the stream is no longer valid after a terminal operation completes.
 
 FIGURE 4.2 Stream pipeline
 
@@ -54,9 +71,6 @@ FIGURE 4.2 Stream pipeline
 Notice that the intermediate operations are a black box. When viewing the assembly
 line from the outside, you care only about what comes in and goes out. What happens in
 between is an implementation detail.
-
-You will need to know the differences between intermediate and terminal operations
-well. Make sure that you can fill in Table 4.3.
 
 TABLE 4.3 Intermediate vs. terminal operations
 
@@ -100,24 +114,16 @@ FIGURE 4.4 A stream pipeline with a limit
 
 The foreman still sees a source of taking signs out of the box and assigns a worker to do
 that on command. He still sees an intermediate operation to paint and sets up another worker
-with instructions to wait and then paint. Then he sees an intermediate step that we need only
-two signs. He sets up a worker to count the signs that go by and notify him when the worker
-has seen two. Finally, he sets up a worker for the terminal operation to put the signs in a pile.
+with instructions to wait and then paint. Then he sees an intermediate step that we need only two signs. He sets up a worker to count the signs that go by and notify him when the worker has seen two. Finally, he sets up a worker for the terminal operation to put the signs in a pile.
 
-This time, suppose that there are 10 signs in the box. We start out like last time. The first
-sign makes its way down the pipeline. The second sign also makes its way down the pipeline.
-When the worker in charge of counting sees the second sign, she tells the foreman. The
-foreman lets the terminal operation worker finish her task and then yells out “stop the line.”
-It doesn’t matter that that there are eight more signs in the box. We don’t need them, so it
-would be unnecessary work to paint them. And we all want to avoid unnecessary work!
+This time, suppose that there are 10 signs in the box. We start out like last time. The first sign makes its way down the pipeline. The second sign also makes its way down the pipeline. When the worker in charge of counting sees the second sign, she tells the foreman. The foreman lets the terminal operation worker finish her task and then yells out “stop the line.” It doesn’t matter that that there are eight more signs in the box. We don’t need them, so it would be unnecessary work to paint them. And we all want to avoid unnecessary work!
 
 Similarly, the foreman would have stopped the line after the first sign if the terminal
 operation was to find the first sign that gets created.
 
-In the following sections, we will cover the three parts of the pipeline. We will also discuss
-special types of streams for primitives and how to print a stream.
+In the following sections, we will cover the three parts of the pipeline. We will also discuss special types of streams for primitives and how to print a stream.
 
-### Creating Stream Sources
+## Creating Stream Sources
 
 In Java, the Stream interface is in the java.util.stream package. There are a few ways to
 create a finite stream:
@@ -130,9 +136,7 @@ create a finite stream:
 
 Line 1 shows how to create an empty stream. Line 2 shows how to create a stream with
 a single element. Line 3 shows how to create a stream from an array. You’ve undoubtedly
-noticed that there isn’t an array on line 3. The method signature uses varargs, which let you
-specify an array or individual elements. Since streams are new in Java 8, most code that’s
-already written uses lists. Java provides a convenient way to convert from a list to a stream:
+noticed that there isn’t an array on line 3. The method signature uses varargs, which let you specify an array or individual elements. Since streams are new in Java 8, most code that’s already written uses lists. Java provides a convenient way to convert from a list to a stream:
 
 ````
 4: List<String> list = Arrays.asList("a", "b", "c");
@@ -141,13 +145,7 @@ already written uses lists. Java provides a convenient way to convert from a lis
 ````
 
 Line 5 shows that it is a simple method call to create a stream from a list. Line 6 does
-the same, except that it creates a stream that is allowed to process elements in parallel. This
-is a great feature because you can write code that uses parallelism before even learning
-what a thread is. Using parallel streams is like setting up multiple tables of workers who
-are able to do the same task. Painting would be a lot faster if we could have five painters
-painting different signs at once. Just keep in mind that it isn’t worth working in parallel for
-small streams. There is an overhead cost in coordinating the work among all of the workers
-operating in parallel. For small amounts of work, it is faster just to do it sequentially.
+the same, except that it creates a stream that is allowed to process elements in parallel. This is a great feature because you can write code that uses parallelism before even learning what a thread is. Using parallel streams is like setting up multiple tables of workers who are able to do the same task. Painting would be a lot faster if we could have five painters painting different signs at once. Just keep in mind that it isn’t worth working in parallel for small streams. There is an overhead cost in coordinating the work among all of the workers operating in parallel. For small amounts of work, it is faster just to do it sequentially.
 
 So far, this isn’t particularly impressive. We could do all this with lists. We can’t create
 an infinite list, though, which makes streams more powerful:
@@ -157,39 +155,29 @@ an infinite list, though, which makes streams more powerful:
 8: Stream<Integer> oddNumbers = Stream.iterate(1, n -> n + 2);
 ````
 
-Line 7 generates a stream of random numbers. How many random numbers? However
-many you need. If you call `randoms.forEach(System.out::println)`, the program will
-print random numbers until you kill it. Later in the chapter, you’ll learn about operations
-like `limit()` to turn the infinite stream into a finite stream.
+Line 7 generates a stream of random numbers. How many random numbers? However many you need. If you call `randoms.forEach(System.out::println)`, the program will print random numbers until you kill it. Later in the chapter, you’ll learn about operations like `limit()` to turn the infinite stream into a finite stream.
 
 Line 8 gives you more control. `iterate()` takes a seed or starting value as the first
-parameter. This is the first element that will be part of the stream. The other parameter is a
-lambda expression that gets passed the previous value and generates the next value. As with
+parameter. This is the first element that will be part of the stream. The other parameter is a lambda expression that gets passed the previous value and generates the next value. As with
 the random numbers example, it will keep on producing odd numbers as long as you need
 them.
 
-_Note: If you try to call `System.out.println(stream)`, you’ll get something like
-`java.util.stream.ReferencePipeline$3@4517d9a3`. This is different than
-a Collection where you see the contents. You don’t need to know this for
-the exam. We mention it so that you aren’t caught by surprise when writing
-code for practice._
+<img src="../img/note.png" alt="Note" width="20"/> _Note: If you try to call `System.out.println(stream)`, you’ll get something like `java.util.stream.ReferencePipeline$3@4517d9a3`. This is different than a Collection where you see the contents. You don’t need to know this for the exam. We mention it so that you aren’t caught by surprise when writingcode for practice._
 
-### Using Common Terminal Operations
+## Using Common Terminal Operations
 
 You can perform a terminal operation without any intermediate operations but not the
-other way around. This is why we will talk about terminal operations first. Reductions are
+other way around. This is why we will talk about terminal operations first. Terminal operations are Stream API operations that returns a result or produce a side effect. Once the terminal method is called on a stream, it consumes the stream and after that we can not use stream. Terminal operations are eager in nature i.e. they process all the elements (unless it's a short-circuiting terminal operation) in the stream before returning the result. You can identify terminal methods from the return type, **they will never return a `Stream`**.
+
+Reductions are
 a special type of terminal operation where all of the contents of the stream are combined
 into a single primitive or `Object`. For example, you might have an `int` or a Collection.
-
-Table 4.4 summarizes this section. Feel free to use it as a guide to remember the most
-important points as we go through each one individually. We explain them from easiest to
-hardest rather than alphabetically.
 
 TABLE 4.4 Terminal stream operations
 
 ![Table 4.4](img/table4-4.png)
 
-#### `forEach()`
+### `forEach()`
 
 A looping construct is available. As expected, calling `forEach()` on an infinite stream does
 not terminate. Since there is no return value, it is not a reduction.
@@ -212,8 +200,7 @@ Stream<String> s = Stream.of("Monkey", "Gorilla", "Bonobo");
 s.forEach(System.out::print); // MonkeyGorillaBonobo
 ````
 
-_Note: Remember that you can call `forEach()` directly on a Collection or on a
-Stream. Don’t get confused on the exam when you see both approaches._
+<img src="../img/note.png" alt="Note" width="20"/> _Note: Remember that you can call `forEach()` directly on a `Collection` or on a `Stream`. Don’t get confused on the exam when you see both approaches._
 
 Notice that you can’t use a traditional for loop on a stream:
 
@@ -225,7 +212,7 @@ for (Integer i: s) {} // DOES NOT COMPILE
 While `forEach()` sounds like a loop, it is really a terminal operator for streams. Streams
 cannot use a traditional for loop to run because they don’t implement the `Iterable` interface.
 
-#### `reduce()`
+### `reduce()`
 
 The `reduce()` method combines a stream into a single object. As you can tell from the
 name, it is a reduction. The method signatures are these:
@@ -299,16 +286,14 @@ threeElements.reduce(op).ifPresent(System.out::print); // 90
 
 Why are there two similar methods? Why not just always require the identity? Java
 could have done that. However, sometimes it is nice to differentiate the case where the
-stream is empty rather than the case where there is a value that happens to match the identity
-being returned from calculation. The signature returning an `Optional` lets us differentiate
+stream is empty rather than the case where there is a value that happens to match the identity being returned from calculation. The signature returning an `Optional` lets us differentiate
 these cases. For example, we might return `Optional.empty()` when the stream is empty
 and `Optional.of(3)` when there is a value.
 
 The third method signature is used when we are processing collections in parallel. It
 allows Java to create intermediate reductions and then combine them at the end. In our
 example, it looks similar. While we aren’t actually using a parallel stream here, Java
-assumes that a stream might be parallel. This is helpful because it lets us switch to a parallel
-stream easily in the future:
+assumes that a stream might be parallel. This is helpful because it lets us switch to a parallel stream easily in the future:
 
 ````
 BinaryOperator<Integer> op = (a, b) -> a * b;
@@ -316,13 +301,9 @@ Stream<Integer> stream = Stream.of(3, 5, 6);
 System.out.println(stream.reduce(1, op, op)); // 90
 ````
 
-#### `collect()`
+### `collect()`
 
-The `collect()` method is a special type of reduction called a _mutable reduction_. It is
-more efficient than a regular reduction because we use the same mutable object while
-accumulating. Common mutable objects include `StringBuilder` and `ArrayList`. This is a
-really useful method, because it lets us get data out of streams and into another form. The
-method signatures are as follows:
+The `collect()` method is a terminal operation and a special type of reduction called a _mutable reduction_. It is more efficient than a regular reduction because we use the same mutable object while accumulating. Common mutable objects include `StringBuilder` and `ArrayList`. This is a really useful method, because it lets us get data out of streams and into another form. The method signatures are as follows:
 
 ````
 <R> R collect(Supplier<R> supplier, BiConsumer<R, ? super T> accumulator, BiConsumer<R, R> combiner);
@@ -337,19 +318,15 @@ Stream<String> stream = Stream.of("w", "o", "l", "f");
 StringBuilder word = stream.collect(StringBuilder::new, StringBuilder::append, StringBuilder:append)
 ````
 
-The first parameter is a `Supplier` that creates the object that will store the results as we
-collect data. Remember that a `Supplier` doesn’t take any parameters and returns a value.
+The first parameter is a `Supplier` that creates the object that will store the results as we collect data. Remember that a `Supplier` doesn’t take any parameters and returns a value.
 In this case, it constructs a new `StringBuilder`.
 
 The second parameter is a `BiConsumer`, which takes two parameters and doesn’t return
-anything. It is responsible for adding one more element to the data collection. In this example,
-it appends the next String to the `StringBuilder`.
+anything. It is responsible for adding one more element to the data collection. In this example, it appends the next String to the `StringBuilder`.
 
-The final parameter is another `BiConsumer`. It is responsible for taking two data collections
-and merging them. This is useful when we are processing in parallel. Two smaller
+The final parameter is another `BiConsumer`. It is responsible for taking two data collections and merging them. This is useful when we are processing in parallel. Two smaller
 collections are formed and then merged into one. This would work with `StringBuilder`
-only if we didn’t care about the order of the letters. In this case, the accumulator and combiner
-have similar logic.
+only if we didn’t care about the order of the letters. In this case, the accumulator and combiner have similar logic.
 
 Now let’s look at an example where the logic is different in the accumulator and
 combiner:
@@ -367,8 +344,26 @@ need to be merged.
 
 We started with the long signature because that’s how you implement your own
 collector. It is important to know how to do this for the exam and to understand how
-collectors work. In practice, there are many common collectors that come up over and
-over. Rather than making developers keep reimplementing the same ones, Java provides
+collectors work. 
+
+The second signature, `<R,A> R collect(Collector<? super T, A,R> collector)` accepts a `Collector` interface which consists of several operations including: `supplier()`, `accumulator()`, a `combiner()`, and `finisher()`:
+
+````
+public interface Collector<T, A, R> {
+    Supplier<A> supplier();
+
+    BiConsumer<A, T> accumulator();
+
+    BinaryOperator<A> combiner();
+
+    Function<A, R> finisher();
+
+    ...
+
+}
+````
+
+Java 11 supports various built-in collectors via the `java.util.stream.Collectors` `final` class. So for the most common operations you do not have to implement a `Collector` yourself. Rather than making developers keep reimplementing the same ones, Java provides
 an interface with common collectors. This approach also makes the code easier to read
 because it is more expressive. For example, we could rewrite the previous example as
 follows:
@@ -388,21 +383,22 @@ System.out.println(set); // [f, w, l, o]
 ````
 
 You might get different output for this last one since `toSet()` makes no guarantees as
-to which implementation of `Set` you’ll get. It is likely to be a `HashSet`, but you shouldn’t
-expect or rely on that.
+to which implementation of `Set` you’ll get. It is likely to be a `HashSet`, but you shouldn’t expect or rely on that.
 
-_Note: The exam expects you to know about common predefined collectors in
+<img src="../img/note.png" alt="Note" width="20"/> _Note: The exam expects you to know about common predefined collectors in
 addition to being able to write your own by passing a supplier, accumulator,
 and combiner._
 
-### Using Common Intermediate Operations
+## Using Common Intermediate Operations
+
+Stream API operations that returns a new `java.util.stream.Stream` are called intermediate operations. Most of the times, these operations are lazy in nature, computation on the source data is only performed when the terminal operation is initiated, and source elements are consumed only as needed. Intermediate operations are never the final result producing operations.
 
 Unlike a terminal operation, intermediate operations deal with infinite streams simply by
 returning an infinite stream. Since elements are produced only as needed, this works fine.
 The assembly line worker doesn’t need to worry about how many more elements are coming
 through and instead can focus on the current element.
 
-#### `filter()`
+### `filter()`
 
 The `filter()` method returns a Stream with elements that match a given expression. Here
 is the method signature:
@@ -410,29 +406,38 @@ is the method signature:
 `Stream<T> filter(Predicate<? super T> predicate)`
 
 This operation is easy to remember and very powerful because we can pass any
-Predicate to it. For example, this filters all elements that begin with the letter m:
+`Predicate` to it. The `Predicate` interface takes a single parameter and returns a `boolean` primitive. For example, this filters all elements that begin with the letter `m`:
 
 ````
 Stream<String> s = Stream.of("monkey", "gorilla", "bonobo");
 s.filter(x -> x.startsWith("m")).forEach(System.out::print); // monkey
 ````
 
-#### `distinct()`
+When you call the `filter()` method on a Stream, the filter passed as parameter to the `filter()` method is stored internally. No filtering takes place yet (lazy processing).
+
+The parameter passed to the `filter()` function determines what items in the stream should be processed, and which that should be excluded from the processing, i.e. if the `Predicate.test(T t)` method of the parameter passed to `filter()` returns `true` for an item, that means it should be processed. If `false` is returned, the item is not processed.
+
+### `distinct()`
 
 The `distinct()` method returns a stream with duplicate values removed. The duplicates do
-not need to be adjacent to be removed. As you might imagine, Java calls `equals()` to determine
-whether the objects are the same. The method signature is as follows:
+not need to be adjacent to be removed. As you might imagine, Java calls the `equals()` method of the `Object` class to determine whether the objects are the same. The method signature is as follows:
 
 `Stream<T> distinct()`
 
-Here’s an example:
+Here’s some examples:
 
 ````
 Stream<String> s = Stream.of("duck", "duck", "duck", "goose");
 s.distinct().forEach(System.out::print); // duckgoose
 ````
 
-#### `limit()` and `skip()`
+````
+List<String> list = Arrays.asList("aA","AA","Aa", "Aa", "AA");
+long l = list.stream().distinct().count();
+System.out.println("Number of distinct elements : " + l); // Number of distinct elements : 3
+````
+
+### `limit()` and `skip()`
 
 The `limit()` and `skip()` methods make a Stream smaller. They could make a finite stream
 smaller, or they could make a finite stream out of an infinite stream. The method signatures
@@ -453,7 +458,7 @@ Stream<Integer> s = Stream.iterate(1, n -> n + 1);
 s.skip(5).limit(2).forEach(System.out::print); // 67
 ````
 
-### Putting Together the Pipeline
+## Putting Together the Pipeline
 
 Streams allow you to use chaining and express what you want to accomplish rather than
 how to do so. Let’s say that we wanted to get the first two names alphabetically that are
@@ -491,15 +496,14 @@ stream.filter(n -> n.length() == 4)
 ````
 
 The difference is that we express what is going on. We care about `String` objects of
-length 4. Then we then want them sorted. Then we want to first two. Then we want to
+length `4`. Then we then want them sorted. Then we want to first two. Then we want to
 print them out. It maps better to the problem that we are trying to solve, and it is simpler
 because we don’t have to deal with counters and such.
 
 Once you start using streams in your code, you may find yourself using them in many
 places. Having shorter, briefer, and clearer code is definitely a good thing!
 
-In this example, you see all three parts of the pipeline. Figure 4.5 shows how each intermediate
-operation in the pipeline feeds into the next.
+In this example, you see all three parts of the pipeline. Figure 4.5 shows how each intermediate operation in the pipeline feeds into the next.
 
 FIGURE 4.5 Stream pipeline with multiple intermediate operations
 
@@ -568,24 +572,21 @@ This one hangs as well until we kill the program. The filter doesn’t allow any
 through, so `limit()` never sees two elements. This means that we have to keep waiting and
 hope that they show up.
 
-## <a name="4-1"></a>4.1 - Extract stream data using map, peek and flatMap methods
+# 4.1 - Extract stream data using map, peek and flatMap methods
 
-### `map()`
+## `map()`
 
-The `map()` method creates a one-to-one mapping from the elements in the stream to the elements
-of the next step in the stream. The method signature is as follows:
+The `map()` method creates a one-to-one mapping from the elements in the stream to the elements of the next step in the stream. The method signature is as follows:
 
 `<R> Stream<R> map(Function<? super T, ? extends R> mapper)`
 
 This one looks more complicated than the others you have seen. It uses the lambda
 expression to figure out the type passed to that function and the one returned. The return
-type is the stream that gets returned.
+type is the stream that gets returned. In other words, for each item in the collection you create a new object based on that item. 
 
-_Note: The `map()` method on streams is for transforming data. Don’t confuse it
-with the `Map` interface, which maps keys to values._
+<img src="../img/note.png" alt="Note" width="20"/> _Note: `map()` on its own does not actually perform the mapping (all intermediate operations are lazy). It only configures the stream for mapping. Once one of the stream processing methods are invoked, the mapping will be performed.
 
-As an example, this code converts a list of String objects to a list of Integer s representing
-their lengths:
+As an example, this code converts a list of `String` objects to a list of `Integer`s representing their lengths:
 
 ````
 Stream<String> s = Stream.of("monkey", "gorilla", "bonobo");
@@ -595,21 +596,15 @@ s.map(String::length).forEach(System.out::print); // 676
 Remember that `String::length` is shorthand for the lambda `x -> x.length()`, which
 clearly shows it is a function that turns a `String` into an `Integer`.
 
-### `flatMap()`
+## `flatMap()`
 
-The `flatMap()` method takes each element in the stream and makes any elements it contains
-top-level elements in a single stream. This is helpful when you want to remove empty
-elements from a stream or you want to combine a stream of lists. We are showing you the
-method signature for consistency with the other methods, just so you don’t think we are
-hiding anything. You aren’t expected to be able to read this:
+The `flatMap()` method takes each element in the stream and makes any elements it contains top-level elements in a single stream. This is helpful when you want to remove empty elements from a stream or you want to combine a stream of lists. 
 
 `<R> Stream<R> flatMap(Function<? super T, ? extends Stream<? extends R>> mapper)`
 
-This gibberish basically says that it returns a Stream of the type that the function contains
-at a lower level. Don’t worry about the signature. It’s a headache.
+The `Stream.flatMap()` method returns a stream consisting of the results of replacing each element of this stream with the contents of a mapped stream produced by applying the provided mapping function to each element. The function produces a stream for each input element and the output streams are flattened. Basically, it returns a `Stream` of the type that the function contains at a lower level.
 
-What you should understand is the example. This gets all of the animals into the same
-level along with getting rid of the empty list:
+This example gets all of the animals into the same level along with getting rid of the empty list:
 
 ````
 List<String> zero = Arrays.asList();
@@ -628,20 +623,33 @@ Mama Gorilla
 Baby Gorilla
 ````
 
-As you can see, it removed the empty list completely and changed all elements of each
-list to be at the top-level of the stream.
+It removed the empty list completely and changed all elements of each list to be at the top-level of the stream.
 
-### `peek()`
+The `flatMap()` operation works as follows:
 
-The `peek()` method is our final intermediate operation. It is useful for debugging because it
-allows us to perform a stream operation without actually changing the stream. The method
-signature is as follows:
+- It takes an input stream and produces an output stream using a mapping function.
+- The mapping function takes an element from the input stream and maps the element to a stream. The type of input element and the elements in the mapped stream may be different. This step produces a stream of streams. Suppose the input stream is a `Stream<T>` and the mapped stream is `Stream<Stream<R>>` where `T` and `R` may be the same or different.
+- Finally, it flattens the output stream (that is, a stream of streams) to produce a stream. That is, the `Stream<Stream<R>>` is flattened to `Stream<R>`.
+
+So, in the example we replaced the `List<String>` with a `Stream<String>` using the `stream()` method, and `flatMap` does the rest. The `flatMap`'s associated functional interface is the same as `map`'s — the `Function` — but its return type is restricted to streams and not any value.
+
+The `flatMap()` transforms each element of a stream into another form (just like `map()`), and generates sub-streams of the newly formed elements. Finally, it flattens all of the sub-streams into a single stream of elements. As the `flatMap()` is a map type of function, it also takes a function and applies (maps) that function to each of the element in the stream.
+
+The difference between `map()` and `flatMap()` is:
+
+- The `map()` accepts a function that returns a mapped element and then the `map()` function returns a stream of such elements (1 to 1).
+- The `flatMap` accepts a function that returns streams of the mapped elements and then the `flatMap` finally returns a collective stream of all of the sub-streams that are created by the each execution of the passed function (1 to 0...n).
+
+## `peek()`
+
+The `peek()` method is an intermediate operation. It is useful for debugging because it
+allows us to perform a stream operation without actually changing the stream. `Stream.peek()` returns the Stream itself after applying the action passed as a `Consumer` object. The method signature is as follows:
 
 `Stream<T> peek(Consumer<? super T> action)`
 
 The most common use for `peek()` is to output the contents of the stream as it goes by.
-Suppose that we made a typo and counted bears beginning with the letter g instead of b .
-We are puzzled why the count is 1 instead of 2. We can add a `peek()` to fi nd out why:
+Suppose that we made a typo and counted bears beginning with the letter `g` instead of `b`.
+We are puzzled why the count is `1` instead of `2`. We can add a `peek()` to find out why:
 
 ````
 Stream<String> stream = Stream.of("black bear", "brown bear", "grizzly");
@@ -650,26 +658,45 @@ long count = stream.filter(s -> s.startsWith("g"))
 System.out.println(count); // 1
 ````
 
-_Note: When working with a `Queue`, `peek()` looks only at the first element. In a
-stream, `peek()` looks at each element that goes through that part of the
-stream pipeline. It’s like having a worker take notes on how a particular
-step of the process is doing._
+<img src="../img/note.png" alt="Note" width="20"/> _Note: When working with a `Queue`, `peek()` looks only at the first element. In a stream, `peek()` looks at each element that goes through that part of the stream pipeline. It’s like having a worker take notes on how a particular step of the process is doing._
 
-## <a name="4-2"></a>4.2 - Search stream data using search findFirst, findAny, anyMatch, allMatch and noneMatch methods
+Here is a second example:
 
-### `findAny()` and `findFirst()`
+````
+Stream<String> words = Stream.of("lower", "case", "text");
+List<String> list = words
+    .peek(s -> System.out.println(s))
+    .map(s -> s.toUpperCase())
+    .collect(Collectors.toList());
+System.out.println(list);
+````
+
+This outputs:
+
+````
+lower
+case
+text
+[LOWER, CASE, TEXT]
+````
+
+# 4.2 - Search stream data using search findFirst, findAny, anyMatch, allMatch and noneMatch methods
+
+## `findAny()` and `findFirst()`
 
 The `findAny()` and `findFirst()` methods return an element of the stream unless the stream
-is empty. If the stream is empty, they return an empty `Optional`. This is the first method
-you’ve seen that works with an infinite stream. Since Java generates only the amount of
-stream you need, the infinite stream needs to generate only one element. `findAny()` is useful
-when you are working with a parallel stream. It gives Java the flexibility to return to you
-the first element it comes by rather than the one that needs to be first in the stream based
-on the intermediate operations.
+is empty. If the stream is empty, they return an empty `Optional`. 
+
+These methods work with an infinite stream. Since Java generates only the amount of stream you need, the infinite stream needs to generate only one element. This means it is a **short circuit terminal operation**. A short circuit terminal operation potentially allows processing of a stream to stop early without examining all the elements.
+
+`findAny()` is useful when you are working with a parallel stream. It gives Java the flexibility to return to you the first element it comes by rather than the one that needs to be first in the stream based on the intermediate operations.
+
+The method `findFirst()` provides the first element from the stream. It will return first element from stream and then will not process any further elements.
 
 These methods are terminal operations but not reductions. The reason is that they sometimes
 return without processing all of the elements. This means that they return a value
 based on the stream but do not reduce the entire stream into one value.
+
 The method signatures are these:
 
 ````
@@ -686,11 +713,7 @@ s.findAny().ifPresent(System.out::println); // monkey
 infinite.findAny().ifPresent(System.out::println); // chimp
 ````
 
-Finding any one match is more useful than it sounds. Sometimes we just want to sample the
-results and get a representative element, but we don’t need to waste the processing generating
-them all. After all, if we plan to work with only one element, why bother looking at more?
-
-### `anyMatch()`, `allMatch()` and `noneMatch()`
+## `anyMatch()`, `allMatch()` and `noneMatch()`
 
 The `anyMatch()`, `allMatch()` and `noneMatch()` methods search a stream and return information
 about how the stream pertains to the predicate. These may or may not terminate
@@ -722,10 +745,10 @@ because one doesn’t match. `noneMatch()` also returns false because one matche
 list, one match is found, so the call terminates. If we called `noneMatch()` or `allMatch()`, they 
 would run until we killed the program.
 
-_Note: Remember that `anyMatch()`, `allMatch()`, and `noneMatch()` return a boolean. 
+<img src="../img/note.png" alt="Note" width="20"/> _Note: Remember that `anyMatch()`, `allMatch()`, and `noneMatch()` return a boolean. 
 By contrast, the find methods return an `Optional` because they return an element of the stream._
 
-## <a name="4-3"></a>4.3 - Use the Optional class
+# 4.3 - Use the Optional class
 
 Suppose that you are taking an introductory Java class and receive scores of 90 and 100
 on the first two exams. Now, we ask you what your average is. An average is calculated by
@@ -875,7 +898,7 @@ System.out.println(opt.orElseThrow(() -> new IllegalStateException()));
 
 It prints out 95 three times. Since the value does exist, there is no need to use the “or else” logic.
 
-### Converting an `Optional` into a Stream
+## Converting an `Optional` into a Stream
 
 In Java 9, the [stream()](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html#stream()) 
 method was introduced to `Optional`:
@@ -888,7 +911,7 @@ accountList.stream()
     .forEach(a -> System.out.println(a.getBalance()));
 ````
 
-#### The `or` method
+### The `or` method
 
 The `or()` method of `Optional` class in Java is used to get this `Optional` instance if any 
 value is present. If there is no value present in this `Optional` instance, then this method returns 
@@ -933,19 +956,18 @@ Optional: Optional.empty
 Optional by or(() -> Optional.of(100)) method: Optional[100]
 ````
 
-_Note: You can chain `or` statements together._
+<img src="../img/note.png" alt="Note" width="20"/> _Note: You can chain `or` statements together._
 
-## <a name="4-4"></a>4.4 - Perform calculations using count, max, min, average and sum stream operations
+# 4.4 - Perform calculations using count, max, min, average and sum stream operations
 
-_Note: For `average` and `sum` see section 8.4 as these are performed on `IntStream`._
+Java 8 introduced three **primitive specialized stream interfaces** that support specialized methods (like `max()`, `sum()`, `average()`) to work with streams of numbers: `IntStream`, `DoubleStream`, and `LongStream`, that respectively specialize the elements of a stream to be `int` primitives, `double` primitives, and `long` primitives -- and thereby avoid hidden boxing costs.
 
-### `count()`
+<img src="../img/note.png" alt="Note" width="20"/> _Note: For `average` and `sum` see section 8.4 as these are performed on `IntStream`._
+
+## `count()`
 
 The `count()` method determines the number of elements in a finite stream. For an infinite
-stream, it hangs. Why? Count from 1 to infinity and let us know when you are finished. Or
-rather don’t do that because we’d rather you study for the exam than spend the rest of your
-life counting. `count()` is a reduction because it looks at each element in the stream and
-returns a single value. The method signature is this:
+stream, it hangs. Why? Count from `1` to infinity and let us know when you are finished...  `count()` is a reduction because it looks at each element in the stream and returns a single value. The method signature is this:
 
 `long count()`
 
@@ -956,20 +978,16 @@ Stream<String> s = Stream.of("monkey", "gorilla", "bonobo");
 System.out.println(s.count()); // 3
 ````
 
-### `min()` and `max()`
+## `min()` and `max()`
 
-The `min()` and `max()` methods allow you to pass a custom `Comparator` and find the smallest
-or largest value in a finite stream according to that sort order. Like `count()`, `min()` and
-`max()` hang on an infinite stream because they cannot be sure that a smaller or larger value
-isn’t coming later in the stream. Both methods are reductions because they return a single
-value after looking at the entire stream. The method signatures are as follows:
+The `min()` and `max()` terminal methods allow you to pass a custom `Comparator` and find the smallest or largest value in a finite stream according to that sort order. Like `count()`, `min()` and `max()` hang on an infinite stream because they cannot be sure that a smaller or larger value isn’t coming later in the stream. Both methods are reductions because they return a single value after looking at the entire stream. The method signatures are as follows:
 
 ````
 Optional<T> min(<? super T> comparator)
 Optional<T> max(<? super T> comparator)
 ````
 
-This example finds the animal with the fewest letters in its name:
+The `Stream.min()` and `Stream.max()` methods take a `java.util.Comparator` as parameter. This example finds the animal with the fewest letters in its name:
 
 ````
 Stream<String> s = Stream.of("monkey", "ape", "bonobo");
@@ -988,19 +1006,26 @@ System.out.println(minEmpty.isPresent()); // false
 ````
 
 Since the stream is empty, the `Comparator` is never called and no value is present in the
-`Optional`.
+`Optional`. In this case because the `Optional` has no value a call to the `get()` method will throw `NoSuchElementException`.
 
-## <a name="4-5"></a>4.5 - Sort a collection using lambda expressions
+The `Comparator.comparing()` method creates a `Comparator` based on the lambda expression passed to it. In fact, the `comparing()` method takes a `Function` which is a functional interface suited for lambda expressions. It takes one parameter and returns a value:
 
-### `Comparator` vs. `Comparable`
+`Comparator<Person> byLastName = Comparator.comparing(Person::getLastName);`
+
+<img src="../img/note.png" alt="Note" width="20"/> _Note: The `java.util.stream.Stream` interface has `max()` and `min()` methods, but they are not with empty parameter list as in `IntStream`, `DoubleStream`, `LongStream` and require a `Comparator` interface passed in as a parameter_
+
+__The `java.util.stream.Stream` interface does not have `average()` and `sum()` methods._
+
+# 4.5 - Sort a collection using lambda expressions
+
+## `Comparator` vs. `Comparable`
 
 We discussed “order” for the `TreeSet` and `TreeMap` classes. For numbers, order is
 obvious—it is numerical order. For `String` objects, order is defined according to the
 Unicode character mapping. As far as the exam is concerned, that means numbers sort
 before letters and uppercase letters sort before lowercase letters.
 
-_Note: Remember that numbers sort before letters and uppercase letters sort
-before lowercase letters._
+<img src="../img/note.png" alt="Note" width="20"/> _Note: Remember that numbers sort before letters and uppercase letters sort before lowercase letters._
 
 You can also sort objects that you create. Java provides an interface called `Comparable` .
 If your class implements `Comparable`, it can be used in these data structures that require
@@ -1012,7 +1037,7 @@ it can trick you into mixing up the two. Don’t be confused! In this section, w
 `Comparable` first. Then, as we go through `Comparator`, we will point out all of the
 differences.
 
-#### `Comparable`
+### `Comparable`
 
 The `Comparable` interface has only one method. In fact, this is the entire interface:
 
@@ -1101,7 +1126,7 @@ compares a smaller id to a larger one, and therefore it prints a negative number
 compares animals with the same id, and therefore it prints 0. Line 13 compares a larger id
 to a smaller one, and therefore it returns a positive number.
 
-_Note: Remember that id – `a.id` sorts in ascending order and `a.id` – id sorts in
+<img src="../img/note.png" alt="Note" width="20"/> _Note: Remember that id – `a.id` sorts in ascending order and `a.id` – id sorts in
 descending order._
 
 When dealing with legacy code, the `compareTo()` method requires a cast since it is
@@ -1126,7 +1151,7 @@ That’s because it is in the `java.util` package. Most of the time, you won’t
 name on the exam. You can tell that the imports have been omitted because the code will
 have line numbers that do not begin with line 1.
 
-#### `Comparator`
+### `Comparator`
 
 Sometimes you want to sort an object that did not implement `Comparable`, or you want to
 sort objects in different ways at different times.
@@ -1220,7 +1245,7 @@ comparing objects. This works fine for the exam. In the real world, though, thin
 so neat. You will have to decide how to handle nulls or prevent them from being in your
 object. It is common to decide that nulls sort before any other values.
 
-### Searching and Sorting
+## Searching and Sorting
 
 You already know the basics of searching and sorting. You now know a little more about
 `Comparable` and `Comparator`.
@@ -1318,7 +1343,7 @@ rabbit.add(new Rabbit());
 Now Java knows that you want to sort by id and all is well. `Comparator`s are helpful
 objects. They let you separate sort order from the object to be sorted.
 
-### Sorting lists
+## Sorting lists
 
 Prior to Java 8, it was necessary to implement the `java.util.Comparator` interface with an anonymous 
 (or named) class when sorting a list:
@@ -1371,10 +1396,10 @@ compare by last name:
 
 `sort(people, comparing(Person::getFirstName).thenComparing(Person::getLastName));`
 
-_Note: `Collections.sort(...)` only works on collections that are subtypes of `List`. The `Set` 
+<img src="../img/note.png" alt="Note" width="20"/> _Note: `Collections.sort(...)` only works on collections that are subtypes of `List`. The `Set` 
 and Collection APIs do not imply any ordering of the elements._
 
-### Sorting maps
+## Sorting maps
 
 You can sort the entries of a `HashMap` by value in a similar fashion. (Note that a `LinkedHashMap` 
 must be used as the target. The keys in an ordinary `HashMap` are unordered)
@@ -1389,7 +1414,7 @@ map = map.entrySet()
                               (k, v) -> k, LinkedHashMap::new));
 ````
 
-### `sorted()`
+## `sorted()`
 
 The Stream intermediate operation, `sorted()` method, returns a stream with the elements sorted. 
 Just like sorting arrays, Java uses natural ordering unless we specify a `Comparator`. The method 
@@ -1431,9 +1456,9 @@ with the interface. This means that we have to use a method and not a method
 reference. We bring this up to remind you that you really do need to know method references
 well.
 
-## <a name="4-6"></a>4.6 - Use Collectors with streams, including the groupingBy and partitioningBy operation
+# 4.6 - Use Collectors with streams, including the groupingBy and partitioningBy operation
 
-#### Collecting Results
+### Collecting Results
 
 Early in the chapter, you saw the `collect()` terminal operation.
 There are many predefined collectors, including those shown in Table 4.5. We will look at
@@ -1444,7 +1469,7 @@ TABLE 4.5 Examples of grouping/partitioning collectors
 ![Table 4.5](img/table4-5.png)
 ![Table 4.5](img/table4-5cont.png)
 
-#### Collecting Using Basic Collectors
+### Collecting Using Basic Collectors
 
 Luckily, many of these collectors work in the same way. Let’s look at an example:
 
@@ -1493,7 +1518,7 @@ the stream. The intermediate operation is `filter()`. Finally, the terminal oper
 which creates a `TreeSet`. If we didn’t care which implement of `Set` we got, we
 could have written `Collectors.toSet()` instead.
 
-#### Collecting into Maps
+### Collecting into Maps
 
 Collector code involving maps can get long. We will build it up slowly. Make sure that you
 understand each example before going on to the next one. Let’s start out with a straightforward
@@ -1560,7 +1585,7 @@ System.out.println(map.getClass()); // class. java.util.TreeMap
 This time we got the type that we specified. With us so far? This code is long but not
 particularly complicated. We did promise you that the code would be long!
 
-#### Collecting Using Grouping, Partitioning, and Mapping
+### Collecting Using Grouping, Partitioning, and Mapping
 
 Now suppose that we want to get groups of names by their length. We can do that by saying
 that we want to group by length:
@@ -1658,8 +1683,7 @@ System.out.println(map); // {5=2, 6=1}
 ````
 
 Finally, there is a `mapping()` collector that lets us go down a level and add another
-collector. Suppose that we wanted to get the first letter of the first animal alphabetically of
-each length. Why? Perhaps for random sampling. The examples on this part of the exam
+collector. Suppose that we wanted to get the first letter of the first animal alphabetically of each length. Why? Perhaps for random sampling. The examples on this part of the exam
 are fairly contrived as well. We’d write the following:
 
 ````
@@ -1693,7 +1717,7 @@ The code does the same thing as in the previous example. This means that it is i
 to recognize the collector names because you might not have the Collectors class
 name to call your attention to it.
 
-## <a name="q"></a>Quiz
+# Quiz
 
 1. <a name="q1"></a>What does the `or` method of the `Optional` class return?
     - A. The same object type that the collection/stream is based on
@@ -1991,7 +2015,7 @@ can be created? (Choose all that apply.)
     - F. An exception is thrown.
 <br />[Jump to answer](#qa21)
 
-## <a name="qa"></a>Quiz Answers
+# Quiz Answers
 
 1. <a name="qa1"></a>[Jump to question](#q1) - **B.** The `or` function from the [JavaDocs](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html#or):
 If a value is present, returns an `Optional` describing the value, otherwise returns an `Optional` 
