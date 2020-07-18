@@ -18,7 +18,9 @@
   - [`findAny()` and `findFirst()`](#findany-and-findfirst)
   - [`anyMatch()`, `allMatch()` and `noneMatch()`](#anymatch-allmatch-and-nonematch)
 - [4.3 - Use the Optional class](#43---use-the-optional-class)
+    - [Summary of `Optional` unwrapping methods](#summary-of-optional-unwrapping-methods)
   - [Converting an `Optional` into a Stream](#converting-an-optional-into-a-stream)
+    - [The `map()` and `flatMap()` in `Optional`](#the-map-and-flatmap-in-optional)
     - [The `or` method](#the-or-method)
 - [4.4 - Perform calculations using count, max, min, average and sum stream operations](#44---perform-calculations-using-count-max-min-average-and-sum-stream-operations)
   - [`count()`](#count)
@@ -790,24 +792,24 @@ In relation to streams, operations `anyMatch(...)`, `allMatch(...)`, `noneMatch(
 
 # 4.3 - Use the Optional class
 
-Suppose that you are taking an introductory Java class and receive scores of 90 and 100
-on the first two exams. Now, we ask you what your average is. An average is calculated by
-adding the scores and dividing by the number of scores, so you have (90+100)/2. This gives
-190/2, so you answer with 95. Great!
+A `java.util.Optional<T>` object is either a wrapper for an `Object` of type `T` or a wrapper for no object. It is intended as a safer alternative than a reference of type `T` that refers to an `Object` or null.
 
-Now suppose that you are taking your second class on Java, and it is the first day of
-class. We ask you what your average is in this class that just started. You haven’t taken any
-exams yet, so you don’t have anything to average. It wouldn’t be accurate to say that your
-average is zero. That sounds bad, and it isn’t true. There simply isn’t any data, so you don’t
-have an average yet.
+Following is the declaration for `java.util.Optional<T>` class:
 
-How do we express this “we don’t know” or “not applicable” answer in Java? Starting
-with Java 8, we use the `Optional` type. An `Optional` is created using a factory. You can
-either request an empty `Optional` or pass a value for the `Optional` to wrap. Think of an
-`Optional` as a box that might have something in it or might instead be empty. Figure 4.1
-shows both options.
+````
+public final class Optional<T> extends Object {
+    ...
+}
+````
 
-FIGURE 4.1 `Optional`
+Suppose that you are taking an introductory Java class and receive scores of `90` and `100` on the first two exams. Now, we ask you what your average is. An average is calculated by adding the scores and dividing by the number of scores, so you have `(90+100)/2`. This gives
+`190/2`, so you answer with `95`. Great!
+
+Now suppose that you are taking your second class on Java, and it is the first day of class. We ask you what your average is in this class that just started. You haven’t taken any exams yet, so you don’t have anything to average. It wouldn’t be accurate to say that your
+average is zero. That sounds bad, and it isn’t true. There simply isn’t any data, so you don’t have an average yet.
+
+How do we express this “we don’t know” or “not applicable” answer in Java? Starting with Java 8, we use the `Optional` type. An `Optional` is created using a factory. You can either request an empty `Optional` or pass a value for the `Optional` to wrap. Think of an
+`Optional` as a box that might have something in it or might instead be empty. The figure below shows both options.
 
 ![Figure 4.1](img/figure4-1.png)
 
@@ -822,11 +824,7 @@ Here’s how to code our average method:
 15: }
 ````
 
-Line 11 returns an empty `Optional` when we can’t calculate an average. Lines 12 and
-13 add up the scores. There is a functional programming way of doing this math, but we
-will get to that later in the chapter. In fact, the entire method could be written in one line,
-but that wouldn’t teach you how `Optional` works! Line 14 creates an `Optional` to wrap the
-average.
+Line 11 returns an **Empty `Optional`** (using the `static` factory method `Optional.empty()`) when we can’t calculate an average. Lines 12 and 13 add up the scores. There is a functional programming way of doing this math, but we will get to that later. In fact, the entire method could be written in one line, but that wouldn’t teach you how `Optional` works! Line 14 creates an `Optional` to wrap the average from a **non-null value** with the `static` factory method `Optional.of(...)`.
 
 Calling the method shows what is in our two boxes:
 
@@ -835,8 +833,7 @@ System.out.println(average(90, 100)); // Optional[95.0]
 System.out.println(average()); // Optional.empty
 ````
 
-You can see that one `Optional` contains a value and the other is empty. Normally, we
-want to check if a value is there and/or get it out of the box. Here’s one way to do that:
+You can see that one `Optional` contains a value and the other is empty. Normally, we want to check if a value is there and/or get it out of the box. Here’s one way to do that:
 
 ````
 20: Optional<Double> opt = average(90, 100);
@@ -844,8 +841,7 @@ want to check if a value is there and/or get it out of the box. Here’s one way
 22:     System.out.println(opt.get()); // 95.0
 ````
 
-Line 21 checks whether the `Optional` actually contains a value. Line 22 prints it out.
-What if we didn’t do the check and the `Optional` was empty?
+Line 21 checks whether the `Optional` actually contains a value. Line 22 prints it out. What if we didn’t do the check and the `Optional` was empty?
 
 ````
 26: Optional<Double> opt = average();
@@ -856,41 +852,26 @@ We’d get an exception since there is no value inside the `Optional`:
 
 `java.util.NoSuchElementException: No value present`
 
-When creating an `Optional`, it is common to want to use empty when the value is `null`.
-You can do this with an `if` statement or ternary operator. We use the ternary operator to
-make sure that you remember how it works from the OCA:
+When creating an `Optional`, it is common to want to use empty when the value is `null`. You can do this with an `if` statement or ternary operator.
 
 `Optional o = (value== null) ? Optional.empty(): Optional.of(value);`
 
-If value is `null`, `o` is assigned the empty `Optional`. Otherwise, we wrap the value. Since
-this is such a common pattern, Java provides a factory method to do the same thing:
+If value is `null`, `o` is assigned the empty `Optional`. Otherwise, we wrap the value. Since this is such a common pattern, Java provides the `static` factory method `Optional.ofNullable(...)`, with which you can create an `Optional` object that may hold a **`null`able value**:
 
 `Optional o = Optional.ofNullable(value);`
 
-That covers the static methods you need to know about `Optional`. Table 4.2 summarizes
-most of the instance methods on `Optional` that you need to know for the
-exam. There are a few others that involve chaining. We will cover those later in the
-chapter.
-
-TABLE 4.2 `Optional` instance methods
+That covers the `static` methods you need to know about `Optional`. The table below summarizes most of the instance methods on `Optional` that you need to know for the exam. There are a few others that involve chaining. We will cover those later in the chapter.
 
 ![Table 4.2](img/table4-2.png)
 
-You’ve already seen `get()` and `isPresent()`. The other methods allow you to write
-code that uses an `Optional` in one line without having to use the ternary operator.
-This makes the code easier to read. Instead of using an `if` statement, which we used
-when checking the average earlier, we can specify a `Consumer` to be run when there is
-a value inside the `Optional`. When there isn’t, the method simply skips running the
-`Consumer`:
+You’ve already seen `get()` and `isPresent()`. The other methods allow you to write code that uses an `Optional` in one line without having to use the ternary operator. This makes the code easier to read. Instead of using an `if` statement, which we used when checking the average earlier, we can specify a `Consumer` to be run when there is a value inside the `Optional`. When there isn’t, the method simply skips running the `Consumer`:
 
 ````
 Optional<Double> opt = average(90, 100);
 opt.ifPresent(System.out::println);
 ````
 
-Using `ifPresent()` better expresses our intent. We want something done if a value is
-present. The other methods allow you to specify what to do if a value isn’t present. There
-are three choices:
+Using `ifPresent()` better expresses our intent. We want something done if a value is present. The other methods allow you to specify what to do if a value isn’t present. There are three choices:
 
 ````
 30: Optional<Double> opt = average();
@@ -910,24 +891,17 @@ at optional.Average$$Lambda$5/455659002.get(Unknown Source)
 at java.util.Optional.orElseThrow(Optional.java:290)
 ````
 
-Line 31 shows that you can return a specific value or variable. In our case, we print the
-“not a number” value. Line 32 shows using a `Supplier` to generate a value at runtime to
-return instead. I’m glad our professors didn’t give us a random average though! Line 33
-shows using a different `Supplier` to create an exception that should be thrown. Remember
-that the stack trace looks weird because the lambdas are generated rather than named
-classes.
+Line 31 shows that you can return a specific value or variable. In our case, we print the “not a number” value. Line 32 shows using a `Supplier` to generate a value at runtime to return instead. I’m glad our professors didn’t give us a random average though! Line 33
+shows using a different `Supplier` to create an exception that should be thrown. Remember that the stack trace looks weird because the lambdas are generated rather than named classes.
 
-Notice that the two methods that take a `Supplier` have different names. Do you see why
-this code does not compile?
+Notice that the two methods that take a `Supplier` have different names. Do you see why this code does not compile?
 
 ````
 System.out.println(opt.orElseGet(
     () -> new IllegalStateException())); // DOES NOT COMPILE
 ````
 
-opt is an `Optional<Double>`. This means the `Supplier` must return a `Double`. Since this
-supplier returns an exception, the type does not match.
-The last example with `Optional` is really easy. What do you think this does?
+`opt` is an `Optional<Double>`. This means the `Supplier` must return a `Double`. Since this supplier returns an exception, the type does not match. The last example with `Optional` is really easy. What do you think this does?
 
 ````
 Optional<Double> opt = average(90, 100);
@@ -936,7 +910,17 @@ System.out.println(opt.orElseGet(() -> Math.random()));
 System.out.println(opt.orElseThrow(() -> new IllegalStateException()));
 ````
 
-It prints out 95 three times. Since the value does exist, there is no need to use the “or else” logic.
+It prints out `95` three times. Since the value does exist, there is no need to use the “or else” logic.
+
+### Summary of `Optional` unwrapping methods
+
+- `Optional.get()` - is the simplest but also the least safe of these methods. It returns the wrapped value if present but throws a `NoSuchElementException` otherwise. For this reason, using this method is almost always a bad idea unless you are really sure the optional contains a value.
+- `Optional.orElse(T other)` it allows you to provide a default value for when the optional does not contain a value. Note, the other value may be `null`.
+- `Optional.orElseGet(Supplier<? extends T> other)` is the lazy counterpart of the `orElse` method, because the supplier is invoked only if the optional contains no value. You should use this method either when the default value is time-consuming to create or you want to be sure this is done only if the optional is empty.
+- `<X extends Throwable> Optional.orElseThrow(Supplier<? extends X> exceptionSupplier)` is similar to the `get()` method in that it throws an exception when the optional is empty, but in this case it allows you to choose the type of exception that you want to throw.
+- `Optional.ifPresent(Consumer<? super T> consumer)` lets you execute the action given as argument if a value is present; otherwise no action is taken.
+- `Optional.isPresent()` returns true if the `Optional` contains a value, `false` otherwise.
+- `Optional.isEmpty()` returns true if the `Optional` is empty, false otherwise.
 
 ## Converting an `Optional` into a Stream
 
@@ -951,18 +935,72 @@ accountList.stream()
     .forEach(a -> System.out.println(a.getBalance()));
 ````
 
+If the `Optional` contains a value, it will return a `Stream` containing only that value, otherwise, it will return an empty `Stream`:
+
+````
+Optional<Integer> in = Optional.of(1);
+in.stream()
+    .filter(i -> i > 0)
+    .forEach(System.out::println); // 1
+````
+
+The `Optional.stream()` method can be helpful when you are dealing with a stream of `Optional` elements. It will help to filter out empty optionals and keep the ones with values.
+
+Assume we have a list of optionals received from a method, and some of the optionals are empty:
+
+````
+Stream<Optional<String>> stream = Stream.of(
+    Optional.of("Java"),
+    Optional.empty(), 
+    Optional.of("is"),
+    Optional.empty(), 
+    Optional.of("good"));
+````
+
+In Java 8 you could remove empty optionals as follows:
+
+````
+List<String> list = stream
+    .flatMap(o -> o.isPresent() ? Stream.of(o.get()) : Stream.empty())
+    .collect(Collectors.toList());
+````
+
+In Java 9 and later you can remove empty optionals with shorter code using `flatMap()`:
+
+````
+List<String> list = stream 
+    .flatMap(Optional::stream)
+    .collect(Collectors.toList());
+````
+
+### The `map()` and `flatMap()` in `Optional`
+
+	
+Both `Optional.map()` and `Optional.flatMap()` return an `Optional`. Use `Optional.map()` if the function returns the object you need; or` Optional.flatMap()` if the function returns an `Optional`.
+
+If the function returns the exact type we need:
+
+````
+Optional<String> s = Optional.of("Java");
+s = s.map(String::toUpperCase); // function returns String
+s.ifPresent(System.out::print);
+````
+					 
+If we have a function that returns an `Optional` then using `map()` would lead to a nested structure of optionals, as the `map()` does an additional wrapping. Use `flatMap()` to keep a flat structure:
+
+````
+Optional<String> s = Optional.of("Java");
+s = s.flatMap(val -> Optional.of(val.toUpperCase())); // function returns Optional<String>
+s.ifPresent(System.out::print);
+````
+
 ### The `or` method
 
-The `or()` method of `Optional` class in Java is used to get this `Optional` instance if any 
-value is present. If there is no value present in this `Optional` instance, then this method returns 
-an `Optional` instance with the value generated from the specified supplier.
+The `or()` method of `Optional` class in Java is used to get this `Optional` instance if any value is present. If there is no value present in this `Optional` instance, then this method returns an `Optional` instance with the value generated from the specified supplier.
 
 Syntax: `public Optional<T> or(Supplier<T> supplier)`
 
-This method accepts a `Supplier` as a parameter of type `T` to generate an `Optional` instance with 
-the value generated from the specified `Supplier`. This method returns this `Optional` instance, if 
-any value is present. If there is no value present in this `Optional` instance, then this method 
-returns an `Optional` instance with the value generated from the specified `Supplier`.
+This method accepts a `Supplier` as a parameter of type `T` to generate an `Optional` instance with the value generated from the specified `Supplier`. This method returns this `Optional` instance, if any value is present. If there is no value present in this `Optional` instance, then this method returns an `Optional` instance with the value generated from the specified `Supplier`.
 
 ````
 // create a Optional 
