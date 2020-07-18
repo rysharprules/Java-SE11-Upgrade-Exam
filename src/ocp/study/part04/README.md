@@ -14,6 +14,7 @@
   - [`flatMap()`](#flatmap)
   - [`peek()`](#peek)
 - [4.2 - Search stream data using search findFirst, findAny, anyMatch, allMatch and noneMatch methods](#42---search-stream-data-using-search-findfirst-findany-anymatch-allmatch-and-nonematch-methods)
+  - [Java stream order of processing](#java-stream-order-of-processing)
   - [`findAny()` and `findFirst()`](#findany-and-findfirst)
   - [`anyMatch()`, `allMatch()` and `noneMatch()`](#anymatch-allmatch-and-nonematch)
 - [4.3 - Use the Optional class](#43---use-the-optional-class)
@@ -682,27 +683,57 @@ text
 
 # 4.2 - Search stream data using search findFirst, findAny, anyMatch, allMatch and noneMatch methods
 
+## Java stream order of processing
+
+Streams may or may not have a defined encounter order. Whether or not a stream has an encounter order depends on the source and the intermediate operations. Certain stream sources (such as `java.util.List` or arrays) are intrinsically ordered, whereas others (such as `java.util.HashSet`) are not. Some intermediate operations, such as `sorted()`, may impose an encounter order on an otherwise unordered stream, and others may render an ordered stream unordered, such as `BaseStream.unordered()`. Further, some terminal operations may ignore encounter order, such as `forEach()`.
+
+If a stream is ordered, most operations are constrained to operate on the elements in their encounter order; if the source of a stream is a `List` containing `[1, 2, 3]`, then the result of executing `map(x -> x*2)` must be `[2, 4, 6]`.
+
+````
+List<Integer> ints = List.of(1, 2, 3);
+Stream<Integer> str = ints.stream();
+Spliterator<Integer> spl = str.spliterator();
+System.out.print(spl.hasCharacteristics(Spliterator.ORDERED)); // true
+````
+
+However, if the source has no defined encounter order, then any permutation of the values `[2, 4, 6]` would be a valid result.
+
+````
+HashSet<Integer> ints = new HashSet<>();
+ints.add(1); ints.add(2); ints.add(3);
+Stream<Integer> str = ints.stream();
+Spliterator<Integer> spl = str.spliterator();
+System.out.print(spl.hasCharacteristics(Spliterator.ORDERED)); // false
+````
+
+For sequential streams, the presence or absence of an encounter order does not affect performance, only determinism. If a stream is ordered, repeated execution of identical stream pipelines on an identical source will produce an identical result; if it is not ordered, repeated execution might produce different results.
+
+For parallel streams, relaxing the ordering constraint can sometimes enable more efficient execution.
+
 ## `findAny()` and `findFirst()`
 
-The `findAny()` and `findFirst()` methods return an element of the stream unless the stream
-is empty. If the stream is empty, they return an empty `Optional`. 
+The `findAny()` and `findFirst()` methods return an element of the stream unless the stream is empty. If the stream is empty, they return an empty `Optional`. 
+
+````
+Optional<T> findAny();
+Optional<T> findFirst();
+````
 
 These methods work with an infinite stream. Since Java generates only the amount of stream you need, the infinite stream needs to generate only one element. This means it is a **short circuit terminal operation**. A short circuit terminal operation potentially allows processing of a stream to stop early without examining all the elements.
 
-`findAny()` is useful when you are working with a parallel stream. It gives Java the flexibility to return to you the first element it comes by rather than the one that needs to be first in the stream based on the intermediate operations.
+The stream pipeline will be optimized behind the scenes to perform a single pass and finish as soon as a result is found by using short-circuiting.
 
 The method `findFirst()` provides the first element from the stream. It will return first element from stream and then will not process any further elements.
 
-These methods are terminal operations but not reductions. The reason is that they sometimes
-return without processing all of the elements. This means that they return a value
-based on the stream but do not reduce the entire stream into one value.
-
-The method signatures are these:
+For example, given a list of integers, finds the first number that is divisible by 7:
 
 ````
-Optional<T> findAny()
-Optional<T> findFirst()
+List<Integer> ints = List.of(1, 6, 22, 21, 35, 36);
+Optional<Integer> result = ints.stream().filter(i -> i % 7 == 0).findFirst();
+result.ifPresentOrElse(System.out::print, () -> System.out.print("No results found"));
 ````
+
+`findAny()` is useful when you are working with a parallel stream. It gives Java the flexibility to return to you the first element it comes by rather than the one that needs to be first in the stream based on the intermediate operations.
 
 This example finds an animal:
 
@@ -713,13 +744,16 @@ s.findAny().ifPresent(System.out::println); // monkey
 infinite.findAny().ifPresent(System.out::println); // chimp
 ````
 
+**No effort will be made to randomize the element returned**, it just does not give the same guarantees as `findFirst()`, and might therefore be faster.
+
+The behavior of `findAny()` operation is explicitly nondeterministic; it is free to select any element in the stream. This is to allow for maximal performance in parallel operations; the cost is that multiple invocations on the same source may not return the same result. If a stable result is desired, use `findFirst()` instead.
+
+These methods are terminal operations but not reductions. The reason is that they sometimes return without processing all of the elements. This means that they return a value based on the stream but do not reduce the entire stream into one value.
+
 ## `anyMatch()`, `allMatch()` and `noneMatch()`
 
-The `anyMatch()`, `allMatch()` and `noneMatch()` methods search a stream and return information
-about how the stream pertains to the predicate. These may or may not terminate
-for infinite streams. It depends on the data. Like the find methods, they are not reductions
-because they do not necessarily look at all of the elements.
-The method signatures are as follows:
+The `anyMatch()`, `allMatch()` and `noneMatch()` methods search a stream and return information about how the stream pertains to the predicate. These may or may not terminate for infinite streams. It depends on the data. Like the find methods, they are not reductions
+because they do not necessarily look at all of the elements. The method signatures are as follows:
 
 ````
 boolean anyMatch(Predicate <? super T> predicate)
@@ -739,14 +773,20 @@ System.out.println(list.stream().noneMatch(pred)); // false
 System.out.println(infinite.anyMatch(pred)); // true
 ````
 
-This shows that we can reuse the same predicate, but we need a different stream each time.
-`anyMatch()` returns true because two of the three elements match. `allMatch()` returns false
-because one doesn’t match. `noneMatch()` also returns false because one matches. On the infinite 
-list, one match is found, so the call terminates. If we called `noneMatch()` or `allMatch()`, they 
-would run until we killed the program.
+This shows that we can reuse the same predicate, but we need a different stream each time. `anyMatch()` returns true because two of the three elements match. `allMatch()` returns false because one doesn’t match. `noneMatch()` also returns false because one matches. On the infinite list, one match is found, so the call terminates. If we called `noneMatch()` or `allMatch()`, they would run until we killed the program.
 
 <img src="../img/note.png" alt="Note" width="20"/> _Note: Remember that `anyMatch()`, `allMatch()`, and `noneMatch()` return a boolean. 
 By contrast, the find methods return an `Optional` because they return an element of the stream._
+
+Remember:
+
+- All `findXxx()` methods have no arguments and return `Optional`.
+- All `xxxMatch(...)` methods accept a `Predicate` and return a `boolean` primitive.
+
+	
+Some operations do not need to process the whole stream to produce a result. For example, you need to evaluate a large `boolean` expression chained with "`&&`" operators. You need only find out that one expression is `false` to deduce that the whole expression will return `false`, no matter how long the expression is; there is no need to evaluate the entire expression. This is what short-circuiting refers to.
+
+In relation to streams, operations `anyMatch(...)`, `allMatch(...)`, `noneMatch(...)`, `findFirst()`, and `findAny()` do not need to process the whole stream to produce a result. As soon as an element is found, a result can be produced. These are **short-circuiting terminal operations**.
 
 # 4.3 - Use the Optional class
 
@@ -1247,11 +1287,9 @@ object. It is common to decide that nulls sort before any other values.
 
 ## Searching and Sorting
 
-You already know the basics of searching and sorting. You now know a little more about
-`Comparable` and `Comparator`.
+You already know the basics of searching and sorting. You now know a little more about `Comparable` and `Comparator`.
 
-The sort method uses the `compareTo()` method to sort. It expects the objects to be sorted
-to be `Comparable`.
+The sort method uses the `compareTo()` method to sort. It expects the objects to be sorted to be `Comparable`.
 
 ````
 1: import java.util.*;
