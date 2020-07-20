@@ -10,15 +10,15 @@
   - [Service module dependency](#service-module-dependency)
   - [Provider module dependency](#provider-module-dependency)
   - [Client module dependency](#client-module-dependency)
-  - [Service Based Design](#service-based-design)
-    - [Module Dependencies](#module-dependencies)
-    - [Service Relationships](#service-relationships)
-    - [Expressing Service Relationships](#expressing-service-relationships)
-    - [Service Loader](#service-loader)
-    - [Choosing the provider class](#choosing-the-provider-class)
-    - [Designing a Service Type](#designing-a-service-type)
-  - [<a name="q"></a>Quiz](#quiz)
-  - [<a name="qa"></a>Quiz Answers](#quiz-answers)
+- [Service Based Design - Game Simulator Example](#service-based-design---game-simulator-example)
+  - [Running the game simulator with the `main` module](#running-the-game-simulator-with-the-main-module)
+    - [The API via the `gameapi` module](#the-api-via-the-gameapi-module)
+    - [Service loading with the `competition` module](#service-loading-with-the-competition-module)
+    - [Service providers](#service-providers)
+      - [`soccer` and `basketball` modules](#soccer-and-basketball-modules)
+      - [Service loader and provider: `competition`](#service-loader-and-provider-competition)
+- [Quiz](#quiz)
+- [Quiz Answers](#quiz-answers)
 
 # 2.1 - Describe the components of Services including directives
 
@@ -227,100 +227,245 @@ contains app
 
 As you can see this depends on the `java.base` and `modS` service module. The client module (`modC`) does not depend on provider module (`modP`) and is not aware of it at compile time.
 
-## Service Based Design
+# Service Based Design - Game Simulator Example
 
-### Module Dependencies
+We have a modular [game](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/blob/master/src/ocp/study/part02/game/) example application.
 
-![Figure 2.1](img/figure2-1.png)
+## Running the game simulator with the `main` module
 
-If we wanted to add another game on top of `basketball` and `soccer`, e.g. softball, baseball etc, 
-that new module would depend on the `gameapi` and the `competition` module would depend on it.
+The `main` module contains a [`Main`](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/blob/master/src/ocp/study/part02/game/src/main/main/Main.java) class which can be run.
 
-### Service Relationships
+````
+public static void main(String[] args) {
+    
+    String gameType = "soccer"; 
+    String competitionType = "knockout";
+    ...
+```` 
 
-Game can be an interface (e.g. basketball, soccer etc). The competition module then can use the game. 
-Then the soccer class can implement the game interface.
+Outputs:
 
-![Figure 2.2](img/figure2-2.png)
+````
+--------------------                                                            
+| Robins Pelicans  |                                                            
+|                  |--------|                                                   
+|    3 - 2         |        |                                                   
+--------------------        |   ------------------                              
+                            |   | Robins Magpies |                              
+                            |---|                |--------|                     
+                            |   |    3 - 1       |        |                     
+--------------------        |   ------------------        |                     
+| Sparrows Magpies |        |                             |                     
+|                  |--------|                             |                     
+|    2 - 3         |                                      |                     
+--------------------                                      |   ------------------
+                                                          |   | Robins Falcons |
+                                                          |---|                |
+                                                          |   |    0 - 3       |
+--------------------                                      |   ------------------
+| Crows Falcons    |                                      |                     
+|                  |--------|                             |                     
+|    2 - 4         |        |                             |                     
+--------------------        |   ------------------        |                     
+                            |   | Falcons Geese  |        |                     
+                            |---|                |--------|                     
+                            |   |    2 - 1       |                              
+--------------------        |   ------------------                              
+| Geese Terns      |        |                                                   
+|                  |--------|                                                   
+|    2 - 0         |                                                           
+--------------------                                                            
+BUILD SUCCESSFUL (total time: 2 seconds)
+````
 
-### Expressing Service Relationships
+Variables `gameType` and `competitionType` can be changed to modify the output. If we change the `gameType` to `basketball` and the `competitionType` to `league`, the output changes accordingly:
 
-Consumer module:
+````
+---------------------------------------------------------------------------------------------------------------------------------
+|          | Terns    | Geese    | Magpies | Sparrows | Robins  | Falcons  | Pelicans | Crows   | League Pts | Total Pts Scored |
+---------------------------------------------------------------------------------------------------------------------------------
+| Terns    |  X       | 81 - 60  | 84 - 84 | 66 - 102 | 66 - 63 | 81 - 66  | 102 - 60 | 90 - 66 | 23         | 1155             |
+---------------------------------------------------------------------------------------------------------------------------------
+| Geese    | 72 - 66  |  X       | 96 - 84 | 81 - 78  | 63 - 87 | 78 - 63  | 63 - 66  | 69 - 51 | 20         | 1125             |
+---------------------------------------------------------------------------------------------------------------------------------
+| Magpies  | 63 - 78  | 66 - 93  |  X      | 69 - 69  | 96 - 63 | 69 - 90  | 78 - 66  | 90 - 72 | 16         | 1098             |
+---------------------------------------------------------------------------------------------------------------------------------
+| Sparrows | 81 - 87  | 75 - 84  | 60 - 69 |  X       | 60 - 78 | 72 - 54  | 78 - 72  | 93 - 60 | 13         | 1059             |
+---------------------------------------------------------------------------------------------------------------------------------
+| Robins   | 69 - 102 | 87 - 96  | 72 - 90 | 111 - 66 |  X      | 72 - 60  | 45 - 81  | 90 - 51 | 12         | 1056             |
+---------------------------------------------------------------------------------------------------------------------------------
+| Falcons  | 69 - 81  | 66 - 105 | 93 - 87 | 90 - 93  | 54 - 60 |  X       | 63 - 63  | 81 - 60 | 11         | 1026             |
+---------------------------------------------------------------------------------------------------------------------------------
+| Pelicans | 60 - 72  | 57 - 81  | 66 - 81 | 69 - 78  | 78 - 75 | 72 - 75  |  X       | 69 - 81 | 9          | 969              |
+---------------------------------------------------------------------------------------------------------------------------------
+| Crows    | 81 - 99  | 90 - 84  | 69 - 72 | 78 - 54  | 87 - 84 | 81 - 102 | 69 - 90  |  X      | 8          | 996              |
+---------------------------------------------------------------------------------------------------------------------------------
+BUILD SUCCESSFUL (total time: 5 seconds)
+````
+
+The `main` module has the following dependencies:
+
+[`module-info.java`](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/blob/master/src/ocp/study/part02/game/src/main/module-info.java)
+````
+module main {
+    requires java.logging;
+    requires competition;
+    requires storage;
+    requires display.ascii;
+}
+````
+
+We won't describe how the application works here but we will point out important aspects to note regarding its modularization. 
+
+The teams (`Team[] theTeams`) are populated with the `game.Factory.createTeam(...)` method from the `competition` module. 
+
+The competition (`TournamentType theCompetition`) is populated with the `game.TournamentFactory.getTournament(...)` method, also from the `competition` module.
+
+### The API via the `gameapi` module
+
+The `gameapi` module provides a set of interfaces which describe the API. Examples we've mentioned already are [`Team`](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/blob/master/src/ocp/study/part02/game/src/gameapi/gameapi/Team.java) and [`TournamentType`](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/blob/master/src/ocp/study/part02/game/src/gameapi/gameapi/TournamentType.java). Another notable class is [`GameProvider`](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/blob/master/src/ocp/study/part02/game/src/gameapi/gameapi/GameProvider.java).
+
+This module does not require any other module. It only exports its own packages:
+
+[`module-info.java`](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/blob/master/src/ocp/study/part02/game/src/gameapi/module-info.java)
+````
+module gameapi {
+    exports gameapi;
+}
+````
+
+### Service loading with the `competition` module
+
+As described in previous sections, the `competition` module is used by the `main` module to obtain the API objects from the `gameapi` module. `main` can access the `gameapi` through `competition` via the `requires transitive` declaration in `competition`'s module descriptor:
+
+[`module-info.java`](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/blob/master/src/ocp/study/part02/game/src/competition/module-info.java)
 ````
 module competition {
-    uses gameapi.Game
+    requires transitive gameapi;
+
+    exports game;
+    exports utils;
+    
+    uses gameapi.GameProvider;
+    
+    uses gameapi.TournamentType;
+    provides gameapi.TournamentType with game.League, game.Knockout;
 }
 ````
 
-Provider module:
+Note also that `competition` `uses gameapi.GameProvider` and `uses gameapi.TournamentType`. `competition` is the **consumer** of these APIs. The module that discovers and loads service providers must contain this directive in its declaration. `uses` is necessary as the `ServiceLoader` needs reflection access.
+
+The `ServiceLoader` is invoked in both factories (`Factory` used to get the `GameProvider` and `TournamentFactory` used to get the `TournamentType`). 
+
+Let's look at `Factory.getProvider(...)` first. This is called indirectly when `Main` calls `Factory.createTeam(...)`.
+
+````
+package game;
+
+import gameapi.Team;
+import gameapi.Player;
+import gameapi.Game;
+import gameapi.GameProvider;
+import java.time.LocalDateTime;
+import java.util.ServiceLoader;
+
+public class Factory {
+
+    static GameProvider theProvider = null;
+    
+    public static GameProvider getProvider(String gameType) {
+    
+        if ((theProvider != null)
+                && theProvider.getType().equals(gameType)) {
+            return theProvider;
+        }
+        
+        ServiceLoader<GameProvider> loader = ServiceLoader.load(GameProvider.class);
+        
+        for (GameProvider currProvider: loader){
+            if (currProvider.getType().equalsIgnoreCase(gameType)){
+                theProvider = currProvider;
+                break;
+            }
+        }
+        if (theProvider == null) {
+            throw new RuntimeException("No suitable service provider found !");
+        }
+        return theProvider;
+    }
+    
+    public static Team createTeam(String gameType, String teamName, Player[] thePlayers) {
+        theProvider = getProvider(gameType);
+        return theProvider.getTeam(teamName.trim(), thePlayers);
+    }
+
+    //... more methods: createGame and createPlayer using same pattern as createTeam
+````
+
+We can see from the above snippet how the `ServiceLoader`s `load` method is used to create a new service loader for the given service type (`GameProvider`), using the current thread's context class loader. `ServiceLoader` implements `Iterable` so we can loop through each available `GameProvider` and call `getType` on each until we have a match with our `gameType` argument (either "soccer" or "basketball").
+
+The `TournamentFactory` follows the same pattern, using the `getName` method to find a match. The `name` argument is the `competitionType` we passed from `Main`.
+
+````    
+public static TournamentType getTournament(String name) {
+    TournamentType theTourney = null;
+    ServiceLoader<TournamentType> sl = ServiceLoader.load(TournamentType.class);
+    
+    for ( TournamentType currTournament: sl) {
+        if (currTournament.getName().equalsIgnoreCase(name)) {
+                theTourney = currTournament;
+                break;
+        }
+
+    }
+    
+    if (theTourney == null) {
+        throw new RuntimeException("No suitable service provider found!");
+    } 
+
+    return theTourney;
+}
+````
+
+### Service providers
+
+#### `soccer` and `basketball` modules
+
+By implementing the `GameProvider` interface (with [`SoccerProvider`](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/blob/master/src/ocp/study/part02/game/src/soccer/soccer/SoccerProvider.java) and [`BasketballProvider`](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/blob/master/src/ocp/study/part02/game/src/basketball/basketball/BasketballProvider.java)), these modules can be used by the `ServiceLoader` as potential service providers.
+
+Finally, the modules need to "provide" the service with the service providers:
+
+[`module-info.java`](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/blob/master/src/ocp/study/part02/game/src/basketball/module-info.java)
+````
+module basketball {
+    requires gameapi;
+    requires java.logging;
+    exports basketball to competition, gameapi;
+    opens basketball to jackson.databind;
+    
+    provides gameapi.GameProvider with basketball.BasketballProvider;
+}
+````
+
+[`module-info.java`](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/blob/master/src/ocp/study/part02/game/src/soccer/module-info.java)
 ````
 module soccer {
-    provides gameapi.Game
+    requires gameapi;
+    requires java.logging;
+    exports soccer;
+    opens soccer to jackson.databind;
+    
+    provides gameapi.GameProvider with soccer.SoccerProvider;
 }
 ````
 
-### Service Loader
+This approach allows us to add further game types, e.g. rugby, hockey, baseball etc. by following the same pattern.
 
-We can now make use of the [ServiceLoader](https://docs.oracle.com/javase/9/docs/api/java/util/ServiceLoader.html) 
-class in the `competition` module.
+#### Service loader and provider: `competition`
 
-````
-ServiceLoader<Game> game = ServiceLoader.load(Game.class);
-ArrayList<Game> providers = new ArrayList<>();
-for (Game currGame : game) {
-    providers.add(currGame);
-}
-return providers;
-````
+Service providers need not be provided by another module. The implementing classes can be from within the same module as shown with the `TournamentType`. `competition`s [`module-info.java`](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/blob/master/src/ocp/study/part02/game/src/competition/module-info.java) which declares what implementations of service interfaces it provides with `provides gameapi.TournamentType with game.League, game.Knockout`. [`League`](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/blob/master/src/ocp/study/part02/game/src/competition/game/League.java) and [`Knockout`](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/blob/master/src/ocp/study/part02/game/src/competition/game/Knockout.java) implement `TournamentType`. Recall that as the service loader, `competition` is also required to state it `uses gameapi.TournamentType` to discover and load the service providers.
 
-The `load` method above: Creates a new service loader for the given service type, using the current 
-thread's context class loader.
-
-### Choosing the provider class
-
-We have multiple potential providers; soccer, basketball etc. We could add a type so that the consumer
-gets the correct service:
-
-````
-ServiceLoader<Game> game = ServiceLoader.load(Game.class);
-ArrayList<Game> providers = new ArrayList<>();
-for (Game currGame : game) {
-    if(currGame.getType().equals("soccer")) return currGame;
-}
-throw new RuntimeException("No suitable service provider");
-````
-
-We can move the Game interface into the competition module. This removes any chance of cyclic dependency.
-
-![Figure 2.3](img/figure2-3.png)
-
-### Designing a Service Type
-
-gameapi module:
-````
-public interface Game {
-    String getType();
-    Team getHomeTeam();
-    Team getAwayTeam();
-    void playGame();
-    ...
-}
-````
-````
-public interface GameProvider {
-    Game getGame (Team homeTeam, Team awayTeam, LocalDateTime dateTime);
-    Team getTeam (String teamName, Player[] players);
-    Player getPlayer(String playerName);
-    String getType();
-}
-````
-
-We can now have a class `SoccerProvider` which implements `GameProvider` in the soccer module. We can then
-do the same for other game types, e.g. `BasketBallProvider` which implements `GameProvider`.
-
-![Figure 2.4](img/figure2-4.png)
-
-## <a name="q"></a>Quiz
+# Quiz
 
 1. <a name="q1"></a>What needs to be implemented in a provider module?:
     - A. All interfaces in the consumer module
@@ -345,10 +490,9 @@ do the same for other game types, e.g. `BasketBallProvider` which implements `Ga
     - D. Zero or one in any module in the module path
 <br />[Jump to answer](#qa4)
 
-## <a name="qa"></a>Quiz Answers
+# Quiz Answers
 
-1. <a name="qa1"></a>[Jump to question](#q1) - **C.** A service provider must provide (via `provides`) 
-an implementation for consumer modules to use (via `uses`). 
-2. <a name="qa2"></a>[Jump to question](#q2) - **A, C.** 
-3. <a name="qa3"></a>[Jump to question](#q3) - **C.**
-4. <a name="qa4"></a>[Jump to question](#q4) - **A.**
+1. <a name="qa1"></a>[Jump to question](#q1) - **C.** A service provider must provide (via `provides`) an implementation for consumer modules to use. 
+2. <a name="qa2"></a>[Jump to question](#q2) - **A, C.** The consumer module does not need to be aware of the provider(s). In the game simulator example, `competition` is unaware of `soccer` and `basketball` (or any other providers we may choose to add) so A is correct. C is also correct. The service providers (e.g. `soccer` and `basketball`) only need to define what service they "provide" via their implementation, e.g. `provides gameapi.GameProvider with soccer.SoccerProvider;`
+3. <a name="qa3"></a>[Jump to question](#q3) - **C.** C is correct for the same reasons as described in the previous answer.
+4. <a name="qa4"></a>[Jump to question](#q4) - **A.** There can be any number of service providers - from zero to n.
