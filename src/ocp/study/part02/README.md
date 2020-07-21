@@ -26,6 +26,24 @@ Since version 6 Java has supported service-provider loading via the `java.util.S
 
 Since Java 9 you can develop Services and Service Providers as modules. A service module declares one or more interfaces whose implementations will be provided at run time by some provider modules. A provider module declares what implementations of service interfaces it `provides`. The module that discovers and loads service providers must contain a `uses` directive in its declaration.
 
+## Summary of Terms
+
+- **Service**
+   -  A well-known set of programming interfaces and classes that provide access to some specific application functionality or feature.
+
+- **Service Provider Interface**
+
+  - An interface or `abstract` class that acts as a proxy or an endpoint to the service.
+  - If the service is one interface, then it is the same as a service provider interface.
+
+- **Service Provider**
+
+  - A specific implementation of the SPI. The Service Provider contains one or more concrete classes that implement or extends the service type.
+
+- **ServiceLoader**
+
+  - At the heart of the SPI is the ServiceLoader class. This has the role of discovering and loading implementations lazily. It uses the context classpath to locate providers implementations and put them in an internal cache.
+
 ## Service Module
 
 We have a [GreeterIntf interface](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/blob/master/src/ocp/study/part02/greeting_1/service/p1/GreeterIntf.java) with one method, `greet()`, which resides in package `p1`. This is exported by `modS` defined in the service [module-info.java](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/blob/master/src/ocp/study/part02/greeting_1/service/module-info.java).
@@ -82,6 +100,10 @@ java -p service.jar;provider.jar;service-client -m modC/app.Client
 Greeting from GreeterImpl !
 ````
 
+Figure 2.1 greeting_1:
+
+![Figure 2.1](img/figure2-1.png)
+
 # 2.2 - Design a service type, load the services using ServiceLoader, check for dependencies of the services including consumer module and provider module
 
 ## Designing services
@@ -93,7 +115,7 @@ A service is a single type, usually an interface or abstract class. A concrete c
 
 ## Developing service providers
 
-A service provider is a single type, usually a concrete class. An interface or abstract class is permitted because it may declare a `static` `provider()` method, discussed later. The type must be public and must not be an inner class.
+A service provider is a single type, usually a concrete class. An interface or abstract class is permitted because it may declare a `static` `provider()` method, discussed later. The type must be `public` and must not be an inner class.
 
 A service provider and its supporting code may be developed in a module, which is then deployed on the application module path or in a modular image. Alternatively, a service provider and its supporting code may be packaged as a JAR file and deployed on the application class path. The advantage of developing a service provider in a module is that the provider can be fully encapsulated to hide all details of its implementation.
 
@@ -174,6 +196,10 @@ The output will be:
 
 `Greeting from MyProvider !`
 
+Figure 2.2 greeting_2:
+
+![Figure 2.2](img/figure2-2.png)
+
 Two points here: 
 
 1. The `provider()` method was used to instantiate service implementation
@@ -233,7 +259,7 @@ We have a modular [game](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/
 
 ## Running the game simulator with the `main` module
 
-The `main` module contains a [`Main`](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/blob/master/src/ocp/study/part02/game/src/main/main/Main.java) class which can be run.
+The application can be started with the runnable client. The `main` module contains a [`Main`](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/blob/master/src/ocp/study/part02/game/src/main/main/Main.java) class which can be run.
 
 ````
 public static void main(String[] args) {
@@ -278,7 +304,7 @@ Outputs:
 BUILD SUCCESSFUL (total time: 2 seconds)
 ````
 
-Variables `gameType` and `competitionType` can be changed to modify the output. If we change the `gameType` to `basketball` and the `competitionType` to `league`, the output changes accordingly:
+Variables `gameType` and `competitionType` can be changed to modify the output. If we change the `gameType` to "basketball" and the `competitionType` to "league", the output changes accordingly:
 
 ````
 ---------------------------------------------------------------------------------------------------------------------------------
@@ -317,13 +343,13 @@ module main {
 
 We won't describe how the application works here but we will point out important aspects to note regarding its modularization. 
 
-The teams (`Team[] theTeams`) are populated with the `game.Factory.createTeam(...)` method from the `competition` module. 
+The teams (`Team[] theTeams`) are populated with the `game.Factory.createTeam(...)` method from the `competition` module (indirectly calling `GameProvider` - more on that in the next section). 
 
 The competition (`TournamentType theCompetition`) is populated with the `game.TournamentFactory.getTournament(...)` method, also from the `competition` module.
 
-### The API via the `gameapi` module
+### The service API via the `gameapi` module
 
-The `gameapi` module provides a set of interfaces which describe the API. Examples we've mentioned already are [`Team`](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/blob/master/src/ocp/study/part02/game/src/gameapi/gameapi/Team.java) and [`TournamentType`](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/blob/master/src/ocp/study/part02/game/src/gameapi/gameapi/TournamentType.java). Another notable class is [`GameProvider`](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/blob/master/src/ocp/study/part02/game/src/gameapi/gameapi/GameProvider.java).
+The `gameapi` module provides a set of interfaces which describe the API. This is the service. Examples we've mentioned already are [`Team`](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/blob/master/src/ocp/study/part02/game/src/gameapi/gameapi/Team.java) and [`TournamentType`](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/blob/master/src/ocp/study/part02/game/src/gameapi/gameapi/TournamentType.java). Another notable class is [`GameProvider`](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/blob/master/src/ocp/study/part02/game/src/gameapi/gameapi/GameProvider.java).
 
 This module does not require any other module. It only exports its own packages:
 
@@ -334,9 +360,11 @@ module gameapi {
 }
 ````
 
-### Service loading with the `competition` module
+### Service provider interface and service loading with the `competition` module
 
-As described in previous sections, the `competition` module is used by the `main` module to obtain the API objects from the `gameapi` module. `main` can access the `gameapi` through `competition` via the `requires transitive` declaration in `competition`'s module descriptor:
+As described in previous sections, the `competition` module is used by the `main` module to obtain the service objects from the `gameapi` module. 
+
+`main` can access the `gameapi` through `competition` via the `requires transitive` declaration in `competition`'s module descriptor:
 
 [`module-info.java`](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/blob/master/src/ocp/study/part02/game/src/competition/module-info.java)
 ````
@@ -353,7 +381,7 @@ module competition {
 }
 ````
 
-Note also that `competition` `uses gameapi.GameProvider` and `uses gameapi.TournamentType`. `competition` is the **consumer** of these APIs. The module that discovers and loads service providers must contain this directive in its declaration. `uses` is necessary as the `ServiceLoader` needs reflection access.
+Note also that `competition` `uses gameapi.GameProvider` and `uses gameapi.TournamentType`. The module that discovers and loads service providers must contain this directive in its declaration. `uses` is necessary as the `ServiceLoader` needs reflection access.
 
 The `ServiceLoader` is invoked in both factories (`Factory` used to get the `GameProvider` and `TournamentFactory` used to get the `TournamentType`). 
 
@@ -459,11 +487,21 @@ module soccer {
 }
 ````
 
-This approach allows us to add further game types, e.g. rugby, hockey, baseball etc. by following the same pattern.
+This approach allows us to add further game types, e.g. rugby, hockey, baseball etc. by following the same pattern
 
-#### Service loader and provider: `competition`
+#### Service provider implementations within the `competition` module
 
-Service providers need not be provided by another module. The implementing classes can be from within the same module as shown with the `TournamentType`. `competition`s [`module-info.java`](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/blob/master/src/ocp/study/part02/game/src/competition/module-info.java) which declares what implementations of service interfaces it provides with `provides gameapi.TournamentType with game.League, game.Knockout`. [`League`](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/blob/master/src/ocp/study/part02/game/src/competition/game/League.java) and [`Knockout`](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/blob/master/src/ocp/study/part02/game/src/competition/game/Knockout.java) implement `TournamentType`. Recall that as the service loader, `competition` is also required to state it `uses gameapi.TournamentType` to discover and load the service providers.
+Service providers need not be provided by another module. The implementing classes can be from within the same module as shown with the `TournamentType`. Concrete classes [`League`](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/blob/master/src/ocp/study/part02/game/src/competition/game/League.java) and [`Knockout`](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/blob/master/src/ocp/study/part02/game/src/competition/game/Knockout.java) implement `TournamentType`.
+
+`competition`'s [`module-info.java`](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/blob/master/src/ocp/study/part02/game/src/competition/module-info.java) which declares what implementations of service interfaces it provides - with `provides gameapi.TournamentType with game.League, game.Knockout`. 
+
+Recall that as the service loader, `competition` is also required to state it `uses gameapi.TournamentType` to discover and load the service providers.
+
+###  Game UML Model
+
+Figure 2.3 game:
+
+![Figure 2.3](img/figure2-3.png)
 
 # Quiz
 
