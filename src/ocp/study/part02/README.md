@@ -1,22 +1,26 @@
 - [2.1 - Describe the components of Services including directives](#21---describe-the-components-of-services-including-directives)
+  - [Summary of Terms](#summary-of-terms)
   - [Service Module](#service-module)
   - [Service Provider Module](#service-provider-module)
   - [Service Client Application](#service-client-application)
+  - [Greeting_1 UML Model](#greeting_1-uml-model)
 - [2.2 - Design a service type, load the services using ServiceLoader, check for dependencies of the services including consumer module and provider module](#22---design-a-service-type-load-the-services-using-serviceloader-check-for-dependencies-of-the-services-including-consumer-module-and-provider-module)
   - [Designing services](#designing-services)
   - [Developing service providers](#developing-service-providers)
   - [Deploying service providers as modules](#deploying-service-providers-as-modules)
     - [The `provider()` method](#the-provider-method)
+  - [Greeting_2 UML Model](#greeting_2-uml-model)
   - [Service module dependency](#service-module-dependency)
   - [Provider module dependency](#provider-module-dependency)
   - [Client module dependency](#client-module-dependency)
 - [Service Based Design - Game Simulator Example](#service-based-design---game-simulator-example)
   - [Running the game simulator with the `main` module](#running-the-game-simulator-with-the-main-module)
-    - [The API via the `gameapi` module](#the-api-via-the-gameapi-module)
-    - [Service loading with the `competition` module](#service-loading-with-the-competition-module)
-    - [Service providers](#service-providers)
-      - [`soccer` and `basketball` modules](#soccer-and-basketball-modules)
-      - [Service loader and provider: `competition`](#service-loader-and-provider-competition)
+  - [The service API via the `gameapi` module](#the-service-api-via-the-gameapi-module)
+  - [Service provider interface and service loading with the `competition` module](#service-provider-interface-and-service-loading-with-the-competition-module)
+  - [Service providers](#service-providers)
+    - [`soccer` and `basketball` modules](#soccer-and-basketball-modules)
+    - [Service provider implementations within the `competition` module](#service-provider-implementations-within-the-competition-module)
+  - [Game UML Model](#game-uml-model)
 - [Quiz](#quiz)
 - [Quiz Answers](#quiz-answers)
 
@@ -99,6 +103,8 @@ and run the client code:
 java -p service.jar;provider.jar;service-client -m modC/app.Client
 Greeting from GreeterImpl !
 ````
+
+##  Greeting_1 UML Model
 
 Figure 2.1 greeting_1:
 
@@ -196,14 +202,16 @@ The output will be:
 
 `Greeting from MyProvider !`
 
-Figure 2.2 greeting_2:
-
-![Figure 2.2](img/figure2-2.png)
-
 Two points here: 
 
 1. The `provider()` method was used to instantiate service implementation
 2. The service provider type (`MyProvider`) is not assignable to service interface (`GreeterIntf`).
+
+##  Greeting_2 UML Model
+
+Figure 2.2 greeting_2:
+
+![Figure 2.2](img/figure2-2.png)
 
 ## Service module dependency
 
@@ -347,7 +355,7 @@ The teams (`Team[] theTeams`) are populated with the `game.Factory.createTeam(..
 
 The competition (`TournamentType theCompetition`) is populated with the `game.TournamentFactory.getTournament(...)` method, also from the `competition` module.
 
-### The service API via the `gameapi` module
+## The service API via the `gameapi` module
 
 The `gameapi` module provides a set of interfaces which describe the API. This is the service. Examples we've mentioned already are [`Team`](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/blob/master/src/ocp/study/part02/game/src/gameapi/gameapi/Team.java) and [`TournamentType`](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/blob/master/src/ocp/study/part02/game/src/gameapi/gameapi/TournamentType.java). Another notable class is [`GameProvider`](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/blob/master/src/ocp/study/part02/game/src/gameapi/gameapi/GameProvider.java).
 
@@ -360,7 +368,7 @@ module gameapi {
 }
 ````
 
-### Service provider interface and service loading with the `competition` module
+## Service provider interface and service loading with the `competition` module
 
 As described in previous sections, the `competition` module is used by the `main` module to obtain the service objects from the `gameapi` module. 
 
@@ -455,9 +463,9 @@ public static TournamentType getTournament(String name) {
 }
 ````
 
-### Service providers
+## Service providers
 
-#### `soccer` and `basketball` modules
+### `soccer` and `basketball` modules
 
 By implementing the `GameProvider` interface (with [`SoccerProvider`](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/blob/master/src/ocp/study/part02/game/src/soccer/soccer/SoccerProvider.java) and [`BasketballProvider`](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/blob/master/src/ocp/study/part02/game/src/basketball/basketball/BasketballProvider.java)), these modules can be used by the `ServiceLoader` as potential service providers.
 
@@ -489,7 +497,7 @@ module soccer {
 
 This approach allows us to add further game types, e.g. rugby, hockey, baseball etc. by following the same pattern
 
-#### Service provider implementations within the `competition` module
+### Service provider implementations within the `competition` module
 
 Service providers need not be provided by another module. The implementing classes can be from within the same module as shown with the `TournamentType`. Concrete classes [`League`](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/blob/master/src/ocp/study/part02/game/src/competition/game/League.java) and [`Knockout`](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/blob/master/src/ocp/study/part02/game/src/competition/game/Knockout.java) implement `TournamentType`.
 
@@ -497,7 +505,7 @@ Service providers need not be provided by another module. The implementing class
 
 Recall that as the service loader, `competition` is also required to state it `uses gameapi.TournamentType` to discover and load the service providers.
 
-###  Game UML Model
+##  Game UML Model
 
 Figure 2.3 game:
 
