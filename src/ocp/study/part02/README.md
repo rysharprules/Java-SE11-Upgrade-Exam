@@ -46,7 +46,7 @@ Since Java 9 you can develop Services and Service Providers as modules. A servic
 
 - **ServiceLoader**
 
-  - At the heart of the SPI is the ServiceLoader class. This has the role of discovering and loading implementations lazily. It uses the context classpath to locate providers implementations and put them in an internal cache.
+  - At the heart of the SPI is the `ServiceLoader` class. This has the role of discovering and loading implementations lazily. It uses the context classpath to locate providers implementations and put them in an internal cache.
 
 ## Service Module
 
@@ -389,9 +389,9 @@ module competition {
 }
 ````
 
-Note also that `competition` `uses gameapi.GameProvider` and `uses gameapi.TournamentType`. The module that discovers and loads service providers must contain this directive in its declaration. `uses` is necessary as the `ServiceLoader` needs reflection access.
+Note also that `competition` `uses gameapi.GameProvider` and `uses gameapi.TournamentType`. The module that discovers and loads service providers must contain this directive in its declaration. This helps to locate providers and ensure they will execute reliably during run time.
 
-The `ServiceLoader` is invoked in both factories (`Factory` used to get the `GameProvider` and `TournamentFactory` used to get the `TournamentType`). 
+The `ServiceLoader` is invoked in both factories ([`Factory`](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/blob/master/src/ocp/study/part02/game/src/competition/game/Factory.java) used to get the `GameProvider` and [`TournamentFactory`](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/blob/master/src/ocp/study/part02/game/src/competition/game/TournamentFactory.java) used to get the `TournamentType`). 
 
 Let's look at `Factory.getProvider(...)` first. This is called indirectly when `Main` calls `Factory.createTeam(...)`.
 

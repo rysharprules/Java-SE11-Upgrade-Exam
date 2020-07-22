@@ -1038,34 +1038,70 @@ Optional by or(() -> Optional.of(100)) method: Optional[100]
 
 # 4.4 - Perform calculations using count, max, min, average and sum stream operations
 
-Java 8 introduced three **primitive specialized stream interfaces** that support specialized methods (like `max()`, `sum()`, `average()`) to work with streams of numbers: `IntStream`, `DoubleStream`, and `LongStream`, that respectively specialize the elements of a stream to be `int` primitives, `double` primitives, and `long` primitives -- and thereby avoid hidden boxing costs.
+Java 8 introduced three **primitive specialized stream interfaces** that support specialized methods (like `max()`, `sum()`, `average()`) to work with streams of numbers: `IntStream`, `DoubleStream`, and `LongStream`, that respectively specialize the elements of a stream to be `int` primitives, `double` primitives, and `long` primitives -- without using wrappers and thereby avoiding hidden boxing costs. If you want to store `short`, `char`, `byte`, and `boolean`, use an `IntStream`, and for `float`, use a `DoubleStream`.
 
-<img src="../img/note.png" alt="Note" width="20"/> _Note: For `average` and `sum` see section 8.4 as these are performed on `IntStream`._
+<img src="../img/note.png" alt="Note" width="20"/> _Note: See section 8.4 for further details for mapping to and from primitive streams_
+
+When you have a stream of objects, you can transform it to a primitive type stream with the `mapToInt`, `mapToLong`, or `mapToDouble` methods:
+
+````
+Stream<String> words = ...;
+IntStream lengths = words.mapToInt(String::length);
+````
+					
+There are methods `sum()`, `average()`, `max()`, and `min()` that return the sum, average, maximum, and minimum. These methods are defined for `XxxStream` and not defined for `Stream`:
+
+````
+IntStream stream = IntStream.of(2, 4, 6);
+int max = stream.max().getAsInt(); // max() returns OptionalInt
+
+stream = IntStream.of(2, 4, 6);
+int min = stream.min().getAsInt(); // min() returns OptionalInt
+
+stream = IntStream.of(2, 4, 6);
+double average = stream.average().getAsDouble(); // average() returns OptionalDouble
+
+stream = IntStream.of(2, 4, 6);
+int sum = stream.sum(); // sum() returns int
+
+System.out.println("max : " + max);
+System.out.println("min : " + min);
+System.out.println("average : " + average);
+System.out.println("sum : " + sum);
+````
+
+Outputs:
+
+````			
+max : 6
+min : 2
+average : 4.0
+sum : 12
+````
 
 ## `count()`
 
-The `count()` method determines the number of elements in a finite stream. For an infinite
-stream, it hangs. Why? Count from `1` to infinity and let us know when you are finished...  `count()` is a reduction because it looks at each element in the stream and returns a single value. The method signature is this:
+The `count()` method determines the number of elements in a finite stream. For an infinite stream, it hangs. Why? Count from `1` to infinity and let us know when you are finished...  `count()` is a reduction because it looks at each element in the stream and returns a single value. The method signature is this:
 
 `long count()`
 
-This example shows calling `count()` on a finite stream:
+The `count()` method returns a long which is the count of elements in the stream. This example shows calling `count()` on a finite stream:
 
 ````
 Stream<String> s = Stream.of("monkey", "gorilla", "bonobo");
 System.out.println(s.count()); // 3
 ````
 
-## `min()` and `max()`
+## `min(...)` and `max(...)`
 
-The `min()` and `max()` terminal methods allow you to pass a custom `Comparator` and find the smallest or largest value in a finite stream according to that sort order. Like `count()`, `min()` and `max()` hang on an infinite stream because they cannot be sure that a smaller or larger value isn’t coming later in the stream. Both methods are reductions because they return a single value after looking at the entire stream. The method signatures are as follows:
+The `min(...)` and `max(...)` terminal methods allow you to pass a custom `Comparator` and find the smallest or largest value in a finite stream according to that sort order. Like `count()`, `min(...)` and `max(...)` hang on an infinite stream because they cannot be sure that a smaller or larger value isn’t coming later in the stream. Both methods are reductions because they return a single value after looking at the entire stream. The method signatures are as follows:
 
 ````
 Optional<T> min(<? super T> comparator)
 Optional<T> max(<? super T> comparator)
 ````
 
-The `Stream.min()` and `Stream.max()` methods take a `java.util.Comparator` as parameter. This example finds the animal with the fewest letters in its name:
+The `Stream.min(...)` and `Stream.max(...)` methods take a `java.util.Comparator` as parameter. This example finds the animal with the fewest letters in its name:
 
 ````
 Stream<String> s = Stream.of("monkey", "ape", "bonobo");
@@ -1073,18 +1109,14 @@ Optional<String> min = s.min((s1, s2) -> s1.length()—s2.length());
 min.ifPresent(System.out::println); // ape
 ````
 
-Notice that the code returns an `Optional` rather than the value. This allows the method
-to specify that no minimum or maximum was found. We use the `Optional` method and a
-method reference to print out the minimum only if one is found. As an example of where
-there isn’t a minimum, let’s look at an empty stream:
+Notice that the code returns an `Optional` rather than the value. This allows the method to specify that no minimum or maximum was found. We use the `Optional` method and a method reference to print out the minimum only if one is found. As an example of where there isn’t a minimum, let’s look at an empty stream:
 
 ````
 Optional<?> minEmpty = Stream.empty().min((s1, s2) -> 0);
 System.out.println(minEmpty.isPresent()); // false
 ````
 
-Since the stream is empty, the `Comparator` is never called and no value is present in the
-`Optional`. In this case because the `Optional` has no value a call to the `get()` method will throw `NoSuchElementException`.
+Since the stream is empty, the `Comparator` is never called and no value is present in the `Optional`. In this case because the `Optional` has no value a call to the `get()` method will throw `NoSuchElementException`.
 
 The `Comparator.comparing()` method creates a `Comparator` based on the lambda expression passed to it. In fact, the `comparing()` method takes a `Function` which is a functional interface suited for lambda expressions. It takes one parameter and returns a value:
 

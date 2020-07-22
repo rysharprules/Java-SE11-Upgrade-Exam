@@ -71,6 +71,7 @@ _This documentation is an aggregation of multiple sources and is intended as a s
 
 ## Bibliography and Resources
 
+- [Oracle JLS - Chapter 7. Packages and Modules](https://docs.oracle.com/javase/specs/jls/se11/html/jls-7.html#jls-7.1)
+- [Project Jigsaw](https://openjdk.java.net/projects/jigsaw/) 
+- [`ServiceLoader` JavaDoc](https://docs.oracle.com/javase/9/docs/api/java/util/ServiceLoader.html)
 - [Study Guide from java.boot.by](http://java.boot.by/ocpjd11-upgrade-guide/index.html)
-- [Project Jigsaw](https://openjdk.java.net/projects/jigsaw/)
-- [Oracle JLS - Chapter 7. Packages and Modules](https://docs.oracle.com/javase/specs/jls/se11/html/jls-7.html#jls-7.1)  
