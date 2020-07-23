@@ -1130,22 +1130,14 @@ __The `java.util.stream.Stream` interface does not have `average()` and `sum()` 
 
 ## `Comparator` vs. `Comparable`
 
-We discussed “order” for the `TreeSet` and `TreeMap` classes. For numbers, order is
-obvious—it is numerical order. For `String` objects, order is defined according to the
-Unicode character mapping. As far as the exam is concerned, that means numbers sort
-before letters and uppercase letters sort before lowercase letters.
+When ordering numbers, order is obvious—it is numerical order. For `String` objects, order is defined according to the Unicode character mapping. As far as the exam is concerned, that means numbers sort before letters and uppercase letters sort before lowercase letters.
 
 <img src="../img/note.png" alt="Note" width="20"/> _Note: Remember that numbers sort before letters and uppercase letters sort before lowercase letters._
 
-You can also sort objects that you create. Java provides an interface called `Comparable` .
-If your class implements `Comparable`, it can be used in these data structures that require
-comparison. There is also a class called `Comparator`, which is used to specify that you want
+You can also sort objects that you create. Java provides an interface called `Comparable` . If your class implements `Comparable`, it can be used in these data structures that require comparison. There is also a class called `Comparator`, which is used to specify that you want
 to use a different order than the object itself provides.
 
-`Comparable` and `Comparator` are similar enough to be tricky. The exam likes to see if
-it can trick you into mixing up the two. Don’t be confused! In this section, we will discuss
-`Comparable` first. Then, as we go through `Comparator`, we will point out all of the
-differences.
+`Comparable` and `Comparator` are similar enough to be tricky. The exam likes to see if it can trick you into mixing up the two. Don’t be confused! In this section, we will discuss `Comparable` first. Then, as we go through `Comparator`, we will point out all of the differences.
 
 ### `Comparable`
 
@@ -1157,9 +1149,7 @@ public interface Comparable<T> {
 }
 ````
 
-See the use of generics in there? This lets you avoid the cast when implementing `compareTo()`. 
-Any object can be `Comparable`. For example, we have a bunch of ducks and want to
-sort them by name:
+See the use of generics in there? This lets you avoid the cast when implementing `compareTo()`.  Any object can be `Comparable`. For example, we have a bunch of ducks and want to sort them by name:
 
 ````
 import java.util.*;
@@ -1183,26 +1173,18 @@ public class Duck implements Comparable<Duck> {
 } }
 ````
 
-The `Duck` class implements the `Comparable` interface. Without implementing that interface,
-all we have is a method named `compareTo()`, but it wouldn’t be a `Comparable` object.
+The `Duck` class implements the `Comparable` interface. Without implementing that interface, all we have is a method named `compareTo()`, but it wouldn’t be a `Comparable` object.
 
-The `Duck` class overrides the `toString()` method from `Object`, so we can see useful output
-when printing out ducks. Without this override, the output would be something like
-`[Duck@70dea4e, Duck@5c647e05]`—hardly useful in seeing which duck’s name comes first.
+The `Duck` class overrides the `toString()` method from `Object`, so we can see useful output when printing out `ducks`. Without this override, the output would be something like `[Duck@70dea4e, Duck@5c647e05]`—hardly useful in seeing which `duck`’s name comes first.
 
-Finally, the `Duck` class implements `compareTo()`. Since `Duck` is comparing objects of type
-`String` and the `String` class already has a `compareTo()` method, it can just delegate.
-We still need to know what the `compareTo()` method returns so that we can write our
+Finally, the `Duck` class implements `compareTo()`. Since `Duck` is comparing objects of type `String` and the `String` class already has a `compareTo()` method, it can just delegate. We still need to know what the `compareTo()` method returns so that we can write our
 own. There are three rules to know:
 
 - The number zero is returned when the current object is equal to the argument to `compareTo()`.
-- A number less than zero is returned when the current object is smaller than the argument
-to `compareTo()`.
-- A number greater than zero is returned when the current object is larger than the argument
-to `compareTo()`.
+- A number less than zero is returned when the current object is smaller than the argument to `compareTo()`.
+- A number greater than zero is returned when the current object is larger than the argument to `compareTo()`.
 
-Let’s look at an implementation of `compareTo()` that compares numbers instead of
-`String` objects:
+Let’s look at an implementation of `compareTo()` that compares numbers instead of `String` objects:
 
 ````
 1: public class Animal implements java.util.Comparable<Animal> {
@@ -1221,26 +1203,19 @@ Let’s look at an implementation of `compareTo()` that compares numbers instead
 14: } }
 ````
 
-Lines 7 and 8 create two `Animal` objects. Lines 9 and 10 set their id values. This is not a
-good way to set instance variables. It would be better to use a constructor or setter method.
-Since the exam shows nontraditional code to make sure that you understand the rules, we
+Lines 7 and 8 create two `Animal` objects. Lines 9 and 10 set their id values. This is not a good way to set instance variables. It would be better to use a constructor or setter method. Since the exam shows nontraditional code to make sure that you understand the rules, we
 throw in some as well.
 
-Lines 3 through 5 implement the `compareTo()` method. Since an int is a primitive, we
-can’t call a method on it. We could create the Integer wrapper class and call `compareTo()`
-on that. It’s not necessary, though, since it is so easy to implement `compareTo()` correctly
+Lines 3 through 5 implement the `compareTo()` method. Since an int is a primitive, we can’t call a method on it. We could create the Integer wrapper class and call `compareTo()` on that. It’s not necessary, though, since it is so easy to implement `compareTo()` correctly
 on our own.
 
-Lines 11 through 13 confi rm that we’ve implemented `compareTo()` correctly. Line 11
-compares a smaller id to a larger one, and therefore it prints a negative number. Line 12
-compares animals with the same id, and therefore it prints 0. Line 13 compares a larger id
+Lines 11 through 13 confi rm that we’ve implemented `compareTo()` correctly. Line 11 compares a smaller id to a larger one, and therefore it prints a negative number. Line 12 compares animals with the same id, and therefore it prints 0. Line 13 compares a larger id
 to a smaller one, and therefore it returns a positive number.
 
 <img src="../img/note.png" alt="Note" width="20"/> _Note: Remember that id – `a.id` sorts in ascending order and `a.id` – id sorts in
 descending order._
 
-When dealing with legacy code, the `compareTo()` method requires a cast since it is
-passed an `Object`:
+When dealing with legacy code, the `compareTo()` method requires a cast since it is passed an `Object`:
 
 ````
 public class LegacyDuck implements java.util.Comparable {
@@ -1252,19 +1227,14 @@ public class LegacyDuck implements java.util.Comparable {
 }
 ````
 
-Since we don’t specify a generic type for `Comparable`, Java assumes that we want an
-`Object`, which means that we have to cast to `LegacyDuck` before accessing instance variables
+Since we don’t specify a generic type for `Comparable`, Java assumes that we want an `Object`, which means that we have to cast to `LegacyDuck` before accessing instance variables
 on it.
 
-You might have noticed by now that we have been writing `java.util.Comparable`.
-That’s because it is in the `java.util` package. Most of the time, you won’t see the package
-name on the exam. You can tell that the imports have been omitted because the code will
-have line numbers that do not begin with line 1.
+You might have noticed by now that we have been writing `java.util.Comparable`. That’s because it is in the `java.util` package. Most of the time, you won’t see the package name on the exam. You can tell that the imports have been omitted because the code will have line numbers that do not begin with line 1.
 
 ### `Comparator`
 
-Sometimes you want to sort an object that did not implement `Comparable`, or you want to
-sort objects in different ways at different times.
+Sometimes you want to sort an object that did not implement `Comparable`, or you want to sort objects in different ways at different times.
 Suppose that we add weight to our `Duck` class. We now have the following:
 
 ````
@@ -1284,9 +1254,7 @@ public class Duck implements Comparable<Duck> {
 }
 ````
 
-The `Duck` class itself can define `compareTo()` in only one way. In this case, name was
-chosen. If we want to sort by something else, we have to define that sort order outside the
-`compareTo()` method:
+The `Duck` class itself can define `compareTo()` in only one way. In this case, name was chosen. If we want to sort by something else, we have to define that sort order outside the `compareTo()` method:
 
 ````
 public static void main(String[] args) {
@@ -1305,12 +1273,9 @@ public static void main(String[] args) {
 }
 ````
 
-First, we defined an inner class with the `Comparator`. Then we sorted without the `Comparator`
-and with the `Comparator` to see the difference in output.
+First, we defined an inner class with the `Comparator`. Then we sorted without the `Comparator` and with the `Comparator` to see the difference in output.
 
-`Comparator` is a functional interface since there is only one abstract method to implement.
-This means that we can rewrite the `Comparator` in the previous example as any of the
-following:
+`Comparator` is a functional interface since there is only one abstract method to implement. This means that we can rewrite the `Comparator` in the previous example as any of the following:
 
 ````
 Comparator<Duck> byWeight = (d1, d2) -> d1.getWeight()—d2.getWeight();
@@ -1320,23 +1285,15 @@ Comparator<Duck> byWeight = (Duck d1, Duck d2) -> {return d1.getWeight()—
     d2.getWeight(); };
 ````
 
-All of these examples show taking two parameters and returning an `int`—just as
-`Comparator` specifies. Remember that the type is optional. Java will infer it by what is
-needed in that spot in the code. This is cool. You can rewrite five lines of code using a
-funky syntax into one line in a different funky syntax! It is really cool because you get used
-to the lambda syntax, whereas the anonymous inner class always feels kludgy. We will use
-a mix of lambdas and anonymous inner classes in this guide since you should expect to see
+All of these examples show taking two parameters and returning an `int`—just as `Comparator` specifies. Remember that the type is optional. Java will infer it by what is needed in that spot in the code. This is cool. You can rewrite five lines of code using a
+funky syntax into one line in a different funky syntax! It is really cool because you get used to the lambda syntax, whereas the anonymous inner class always feels kludgy. We will use a mix of lambdas and anonymous inner classes in this guide since you should expect to see
 both approaches on the exam.
 
-There are a good number of differences between `Comparable` and `Comparator`. We’ve
-listed them for you in Table 4.1.
-
-TABLE 4.1 Comparison of `Comparable` and `Comparator`
+There are a good number of differences between `Comparable` and `Comparator` as shown below.
 
 ![Table 4.1](img/table4-1.png)
 
-Memorize this table—really. The exam will try to trick you by mixing up the two and
-seeing if you can catch it. Do you see why this one doesn’t compile?
+Memorize this table—really. The exam will try to trick you by mixing up the two and seeing if you can catch it. Do you see why this one doesn’t compile?
 
 ````
 Comparator<Duck> byWeight = new Comparator<Duck>() { //DOES NOT COMPILE
@@ -1346,14 +1303,9 @@ Comparator<Duck> byWeight = new Comparator<Duck>() { //DOES NOT COMPILE
 };
 ````
 
-The method name is wrong. A `Comparator` must implement a method named `compare()`.
-Pay special attention to method names and the number of parameters when you see
-`Comparator` and `Comparable` in questions.
+The method name is wrong. A `Comparator` must implement a method named `compare()`. Pay special attention to method names and the number of parameters when you see `Comparator` and `Comparable` in questions.
 
-You’ve probably noticed by now that we have ignored nulls in checking equality and
-comparing objects. This works fine for the exam. In the real world, though, things aren’t
-so neat. You will have to decide how to handle nulls or prevent them from being in your
-object. It is common to decide that nulls sort before any other values.
+You’ve probably noticed by now that we have ignored nulls in checking equality and comparing objects. This works fine for the exam. In the real world, though, things aren’t so neat. You will have to decide how to handle nulls or prevent them from being in your object. It is common to decide that nulls sort before any other values.
 
 ## Searching and Sorting
 
@@ -1372,9 +1324,7 @@ The sort method uses the `compareTo()` method to sort. It expects the objects to
 8: } }
 ````
 
-Java knows that the `Rabbit` class is not `Comparable`. It knows sorting will fail, so it
-doesn’t even let the code compile. You can fix this by passing a `Comparator` to `sort()`.
-Remember that a `Comparator` is useful when you want to specify sort order without using a
+Java knows that the `Rabbit` class is not `Comparable`. It knows sorting will fail, so it doesn’t even let the code compile. You can fix this by passing a `Comparator` to `sort()`. Remember that a `Comparator` is useful when you want to specify sort order without using a
 `compareTo()` method:
 
 ````
@@ -1389,8 +1339,7 @@ public class SortRabbits {
 } }
 ````
 
-`sort()` and `binarySearch()` allow you to pass in a `Comparator` object when you don’t want
-to use the natural order. There is a trick in this space. What do you think the following outputs?
+`sort()` and `binarySearch()` allow you to pass in a `Comparator` object when you don’t want to use the natural order. There is a trick in this space. What do you think the following outputs?
 
 ````
 3: List<String> names = Arrays.asList("Fluffy", "Hoppy");
@@ -1399,18 +1348,12 @@ to use the natural order. There is a trick in this space. What do you think the 
 6: System.out.println(index);
 ````
 
-The correct answer is -1. Before you panic, you don’t need to know that the answer
-is -1. You do need to know that the answer is not defined. Line 3 creates a list, `[Fluffy,
-Hoppy]`. This list happens to be sorted in ascending order. Line 4 creates a `Comparator` that
-reverses the natural order. Line 5 requests a binary search in descending order. Since the list
-is in ascending order, we don’t meet the precondition for doing a search.
+The correct answer is `-1`. Before you panic, you don’t need to know that the answer is `-1`. You do need to know that the answer is not defined. Line 3 creates a list, `[Fluffy, Hoppy]`. This list happens to be sorted in ascending order. Line 4 creates a `Comparator` that
+reverses the natural order. Line 5 requests a binary search in descending order. Since the list is in ascending order, we don’t meet the precondition for doing a search.
 
-Earlier in the chapter, we talked about collections that require classes to implement
-`Comparable`. Unlike sorting, they don’t check that you have actually implemented
-`Comparable` at compile time.
+Earlier in the chapter, we talked about collections that require classes to implement `Comparable`. Unlike sorting, they don’t check that you have actually implemented `Comparable` at compile time.
 
-Going back to our `Rabbit` that does not implement `Comparable`, we try to add it to a
-`TreeSet`:
+Going back to our `Rabbit` that does not implement `Comparable`, we try to add it to a `TreeSet`:
 
 ````
 2: public class UseTreeSet {
@@ -1423,21 +1366,15 @@ Going back to our `Rabbit` that does not implement `Comparable`, we try to add i
 9: } }
 ````
 
-Line 6 is fine. `Duck` does implement `Comparable`. TreeSet is able to sort it into the proper
-position in the set. Line 8 is a problem. When TreeSet tries to sort it, Java discovers the
-fact that Rabbit does not implement `Comparable`. Java throws an exception that looks like
-this:
+Line 6 is fine. `Duck` does implement `Comparable`. TreeSet is able to sort it into the proper position in the set. Line 8 is a problem. When TreeSet tries to sort it, Java discovers the fact that Rabbit does not implement `Comparable`. Java throws an exception that looks like this:
 
 ````
-Exception in thread "main" java.lang.ClassCastException: comparing.Rabbit cannot
-be cast to java.lang.Comparable
+Exception in thread "main" java.lang.ClassCastException: comparing.Rabbit cannot be cast to java.lang.Comparable
 ````
 
-It seems weird for this exception to be thrown when the first object is added to the set.
-After all, there is nothing to compare yet. Java works this way for consistency.
+It seems weird for this exception to be thrown when the first object is added to the set. After all, there is nothing to compare yet. Java works this way for consistency.
 
-Just like searching and sorting, you can tell collections that require sorting that you wish
-to use a specific `Comparator`, for example:
+Just like searching and sorting, you can tell collections that require sorting that you wish to use a specific `Comparator`, for example:
 
 ````
 Set<Rabbit> rabbit = new TreeSet<>(new Comparator<Rabbit>() {
@@ -1448,13 +1385,11 @@ Set<Rabbit> rabbit = new TreeSet<>(new Comparator<Rabbit>() {
 rabbit.add(new Rabbit());
 ````
 
-Now Java knows that you want to sort by id and all is well. `Comparator`s are helpful
-objects. They let you separate sort order from the object to be sorted.
+Now Java knows that you want to sort by `id` and all is well. `Comparator`s are helpful objects. They let you separate sort order from the object to be sorted.
 
 ## Sorting lists
 
-Prior to Java 8, it was necessary to implement the `java.util.Comparator` interface with an anonymous 
-(or named) class when sorting a list:
+Prior to Java 8, it was necessary to implement the `java.util.Comparator` interface with an anonymous (or named) class when sorting a list:
 
 ````
 List<Person> people = ...
@@ -1468,8 +1403,7 @@ Collections.sort(
 );
 ````
 
-Starting with Java 8, the anonymous class can be replaced with a lambda expression. Note that the 
-types for the parameters p1 and p2 can be left out, as the compiler will infer them automatically:
+Starting with Java 8, the anonymous class can be replaced with a lambda expression. Note that the types for the parameters `p1` and `p2` can be left out, as the compiler will infer them automatically:
 
 ````
 Collections.sort(
@@ -1478,8 +1412,17 @@ Collections.sort(
 );
 ````
 
-The example can be simplified by using `Comparator.comparing` and method references expressed using 
-the `::` (double colon) symbol.
+Or the same logic by using `Comparator.comparing` method:
+
+````
+Comparator<Person> c = Comparator.comparing(p -> p.getFirstName());
+Collections.sort(
+    people,
+    c
+);
+````
+
+The example can be simplified further with method references expressed using the `::` (double colon) symbol.
 
 ````
 Collections.sort(
@@ -1488,8 +1431,7 @@ Collections.sort(
 );
 ````
 
-A static import allows us to express this more concisely, but it is debatable whether this improves 
-overall readability:
+A static import allows us to express this more concisely, but it is debatable whether this improves overall readability:
 
 ````
 import static java.util.Collections.sort;
@@ -1498,19 +1440,29 @@ import static java.util.Comparator.comparing;
 sort(people, comparing(Person::getFirstName));
 ````
 
-`Comparator`s built this way can also be chained together. For example, after comparing people by 
-their first name, if there are people with the same first name, the `thenComparing` method with also 
-compare by last name:
+`Comparator`s built this way can also be chained together. For example, after comparing people by their first name, if there are people with the same first name, the `thenComparing` `default` method will also compare by last name:
 
 `sort(people, comparing(Person::getFirstName).thenComparing(Person::getLastName));`
 
-<img src="../img/note.png" alt="Note" width="20"/> _Note: `Collections.sort(...)` only works on collections that are subtypes of `List`. The `Set` 
-and Collection APIs do not imply any ordering of the elements._
+<img src="../img/note.png" alt="Note" width="20"/> _Note: `Collections.sort(...)` only works on collections that are subtypes of `List`. The `Set` and Collection APIs do not imply any ordering of the elements._
+
+The `java.util.Collections.sort()` method without the second argument of `Comparator` sorts the specified `List` into ascending order, according to the natural ordering of its elements. When using this method, all elements in the list must implement the `Comparable` interface. Furthermore, all elements in the list must be mutually comparable.
+
+**Warning**: If you initialize a list with `of`, it will fail at runtime, as the factory method creates an **immutable** list object and sorting modifies exactly the same list object: `List<String> emps = List.of("Nathaniel", "Steve","Nick");`
+
+If the objects in the list do not implement `Comparable`, you should provide your custom `Comparator`.
+
+As of Java 8 the `java.util.List` interface has `default void sort(Comparator<? super E> c)` method which can sort own elements:
+
+````
+List<Person> people = ...
+Comparator<Person> c = Comparator.comparing(Person::getFirstName);
+people.sort(c);
+````
 
 ## Sorting maps
 
-You can sort the entries of a `HashMap` by value in a similar fashion. (Note that a `LinkedHashMap` 
-must be used as the target. The keys in an ordinary `HashMap` are unordered)
+You can sort the entries of a `HashMap` by value in a similar fashion. (Note that a `LinkedHashMap` must be used as the target. The keys in an ordinary `HashMap` are unordered)
 
 ````
 Map<String, Integer> map = new HashMap();  // ... or any other Map class
@@ -1524,10 +1476,7 @@ map = map.entrySet()
 
 ## `sorted()`
 
-The Stream intermediate operation, `sorted()` method, returns a stream with the elements sorted. 
-Just like sorting arrays, Java uses natural ordering unless we specify a `Comparator`. The method 
-signatures are
-these:
+The _stateful intermediate operation_, `sorted()`, returns a stream with the elements sorted. Just like sorting arrays, Java uses natural ordering unless we specify a `Comparator`. The method signatures are these:
 
 ````
 Stream<T> sorted()
@@ -1541,8 +1490,39 @@ Stream<String> s = Stream.of("brown-", "bear-");
 s.sorted().forEach(System.out::print); // bear-brown
 ````
 
-Remember that we can pass a lambda expression as the `Comparator`. For example, we
-can pass a `Comparator` implementation:
+Here's a more expansive example:
+
+````
+Stream<Employee> emps = Stream.of(
+    new Employee("Nathaniel"), new Employee("Jane"),
+    new Employee("Steve"), new Employee("Nick"),
+    new Employee("Jack"));
+
+Comparator<Employee> c1 = Comparator.comparing(e -> e.name.length());
+Comparator<Employee> c2 = (e1, e2) -> e1.name.compareTo(e2.name);
+
+List<Employee> sl = emps
+    .sorted(c1.thenComparing(c2))
+    .collect(Collectors.toList());
+System.out.println(sl);
+````
+
+The `Stream.sorted()` method without parameters requires a stream of `Comparable` elements! If the elements of this stream are not `Comparable`, a `java.lang.ClassCastException` may be thrown when the terminal operation is executed.
+
+For ordered streams, the sort is stable. For unordered streams, no stability guarantees are made.
+
+You can sort a stream in the reverse order by preparing a simple `Comparator` instance for the sort and then calling `reversed()` method on it to get the reversed version of that `Comparator`:
+
+````
+Comparator<Employee> byNameLengthDesc = Comparator.comparing((Employee e) -> e.name.length()).reversed();
+Stream<Employee> emps = Stream.of(new Employee("Nathaniel"), new Employee("Steve"), new Employee("Nick"));
+List<Employee> sl = emps
+    .sorted(byNameLengthDesc)
+    .collect(Collectors.toList());
+System.out.print(sl);
+````
+
+Remember that we can pass a lambda expression as the `Comparator`. For example, we can pass a `Comparator` implementation:
 
 ````
 Stream<String> s = Stream.of("brown bear-", "grizzly-");
@@ -1550,19 +1530,11 @@ s.sorted(Comparator.reverseOrder())
     .forEach(System.out::print); // grizzly-brown bear-
 ````
 
-Here we passed a `Comparator` to specify that we want to sort in the reverse of natural
-sort order. Ready for a tricky one? Do you see why this doesn’t compile?
+Here we passed a `Comparator` to specify that we want to sort in the reverse of natural sort order. Ready for a tricky one? Do you see why this doesn’t compile?
 
 `s.sorted(Comparator::reverseOrder); // DOES NOT COMPILE`
 
-Take a look at the method signatures again. `Comparator` is a functional interface.
-This means that we can use method references or lambdas to implement it. The
-`Comparator` interface implements one method that takes two `String` parameters and
-returns an `int`. However, `Comparator::reverseOrder` doesn’t do that. It is a reference
-to a function that takes zero parameters and returns a `Comparator`. This is not compatible
-with the interface. This means that we have to use a method and not a method
-reference. We bring this up to remind you that you really do need to know method references
-well.
+Take a look at the method signatures again. `Comparator` is a functional interface. This means that we can use method references or lambdas to implement it. The `Comparator` interface implements one method that takes two `String` parameters and returns an `int`. However, `Comparator::reverseOrder` doesn’t do that. It is a reference to a function that takes zero parameters and returns a `Comparator`. This is not compatible with the interface. This means that we have to use a method and not a method reference. We bring this up to remind you that you really do need to know method references well.
 
 # 4.6 - Use Collectors with streams, including the groupingBy and partitioningBy operation
 
