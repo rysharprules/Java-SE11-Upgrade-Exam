@@ -1,8 +1,9 @@
 - [5.1 - Use Path interface to operate on file and directory paths](#51---use-path-interface-to-operate-on-file-and-directory-paths)
   - [Creating Instances with Factory and Helper Classes](#creating-instances-with-factory-and-helper-classes)
   - [Creating `Paths`](#creating-paths)
-  - [Using the `Paths` Class](#using-the-paths-class)
-    - [Be Wary of `Path` vs. `Paths` on the Exam](#be-wary-of-path-vs-paths-on-the-exam)
+    - [Using the `Paths` Class](#using-the-paths-class)
+      - [Be Wary of `Path` vs. `Paths` on the Exam](#be-wary-of-path-vs-paths-on-the-exam)
+    - [`of` factory methods](#of-factory-methods)
   - [Providing Optional Arguments](#providing-optional-arguments)
   - [Using `Path` Objects](#using-path-objects)
     - [Viewing the `Path` with `toString()`, `getNameCount()`, and `getName()`](#viewing-the-path-with-tostring-getnamecount-and-getname)
@@ -12,7 +13,7 @@
     - [Using `Path` Symbols](#using-path-symbols)
     - [Deriving a `Path` with `relativize()`](#deriving-a-path-with-relativize)
       - [Compatible `Path` Types for `relativize()`](#compatible-path-types-for-relativize)
-    - [Joining `Path` Objects with `resolve()`](#joining-path-objects-with-resolve)
+    - [Joining `Path` Objects with `resolve()` and `resolveSibling`](#joining-path-objects-with-resolve-and-resolvesibling)
     - [Cleaning Up a `Path` with `normalize()`](#cleaning-up-a-path-with-normalize)
     - [Checking for file Existence with `toRealPath()`](#checking-for-file-existence-with-torealpath)
   - [5.2 Use Files class to check, delete, copy or move a file or directory](#52-use-files-class-to-check-delete-copy-or-move-a-file-or-directory)
@@ -46,7 +47,7 @@
     - [Avoiding Circular `Paths`](#avoiding-circular-paths)
   - [Searching a Directory](#searching-a-directory)
     - [Listing Directory Contents](#listing-directory-contents)
-  - [Printing `File` Contents](#printing-file-contents)
+  - [Printing file contents](#printing-file-contents)
       - [`Files.readAllLines()` vs. `Files.lines()`](#filesreadalllines-vs-fileslines)
 - [Quiz](#quiz)
 - [Quiz Answers 4?](#quiz-answers-4)
@@ -55,7 +56,19 @@
 
 The `java.nio.file.Path` interface, or `Path` interface for short, is the primary entry point for working with the NIO.2 API. A `Path` object represents a hierarchical path on the storage system to a file or directory. In this manner, `Path` is a direct replacement for the legacy `java.io.File` class, and conceptually it contains many of the same properties. For example, both `File` and `Path` objects may refer to a file or a directory. Both also may refer to an absolute path or relative path within the file system.
 
+A `Path` object is more abstract than a `File`, in that it is a sequence of names that represent a directory hierarchy (that may or may not include a file) on the file system. There are no methods in the `Path` interface that allow working with directories or files. The defined methods are for working with or manipulating `Path` objects only, resolving one `Path` to another. (There is one method that can be used to obtain a `java.io.File` object from a `java.nio.file.Path`, `toFile`. Likewise the `java.io.File` class now contains a `toPath` method.) To work with files and directories, `Path` objects are used in conjunction with the `java.nio.file.Files` class. The `java.nio.file.Files` class consists entirely of `static` methods for manipulating directories and files, including copy, move and functions for working with symbolic links.
+
+Like `File`, a `Path` can also refer to a not existing file. That is only file path, NOT the data containing in a file.
+
 Unlike the `File` class, the `Path` interface contains support for symbolic links. A symbolic link is a special file within an operating system that serves as a reference or pointer to another file or directory. In general, symbolic links are transparent to the user, as the operating system takes care of resolving the reference to the actual file. The NIO.2 API includes full support for creating, detecting, and navigating symbolic links within the file system.
+
+In Java 6 and earlier:
+
+`File file = new File("README.TXT");`
+
+We can convert to a `Path` with:
+
+`Path path = new File("README.TXT").toPath();`
 
 ## Creating Instances with Factory and Helper Classes
 
@@ -69,10 +82,9 @@ You should become comfortable with this paradigm, if you are not already, as mos
 
 ## Creating `Paths`
 
-Since `Path` is an interface, you need a factory class to create instances of one. The NIO.2 API provides a number of classes and methods that you can use to create `Path` objects,
-which we will review in this section.
+Since `Path` is an interface, you need a factory class to create instances of one. The NIO.2 API provides a number of classes and methods that you can use to create `Path` objects, which we will review in this section.
 
-## Using the `Paths` Class
+### Using the `Paths` Class
 
 The simplest and most straightforward way to obtain a `Path` object is using the `java.nio.files.Paths` factory class, or `Paths` for short. To obtain a reference to a file or directory, you would call the static method `Paths.get(String)` method, as shown in the following examples:
 
@@ -119,7 +131,7 @@ Path path4 = Paths.get(new URI("http://www.wiley.com"));
 URI uri4 = path4.toUri();
 ````
 
-### Be Wary of `Path` vs. `Paths` on the Exam
+#### Be Wary of `Path` vs. `Paths` on the Exam
 
 Java is fond of using one name for the data class and the plural form of that name for the factory or helper class. When you see questions with `Path` or `Paths` on the exam, be sure that the class reference and usage are correct. For example, the following usage is incorrect and will not compile:
 
@@ -131,6 +143,30 @@ Path path2 = Path.get("/crocodile/food.csv"); // DOES NOT COMPILE
 In the first example, the `Path` object is being assigned to a `Paths` instance, which is incompatible. In the second example, there is attempt to access a method that does not exist, `Path.get("String")`.
 
 The key to remember is that the singular form `Path` represents the instance with which you want to work, whereas the plural form `Paths` is the factory class containing methods for creating `Path` instances.
+
+### `of` factory methods
+
+Java 11 added two new overloaded `static` methods to `java.nio.file.Path` interface to conveniently create an instance of the interface:
+
+````
+public static Path of(String first, String... more)
+public static Path of(URI uri) 
+````
+
+Then we can create Path instances as follows (assmuming that `C:\home\ryan\foo\test.txt` exists):
+
+````
+Path path = Path.of("C:", "home", "ryan", "foo", "test.txt");
+System.out.println(path); // C:\home\ryan\foo\test.txt
+boolean exists = Files.exists(path);
+System.out.println(exists); // true
+
+URI uri = URI.create("file:///C:/home/ryan/bar/test.txt"); // does NOT exist !
+System.out.println(uri); // file:///C:/home/ryan/bar/test.txt
+Path path = Path.of(uri);
+System.out.println(path); // C:\home\ryan\bar\test.txt
+System.out.println(Files.exists(path)); // false					
+````
 
 ## Providing Optional Arguments
 
@@ -200,13 +236,17 @@ Element 2 is: harry.happy
 
 Notice that the individual names are the same. For the exam, you should be aware that the `getName(int)` method is zero-indexed, with the file system root excluded from the path components.
 
+If index is negative, index is greater than or equal to the number of elements, or this path has zero name elements, then `IllegalArgumentException` is thrown.
+
 ### Accessing `Path` Components with `getFileName()`, `getParent()`, and `getRoot()`
 
-The `Path` interface contains numerous methods for retrieving specific sub-elements of a `Path` object, returned as `Path` objects themselves. The first method, `getFileName()`, returns a `Path` instance representing the filename, which is the farthest element from the root. Like most methods in the `Path` interface, `getFileName()` returns a new `Path` instance rather than a `String`.
+The `Path` interface contains numerous methods for retrieving specific sub-elements of a `Path` object, returned as `Path` objects themselves. 
+
+The first method, `getFileName()`, returns a `Path` instance representing the filename, which is the farthest element from the root. Like most methods in the `Path` interface, `getFileName()` returns a new `Path` instance rather than a `String`.
 
 The next method, `getParent()`, returns a `Path` instance representing the parent path or `null` if there is no such parent. If the instance of the `Path` object is relative, this method will stop at the top-level element defined in the `Path` object. In other words, it will not traverse outside the working directory to the file system root.
 
-The last method, `getRoot()`, returns the root element for the `Path` object or `null` if the `Path` object is relative.
+The last method, `getRoot()`, returns the root element for the `Path` object or `null` if the `Path` object is relative, i.e. does not have a root component. For UNIX platform the root will be "`/`". For Windows, something like "`C:\`".
 
 We present a sample application that traverses absolute and relative `Path` objects to show how each handles the root differently:
 
@@ -335,7 +375,7 @@ For example, the path value `../bear.txt` refers to a file named `bear.txt` in t
 
 ### Deriving a `Path` with `relativize()`
 
-The `Path` interface provides a method `relativize(Path)` for constructing the relative path from one `Path` object to another. Consider the following relative and absolute path examples using the `relativize()` method.
+The `Path` interface provides a method `relativize(Path)` for constructing the relative path from one `Path` object to another. Consider the following relative and absolute path examples using the `relativize()` method. The new path is relative to the original path. _Relativization is the inverse of resolution._
 
 ````
 Path path1 = Paths.get("fish.txt");
@@ -371,6 +411,8 @@ This code snippet produces the following output when executed:
 
 In this set of examples, the two path values are absolute, and the `relativize()` method constructs the relative path between the two absolute path values within the file system. Note that the file system is not accessed to perform this comparison. For example, the root path element `E:` may not exist in the file system, yet the code would execute without issue since Java is referencing the path elements and not the actual file values.
 
+A relative path CANNOT be constructed if only one of the paths includes a root element. If both paths include a root element, the capability to construct a relative path is system dependent.
+
 #### Compatible `Path` Types for `relativize()`
 
 The `relativize()` method requires that both paths be absolute or both relative, and it will throw an `IllegalArgumentException` if a relative path value is mixed with an absolute path value. For example, the following would throw an exception at runtime:
@@ -389,9 +431,13 @@ Path path4 = Paths.get("d:\\storage\\bananas.txt");
 path3.relativize(path4); // THROWS EXCEPTION AT RUNTIME
 ````
 
-### Joining `Path` Objects with `resolve()`
+### Joining `Path` Objects with `resolve()` and `resolveSibling`
 
-The `Path` interface includes a `resolve(Path)` method for creating a new `Path` by joining an existing path to the current path. To put it another way, the object on which the `resolve()` method is invoked becomes the basis of the new `Path` object, with the input argument being appended onto the `Path`. Let’s see what happens if we apply `resolve()` to an absolute path and a relative path:
+The `Path` interface includes a `resolve(Path)` method for creating a new `Path` by joining an existing path to the current path. To put it another way, the object on which the `resolve()` method is invoked becomes the basis of the new `Path` object, with the input argument being appended onto the `Path`. You pass in a partial path, which is a path that does not include a root element, and that partial path is appended to the original path.
+
+If the `other` parameter is an absolute path then this method trivially returns `other`. If `other` is an empty path then this method trivially returns this path. Otherwise this method considers this path to be a directory and resolves the given path against this path. In the simplest case, the given path does not have a root component, in which case this method joins the given path to this path and returns a resulting path that ends with the given path.
+
+Let’s see what happens if we apply `resolve()` to an absolute path and a relative path:
 
 ````
 final Path path1 = Paths.get("/cats/../panther");
@@ -417,7 +463,9 @@ Since the input parameter path2 is an absolute path, the output would be the fol
 
 `/tiger/cage`
 
-For the exam, you should be cognizant of mixing absolute and relative paths with the `resolve()` method. If an absolute path is provided as input to the method, such as `path1. resolve(path2)`, then `path1` would be ignored and a copy of `path2` would be returned.
+For the exam, you should be cognizant of mixing absolute and relative paths with the `resolve()` method. If an absolute path is provided as input to the method, such as `path1.resolve(path2)`, then `path1` would be ignored and a copy of `path2` would be returned.
+
+The `resolveSibling(Path other)` and `resolveSibling(String other)` methods resolve the given path against this path's parent path. This is useful where a file name needs to be replaced with another file name. For example, suppose that the name separator is "`/`" and a path represents "`dir1/dir2/foo`", then invoking this method with the `Path` "`bar`" will result in the `Path` "`dir1/dir2/bar`". If this path does not have a parent path, or `other` is absolute, then this method returns `other`. If `other` is an empty path then this method returns this path's parent, or where this path doesn't have a parent, the empty path.
 
 ### Cleaning Up a `Path` with `normalize()`
 
@@ -1027,7 +1075,7 @@ The code snippet iterates over a directory, outputting the full path of the file
 
 Contrast this method with the `Files.walk()` method, which traverses all subdirectories. For the exam, you should be aware that `Files.list()` searches one level deep and is analogous to `java.io.File.listFiles()`, except that it relies on streams.
 
-## Printing `File` Contents
+## Printing file contents
 
 Earlier in the chapter, we presented `Files.readAllLines()` and commented that using it to read a very large file could result in an `OutOfMemoryError` problem. Luckily, the NIO.2 API in Java 8 includes a `Files.lines(Path)` method that returns a `Stream<String>` object and does not suffer from this same issue. The contents of the file are read and processed lazily, which means that only a small portion of the file is stored in memory at any given time. We now present `Files.lines()`, which is equivalent to the previous `Files.readAllLines()` sample code:
 
