@@ -168,7 +168,7 @@ System.out.println(path); // C:\home\ryan\bar\test.txt
 System.out.println(Files.exists(path)); // false					
 ````
 
-## Providing Optional Arguments
+## Providing optional aArguments
 
 Throughout this section, we introduce numerous methods for interacting with files and directories in NIO.2. Many of the methods in the NIO.2 API that interact with real files and directories take additional options flags in the form of a vararg. For the exam, you do not need to memorize which of the dozens of NIO.2 methods take which optional arguments, but you should be able to recognize what they do when you see them on the exam. Table 5.1 lists the values that you should know for the exam. Note that these descriptions apply to both files and directories. If you are not familiar with the operations to which these attributes apply, don’t worry; we’ll explain them later in this chapter.
 
@@ -176,11 +176,11 @@ TABLE 5.1 - Common optional arguments in NIO.2
 
 | Enum Value | Usage | Description |
 | --- | --- | --- |
-| `NOFOLLOW_LINKS` | Test file existing, Read file data, Copy file, Move file | If provided, symbolic links when encountered will not be traversed. Useful for performing operations on symbolic links themselves rather than their target. |
+| `NOFOLLOW_LINKS` | Test file existing, Read file data, Copy file, Move file | `LinkOption`, if provided, symbolic links when encountered will not be traversed. Useful for performing operations on symbolic links themselves rather than their target. |
 | `FOLLOW_LINKS` | Traverse a directory tree | If provided, symbolic links when encountered will be traversed. |
 | `COPY_ATTRIBUTES` | Copy file | If provided, all metadata about a file will be copied with it. |
-| `REPLACE_EXISTING` | Copy file, Move file | If provided and the target file exists, it will be replaced; otherwise, if it is not provided, an exception will be thrown if the file already exists. |
-| `ATOMIC_MOVE` | Move file | The operation is performed in an atomic manner within the file system, ensuring that any process using the file sees only a complete record. Method using it may throw an exception if the feature is unsupported by the file system. |
+| `REPLACE_EXISTING` | Copy file, Move file | `StandardCopyOption`, if provided and the target file exists, it will be replaced; otherwise, if it is not provided, an exception will be thrown if the file already exists. |
+| `ATOMIC_MOVE` | Move file | `StandardCopyOption`, the operation is performed in an atomic manner within the file system, ensuring that any process using the file sees only a complete record. Method using it may throw an exception if the feature is unsupported by the file system. |
 
 For simplicity as well as better readability, we purposely omit the `enum` class names to which the values belong throughout the text, although we do include them in any practice questions. For example, the copy methods take a list of `CopyOption` interface values, of which `StandardCopyOption` is an enum that implements the interface and includes `StandardCopyOption.COPY_ATTRIBUTES` as an option. As we said, for simplicity, we omit these details as the exam won’t require you to understand this relationship.
 
@@ -528,13 +528,15 @@ Finally, we can also use the `toRealPath()` method to gain access to the current
 
 `System.out.println(Paths.get(".").toRealPath());`
 
-## 5.2 Use Files class to check, delete, copy or move a file or directory
+## 5.2 Use `Files` class to check, delete, copy or move a file or directory
 
 ## Interacting with `Files`
 
 Great! We now have access to a `Path` object, and we can find out a ton of information about it, but what can we do with the file it references? For starters, many of the same operations available in `java.io.File` are available to `java.nio.file.Path` via a helper class called `java.nio.file.Files`, or `Files` for short. Unlike the methods in the `Path` and `Paths` class, most of the options within the `Files` class will throw an exception if the file to which the `Path` refers does not exist.
 
-The `Files` class contains numerous static methods for interacting with files, with most taking one or two `Path` objects as arguments. Some of these methods are capable of throwing the checked `IOException` at runtime, often when the file being referenced does not exist within the file system, as you saw with the `Path` method `toRealPath()`.
+The `Files` class contains numerous `static` methods for interacting with files, with most taking one or two `Path` objects as arguments. Some of these methods are capable of throwing the checked `IOException` at runtime, often when the file being referenced does not exist within the file system, as you saw with the `Path` method `toRealPath()`.
+
+In addition to `IOException`, many specific exceptions extend `FileSystemException`. This class has some useful methods that return the file involved (`getFile`), the detailed message string (`getMessage`), the reason why the file system operation failed (`getReason`), and the "other" file involved, if any (`getOtherFile`).
 
 ### Testing a `Path` with `exists()`
 
@@ -549,7 +551,7 @@ Files.exists(Paths.get("/ostrich"));
 
 The first example checks whether a file exists, while the second example checks whether a directory exists. You can see that this method does not throw an exception if the file does not exist, as doing so would prevent this method from ever returning false at runtime.
 
-### Testing Uniqueness with `isSameFile()`
+### Testing uniqueness with `isSameFile()`
 
 The `Files.isSameFile(Path,Path)` method is useful for determining if two `Path` objects relate to the same file within the file system. It takes two `Path` objects as input and follows symbolic links. Despite the name, the method also determines if two `Path` objects refer to the same directory.
 
@@ -576,7 +578,7 @@ try {
 
 Since `cobra` is a symbolic link to the `snake` file, the first example outputs true. In the second example, the symbol `..` cancels out the tree path of the path, resulting in the method also outputting true. In the third example, the symbol `.` leaves the path unmodified, so the result is true as well. The final example returns false, assuming that neither file is a symbolic link to the other. Even if the files have the same name and the same contents, if they are at different locations, they are considered different files within the file system.
 
-### Making Directories with `createDirectory()` and `createDirectories()`
+### Making directories with `createDirectory()` and `createDirectories()`
 
 To create directories in the legacy `java.io API`, we called `mkdir()` or `mkdirs()` on a `File` object. In the NIO.2 API, we can use the `Files.createDirectory(Path)` method to create a directory. There is also a plural form of the method called `createDirectories()`, which like `mkdirs()` creates the target directory along with any nonexistent parent directories leading up to the target directory in the path.
 
@@ -595,9 +597,9 @@ try {
 
 The first example creates a new directory, field, in the directory `/bison`, assuming `/bison` exists; or else an exception is thrown. Contrast this with the second example that creates the directory `green` along with any of the following parent directories if they do not already exist, such as `/bison`, `/bison/field`, or `/bison/pasture`.
 
-### Duplicating File Contents with `copy()`
+### Duplicating file contents with `copy()`
 
-Unlike the legacy `java.io.File` class, the NIO.2 Files class provides a set of overloaded `copy()` methods for copying files and directories within the file system. The primary one that you should know about for the exam is `Files.copy(Path,Path)`, which copies a file or directory from one location to another. The `copy()` method throws the checked `IOException`, such as when the file or directory does not exist or cannot be read.
+Unlike the legacy `java.io.File` class, the NIO.2 Files class provides a set of overloaded `copy()` methods for copying files and directories within the file system. The primary one that you should know about for the exam is `Files.copy(Path, Path)`, which copies a file or directory from one location to another. The `copy()` method throws the checked `IOException`, such as when the file or directory does not exist or cannot be read.
 
 Directory copies are shallow rather than deep, meaning that files and subdirectories within the directory are not copied. To copy the contents of a directory, you would need to create a function to traverse the directory and copy each file and subdirectory individually:
 
@@ -612,11 +614,11 @@ try {
 
 The first example performs a shallow copy of the `panda` directory, creating a new `panda-save` directory, but it does not copy any of the contents of the original directory. The second example copies the `bamboo.txt` file from the directory panda to the directory `panda-save`.
 
-By default, copying files and directories will traverse symbolic links, although it will not overwrite a file or directory if it already exists, nor will it copy file attributes. These behaviors can be altered by providing the additional options `NOFOLLOW_LINKS`, `REPLACE_EXISTING`, and `COPY_ATTRIBUTES`, respectively.
+By default, copying files and directories will traverse symbolic links, although it will not overwrite a file or directory if it already exists, nor will it copy file attributes. These behaviors can be altered by providing the additional options `NOFOLLOW_LINKS`, `REPLACE_EXISTING`, and `COPY_ATTRIBUTES`, respectively (with the overloaded method version: `Files.copy(Path source, Path target, CopyOption... options)`). The options argument are enums that specify how the file should be copied. There are actually two different `Enum` classes, `LinkOption` and `StandardCopyOption`, but both implement the `CopyOption` interface.
 
-#### Copying Files with java.io and NIO.2
+#### Copying files with java.io and NIO.2
 
-The NIO.2 Files API class contains two overloaded `copy()` methods for copying files using java.io streams. The first `copy()` method takes a source `java.io.InputStream` along with a target `Path` object. It reads the contents from the stream and writes the output to a file represented by a `Path` object.
+The NIO.2 `Files` API class contains two overloaded `copy()` methods for copying files using java.io streams. The first `copy()` method takes a source `java.io.InputStream` along with a target `Path` object. It reads the contents from the stream and writes the output to a file represented by a `Path` object.
 
 The second `copy()` method takes a source `Path` object and target `java.io.OutputStream`. It reads the contents of the file and writes the output to the stream.
 
@@ -636,11 +638,11 @@ try (InputStream is = new FileInputStream("source-data.txt");
 
 In this example, the `InputStream` and `OutputStream` parameters could refer to any valid stream, including website connections, in-memory stream resources, and so forth.
 
-Like the first `copy()` method, the `copy(InputStream,Path)` method also supports optional vararg options, since the data is being written to a file represented by a `Path` object. The second method, `copy(Path,OutputStream)`, does not support optional vararg values, though, since the data is being written to a stream that may not represent a file system resource.
+Like the first `copy()` method, the `copy(InputStream, Path)` method also supports optional vararg options, since the data is being written to a file represented by a `Path` object. The second method, `copy(Path, OutputStream)`, does not support optional vararg values, though, since the data is being written to a stream that may not represent a file system resource.
 
-### Changing a File Location with `move()`
+### Changing a file Location with `move()`
 
-The `Files.move(Path,Path)` method moves or renames a file or directory within the file system. Like the `copy()` method, the `move()` method also throws the checked `IOException` in the event that the file or directory could not be found or moved. The following is some sample code that uses the `move()` method:
+The `Files.move(Path, Path)` method moves or renames a file or directory within the file system. Like the `copy()` method, the `move()` method also throws the checked `IOException` in the event that the file or directory could not be found or moved. The following is some sample code that uses the `move()` method:
 
 ````
 try {
@@ -653,11 +655,23 @@ try {
 
 The first example renames the `zoo` directory to `zoo-new` directory, keeping all of the original contents from the source directory. The second example moves the `addresses.txt` file from the directory user to the directory `zoo-new`, and it renames it to `addresses2.txt`.
 
-By default, the `move()` method will follow links, throw an exception if the file already exists, and not perform an atomic move. These behaviors can be changed by providing the optional values `NOFOLLOW_LINKS`, `REPLACE_EXISTING`, or `ATOMIC_MOVE`, respectively, to the method. If the file system does not support atomic moves, an `AtomicMoveNotSupportedException` will be thrown at runtime.
+By default, the `move()` method will follow links, throw an exception if the file already exists, and not perform an atomic move. These behaviors can be changed by providing the optional values from `CopyOption`: `NOFOLLOW_LINKS`, `REPLACE_EXISTING`, or `ATOMIC_MOVE`, respectively, to the method (The method is overloaded for this purpose: `Files.move(Path, Path, CopyOption...)`). If the file system does not support atomic moves, an `AtomicMoveNotSupportedException` will be thrown at runtime.
+
+When a method accepts a varargs argument, you can pass it a comma-separated list of values or an array (`CopyOption[]`) of values:
+
+````
+import static java.nio.file.StandardCopyOption.*;
+...
+Path source = ...;
+Path target = ...;
+Files.move(source, target, REPLACE_EXISTING, ATOMIC_MOVE);
+````
 
 <img src="../img/note.png" alt="Note" width="20"/> _Note: The `Files.move()` method can be applied to non-empty directories only if they are on the same underlying drive. While moving an empty directory across a drive is supported, moving a non-empty directory across a drive will throw an NIO.2 `DirectoryNotEmptyException`._
 
-### Removing a File with `delete()` and `deleteIfExists()`
+If `Files.move(...)` is called with `StandardCopyOption.COPY_ATTRIBUTES` an `UnsupportedOperationException` is thrown.
+
+### Removing a file with `delete()` and `deleteIfExists()`
 
 The `Files.delete(Path)` method deletes a file or empty directory within the file system. The `delete()` method throws the checked `IOException` under a variety of circumstances. For example, if the path represents a non-empty directory, the operation will throw the runtime `DirectoryNotEmptyException`. If the target of the path is a symbol link, then the symbolic link will be deleted, not the target of the link.
 
@@ -676,11 +690,11 @@ try {
 
 The first example deletes the `features.txt` file in the vulture directory, and it throws a `NoSuchFileException` if the file or directory does not exist. The second example deletes the `pigeon` directory assuming it is empty. If the `pigeon` directory does not exist, then the second line will not throw an exception.
 
-### Reading and Writing File Data with `newBufferedReader()` and `newBufferedWriter()`
+### Reading and writing file data with `newBufferedReader()` and `newBufferedWriter()`
 
 The NIO.2 API includes methods for reading and writing file contents using java.io streams.
 
-The first method, `Files.newBufferedReader(Path,Charset)`, reads the file specified at the `Path` location using a `java.io.BufferedReader` object. It also requires a `Charset` value to determine what character encoding to use to read the file (characters can be encoded in bytes in a variety of ways). It may also be useful to know that `Charset.defaultCharset()` can be used to get the default Charset for the JVM.
+The first method, `Files.newBufferedReader(Path,Charset)`, reads the file specified at the `Path` location using a `java.io.BufferedReader` object. It also requires a `Charset` value to determine what character encoding to use to read the file (characters can be encoded in bytes in a variety of ways). It may also be useful to know that `Charset.defaultCharset()` can be used to get the default `Charset` for the JVM.
 
 ````
 Path path = Paths.get("/animals/gopher.txt");
@@ -695,7 +709,7 @@ try (BufferedReader reader = Files.newBufferedReader(path,
 }
 ````
 
-This example reads the contents of the files using a `BufferedReader` and outputs the contents to the user. As you shall see in the next section, there is a much simpler way to accomplish this, which uses functional programming streams.
+This example reads the contents of the files using a `BufferedReader` and outputs the contents to the user.
 
 The second method, `Files.newBufferedWriter(Path,Charset)`, writes to a file specified at the `Path` location using a `BufferedWriter`. Like the reader method, it also takes a `Charset` value:
 
@@ -714,7 +728,84 @@ This code snippet creates a new file with the specified contents, overwriting th
 
 Since both of these methods create resources, we use the try-with-resource syntax. Also, note that both of these methods use buffered streams rather than low-level file streams. The buffered stream classes are much more performant in practice, so much so that the NIO.2 API includes methods that specifically return these stream classes, in part to encourage you always to use buffered streams in your application.
 
-### Reading Files with `readAllLines()`
+### `readString` and `writeString`
+
+Java 11 added following new methods to `java.nio.file.Files` class to directly read `String` from a file and to directly write `String` to a file:
+
+````
+/**
+  * Reads all content from a file into a string, decoding from bytes to characters
+  * using the StandardCharsets.UTF_8 charset.
+  *
+  * The method ensures that the file is closed when all content have been read
+  * or an I/O error, or other runtime exception, is thrown.
+  */
+public static String readString(Path path) throws IOException
+
+ /**
+  * Reads all characters from a file into a string, decoding from bytes to characters
+  * using the specified charset.
+  *
+  * The method ensures that the file is closed when all content have been read
+  * or an I/O error, or other runtime exception, is thrown.
+  *
+  *  This method reads all content including the line separators in the middle
+  * and/or at the end. The resulting string will contain line separators as they
+  * appear in the file.
+  *
+  *
+  * This method is intended for simple cases where it is appropriate and convenient
+  * to read the content of a file into a String. It is not intended for reading
+  * very large files.
+  */
+public static String readString(Path path, Charset cs) throws IOException
+````
+
+````
+/**
+  * Write a CharSequence to a file.
+  * Characters are encoded into bytes using the StandardCharsets.UTF_8 charset.
+  *
+  */
+public static Path writeString(Path path, CharSequence csq, OpenOption... options) throws IOException
+
+ /**
+  * Write a CharSequence to a file.
+  *
+  * Characters are encoded into bytes using the specified charset.
+  *
+  * All characters are written as they are, including the line separators in
+  * the char sequence. No extra characters are added.
+  *
+  * The options parameter specifies how the file is created
+  * or opened. If no options are present then this method works as if the
+  * StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, 
+  * and StandardOpenOption.WRITE options are present. In other words, it
+  * opens the file for writing, creating the file if it doesn't exist, or
+  * initially truncating an existing regular file to a size of 0.
+  */
+public static Path writeString(Path path, CharSequence csq, Charset cs, OpenOption... options) throws IOException
+````
+
+### Methods for unbuffered streams and interoperable with java.io APIs
+
+To open a file for reading, you can use the `newInputStream(Path, OpenOption...)` method. This method returns an unbuffered input stream for reading bytes from the file.
+
+````
+try (InputStream in = Files.newInputStream(file);
+    BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
+    String line = null;
+    while ((line = reader.readLine()) != null) {
+        System.out.println(line);
+    }
+} catch (NoSuchFileException  x) {
+    System.err.println("No such file exists: " + x.getFile());
+} catch (IOException  x) {
+    System.err.println(x);
+}
+````
+
+### Reading files with `readAllLines()` and `readAllBytes()`
 
 The `Files.readAllLines()` method reads all of the lines of a text file and returns the results as an ordered `List` of `String` values. The NIO.2 API includes an overloaded version that takes an optional `Charset` value. The following sample code reads the lines of the file and outputs them to the user:
 
@@ -734,9 +825,118 @@ The code snippet reads all of the lines of the file and then iterates over them.
 
 Be aware that the entire file is read when `readAllLines()` is called, with the resulting `String` array storing all of the contents of the file in memory at once. Therefore, if the file is significantly large, you may encounter an `OutOfMemoryError` trying to load all of it into memory.
 
+Its counterpart is `readAllBytes(Path)`:
+
+````
+Path file = ...;
+byte[] fileArray;
+fileArray = Files.readAllBytes(file);
+````
+
+### `OpenOptions`
+
+Several of the Files methods take an optional `OpenOptions` parameter. This parameter is optional and the API tells you what the default behavior is for the method when none is specified. The following `StandardOpenOptions` enum constants are supported:
+
+- `APPEND` - If the file is opened for WRITE access then bytes will be written to the end of the file rather than the beginning. If the file is opened for write access by other programs, then it is file system specific if writing to the end of the file is atomic.
+- `CREATE` - Create a new file if it does not exist. This option is ignored if the `CREATE_NEW` option is also set. The check for the existence of the file and the creation of the file if it does not exist is atomic with respect to other file system operations.
+- `CREATE_NEW` - Create a new file, failing if the file already exists. The check for the existence of the file and the creation of the file if it does not exist is atomic with respect to other file system operations.
+- `DELETE_ON_CLOSE` - Delete on close. When this option is present then the implementation makes a best effort attempt to delete the file when closed by the appropriate close method. If the close method is not invoked then a best effort attempt is made to delete the file when the Java virtual machine terminates (either normally, as defined by the Java Language Specification, or where possible, abnormally). This option is primarily intended for use with work files that are used solely by a single instance of the Java virtual machine. This option is not recommended for use when opening files that are open concurrently by other entities. Many of the details as to when and how the file is deleted are implementation specific and therefore not specified. In particular, an implementation may be unable to guarantee that it deletes the expected file when replaced by an attacker while the file is open. Consequently, security sensitive applications should take care when using this option.
+- `DSYNC` - Requires that every update to the file's content be written synchronously to the underlying storage device.
+- `READ` - Open for read access.
+- `SPARSE` - Sparse file. When used with the `CREATE_NEW` option then this option provides a hint that the new file will be sparse. The option is ignored when the file system does not support the creation of sparse files.
+- `SYNC` - Requires that every update to the file's content or metadata be written synchronously to the underlying storage device.
+- `TRUNCATE_EXISTING` - If the file already exists and it is opened for `WRITE` access, then its length is truncated to 0. This option is ignored if the file is opened only for `READ` access.
+- `WRITE` - Open for write access.
+
+### Glob argument
+
+The `newDirectoryStream` method in the `Files` class accepts a glob argument:
+
+````
+/**
+ * Opens a directory, returning a DirectoryStream to iterate over the entries in the directory.
+ * The elements returned by the directory stream's iterator are of type Path, each one representing
+ * an entry in the directory. The Path objects are obtained as if by resolving the name of the
+ * directory entry against dir. The entries returned by the iterator are filtered by matching the
+ * String representation of their file names against the given globbing pattern.
+ */
+public static DirectoryStream<Path> newDirectoryStream(Path dir, String glob) throws IOException;
+````
+
+You can use glob syntax to specify pattern-matching behavior. A glob pattern is specified as a string and is matched against other strings, such as directory or file names. For example:
+
+- `*.java` - Matches a path that represents a file name ending in `.java`
+- `*.*` - Matches file names containing a dot
+- `*.{java,class}` - Matches file names ending with `.java` or `.class`
+- `foo.?` - Matches file names starting with `foo.` and a single character extension
+- `/home/*/*` - Matches `/home/ry/data` on UNIX platforms
+- `/home/**` - Matches `/home/ry` and `/home/ry/data` on UNIX platforms
+- `C:\\*` - Matches `C:\foo` and `C:\bar` on the Windows platform (note that the backslash is escaped; as a string literal in the Java Language the pattern would be "`C:\\\\*`")
+
+### Creating temporary files
+
+You can create a temporary file using one of the following `Files.createTempFile` methods:
+
+````
+/**
+ * Creates a new empty file in the specified directory, using the given prefix and suffix strings to generate
+ * its name. The resulting Path is associated with the same FileSystem as the given directory.
+ *
+ * The details as to how the name of the file is constructed is implementation dependent and therefore not specified.
+ * Where possible the prefix and suffix are used to construct candidate names in the same manner as the
+ * File.createTempFile(String,String,File) method.
+ *
+ * As with the File.createTempFile methods, this method is only part of a temporary-file facility. Where used as a work
+ * files, the resulting file may be opened using the DELETE_ON_CLOSE option so that the file is deleted when the appropriate
+ * close method is invoked. Alternatively, a shutdown-hook, or the File.deleteOnExit() mechanism may be used to delete the
+ * file automatically.
+ *
+ * The attrs parameter is optional file-attributes to set atomically when creating the file. Each attribute is identified by
+ * its name. If more than one attribute of the same name is included in the array then all but the last occurrence is ignored.
+ * When no file attributes are specified, then the resulting file may have more restrictive access permissions to files
+ * created by the File.createTempFile(String,String,File) method.
+ */
+ public static Path createTempFile(Path dir,
+                  String prefix,
+                  String suffix,
+                  FileAttribute<?>... attrs)
+                           throws IOException;
+
+/**
+ * Creates an empty file in the default temporary-file directory, using the given prefix and suffix to generate its name.
+ * The resulting Path is associated with the default FileSystem.
+ *
+ * This method works in exactly the manner specified by the createTempFile(Path,String,String,FileAttribute[]) method for
+ * the case that the dir parameter is the temporary-file directory.
+ */
+ public static Path createTempFile(String prefix,
+                  String suffix,
+                  FileAttribute<?>... attrs)
+                           throws IOException;
+````
+
+The first method allows the code to specify a directory for the temporary file and the second method creates a new file in the default temporary-file directory. Both methods allow you to specify a suffix for the filename and the first method allows you to also specify a prefix. The following code snippet gives an example of the second method:
+
+````
+try {
+    Path tempFile = Files.createTempFile(null, ".myapp");
+    System.out.format("The temporary file: %s%n", tempFile);
+} catch (IOException x) {
+    System.err.format("IOException: %s%n", x);
+}
+````
+
+The result of running this file would be something like the following: `The temporary file: C:\Users\IBM_AD~1\AppData\Local\Temp\3900024882240192379.myapp`. If we added a prefix it would show before `39000...`
+
+A temporary file is just a simple file until YOU make sure that it is truly temporary, which means that an automatic mechanism must delete temporary files periodically or at a specified time. There are three approaches to automatic cleanup of temporary files:
+
+- automatic file cleanup via `File.deleteOnExit()`
+- automatic file cleanup via shutdown-hook: `Runtime.getRuntime().addShutdownHook(new Thread() { ... });`
+- automatic file cleanup via `StandardOpenOption.DELETE_ON_CLOSE`
+
 ## Discovering Basic File Attributes
 
-### Reading Common Attributes with `isDirectory()`, `isRegularFile()`, and `isSymbolicLink()`
+### Reading common attributes with `isDirectory()`, `isRegularFile()`, and `isSymbolicLink()`
 
 The `Files` class includes three methods for determining if a path refers to a directory, a regular file, or a symbolic link. The methods to accomplish this are named `Files.isDirectory(Path)`, `Files.isRegularFile(Path)`, and `Files.isSymbolicLink(Path)`, respectively.
 
@@ -762,7 +962,7 @@ TABLE 5.3 `isDirectory()`, `isRegularFile()`, `isSymbolicLink()` examples
 
 You see that the value of `isDirectory()` and `isRegular()` in Table 5.3 cannot be determined on the symbolic link `/coyotes` without knowledge of what the symbolic link points to.
 
-### Checking File Visibility with `isHidden()`
+### Checking file visibility with `isHidden()`
 
 The Files class includes the `Files.isHidden(Path)` method to determine whether a file or directory is hidden within the file system. In Linux- or Mac-based systems, this is often denoted by file or directory entries that begin with a period character (`.`), while in Windows-based systems this requires the hidden attribute to be set. The `isHidden()` method throws the checked `IOException`, as there may be an I/O error reading the underlying file information. We present illustrative usage of this method in the following sample code:
 
@@ -777,7 +977,7 @@ try {
 If the `walrus.txt` file is available and hidden within the file system, this method will
 return true.
 
-### Testing File Accessibility with `isReadable()` and `isExecutable()`
+### Testing file accessibility with `isReadable()` and `isExecutable()`
 
 The `Files` class includes two methods for reading file accessibility: `Files.isReadable(Path)` and `Files.isExecutable(Path)`. This is important in file systems where the filename can be viewed within a directory, but the user may not have permission to read the contents of the file or execute it.
 
@@ -828,7 +1028,7 @@ try {
 
 The first part of the code reads and outputs the last-modified time value of the `food.jpeg` file. The next line sets a last-modified date/time using the current time value. Finally, we repeat our earlier line and output the newly set last-modified date/time value.
 
-### Managing Ownership with `getOwner()` and `setOwner()`
+### Managing ownership with `getOwner()` and `setOwner()`
 
 Many file systems also support the notion of user-owned files and directories. In this manner, the `Files.getOwner(Path)` method returns an instance of `UserPrincipal` that represents the owner of the file within the file system.
 
@@ -864,7 +1064,7 @@ try {
 
 The first set of lines reads the owner of the file and outputs the name of the user. The second set of lines retrieves a user named `jane` within the related file system and uses it to set a new owner for the file. Finally, we read the file owner name again to verify that is has been updated.
 
-## Improving Access with Views
+## Improving access with views
 
 Up until now, we have been accessing individual file attributes with single method calls. While this is functionally correct, there are often costs associated with accessing the file that make it far more efficient to retrieve all file metadata attributes in a single call. Furthermore, some attributes are file system specific and cannot be easily generalized for all file systems.
 
