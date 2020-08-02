@@ -812,6 +812,8 @@ try (InputStream in = Files.newInputStream(file);
 
 ### Reading files with `readAllLines()` and `readAllBytes()`
 
+`public static List<String> readAllLines(Path path) throws IOException`
+
 The `Files.readAllLines()` method reads all of the lines of a text file and returns the results as an ordered `List` of `String` values. The NIO.2 API includes an overloaded version that takes an optional `Charset` value. The following sample code reads the lines of the file and outputs them to the user:
 
 ````
@@ -1193,7 +1195,16 @@ For the exam, you don’t have to understand the details of each search strategy
 
 ## Walking a Directory
 
+````
+public static Stream<Path> walk(Path start,
+                                int maxDepth,
+                                FileVisitOption... options)
+                         throws IOException
+````
+
 Java 8 includes a new Streams API for performing complex operations in a single line of code using functional programming and lambda expressions. The first newly added NIO.2 stream-based method that we will cover is one used to traverse a directory. The `Files.walk(path)` method returns a `Stream<Path>` object that traverses the directory in a depth-first, lazy manner. By lazy, we mean the set of elements is built and read while the directory is being traversed. For example, until a specific subdirectory is reached, its child elements are not loaded. This performance enhancement allows the process to be run on directories with a large number of descendants in a reasonable manner.
+
+The stream walks the file tree as elements are consumed. The `Stream` returned is guaranteed to have at least one element, the starting file itself. For each file visited, the stream attempts to read its `BasicFileAttributes`. If the file is a directory and can be opened successfully, entries in the directory, and their descendants will follow the directory in the stream as they are encountered. When all entries have been visited, then the directory is closed. The file tree walk then continues at the next sibling of the directory.
 
 <img src="../img/note.png" alt="Note" width="20"/> _Note: Keep in mind that when you create a `Stream<Path>` object using `Files.walk()`, the contents of the directory have not yet been traversed._
 
@@ -1210,7 +1221,7 @@ try {
 }
 ````
 
-This example iterates over a directory and outputs all of the files that end with a java extension. You can see that the method also throws a somewhat expected `IOException`, as there could be a problem reading the underlying file system. Sample output for this method would be similar to the following:
+This example iterates over a directory and outputs all of the files that end with a `.java` extension. You can see that the method also throws a somewhat expected `IOException`, as there could be a problem reading the underlying file system. Sample output for this method would be similar to the following:
 
 ````
 /bigcats/version1/backup/Lion.java
@@ -1219,11 +1230,44 @@ This example iterates over a directory and outputs all of the files that end wit
 /bigcats/Lion.java
 ````
 
-By default, the method iterates up to `Integer.MAX_VALUE` directories deep, although there is an overloaded version of `walk(Path,int)` that takes a maximum directory depth integer value as the second parameter. A value of 0 indicates the current path record itself. In the previous example, you would need to specify a value of at least 1 to print any child record. In practice, you may want to set a limit to prevent your application from searching too deeply on a large directory structure and taking too much time.
+By default, the method iterates up to `Integer.MAX_VALUE` directories deep, although there is an overloaded version of `walk(Path, int)` that takes a maximum directory depth integer value as the second parameter. A value of `0` indicates the current path record itself. In the previous example, you would need to specify a value of at least `1` to print any child record. In practice, you may want to set a limit to prevent your application from searching too deeply on a large directory structure and taking too much time.
 
 You see that the `Stream<Path>` object returned by the `walk()` method visits every descendant path, with the filter being applied as each path is encountered.
 
-### Avoiding Circular `Paths`
+The next example demonstrates how to list all files and sub-directories in a directory:
+
+````
+C:\temp
+│   A.class
+│   A.java
+│
+└───dir1
+        B.class
+        B.java
+````							
+
+````
+public static void main(String[] args) throws IOException {
+    Path start = Paths.get("C:\\temp");
+    int maxDepth = 5;
+    try (Stream<Path> stream = Files.walk(start, maxDepth)) {
+        stream.forEach(System.out::println);
+    }
+}
+````
+								
+Outputs:
+
+````
+C:\temp
+C:\temp\A.class
+C:\temp\A.java
+C:\temp\dir1
+C:\temp\dir1\B.class
+C:\temp\dir1\B.java		
+````
+
+### Avoiding circular `Paths`
 
 Unlike our earlier NIO.2 methods, the `walk()` method will not traverse symbolic links by default. Following symbolic links could result in a directory tree that includes other, seemingly unrelated directories in the search. For example, a symbolic link to the root directory in a subdirectory means that every file in the system may be traversed.
 
@@ -1231,10 +1275,22 @@ Worse yet, symbolic links could lead to a cycle. A cycle is an infinite circular
 
 If you have a situation where you need to change the default behavior and traverse symbolic links, NIO.2 offers the `FOLLOW_LINKS` option as a vararg to the `walk()` method. It is recommended to specify an appropriate depth limit when this option is used. Also, be aware that when this option is used, the `walk()` method will track the paths it has visited, throwing a `FileSystemLoopException` if a cycle is detected.
 
-## Searching a Directory
+## Searching a directory
 
-In the previous example, we applied a filter to the `Stream<Path>` object to filter the results, although the NIO.2 API provides a more direct method. The `Files.find(Path,int,BiPredicate)` method behaves in a similar manner as the `Files.walk()` method, except that it requires the depth value to be explicitly set along with a `BiPredicate` to filter the data. Like `walk()`, `find()` also supports the `FOLLOW_LINK`
-vararg option.
+In the previous example, we applied a filter to the `Stream<Path>` object to filter the results, although the NIO.2 API provides a more direct method. The `Files.find(Path, int, BiPredicate)` method behaves in a similar manner as the `Files.walk()` method, except that it requires the depth value to be explicitly set along with a `BiPredicate` to filter the data. Like `walk()`, `find()` also supports the `FOLLOW_LINK`
+vararg option (`FileVisitOption.FOLLOW_LINKS`).
+
+The `find(...)` returns a `Stream` that is lazily populated with `Path` by searching for files in a file tree rooted at a given starting file. The `find(...)` method walks the file tree in exactly the manner specified by the `walk(...)` method. For each file encountered, the given `BiPredicate` is invoked with its `Path` and `BasicFileAttributes`. The `Path` object is obtained as if by resolving the relative path against start and is only included in the returned `Stream` if the `BiPredicate` returns `true`. Compare to calling filter on the `Stream` returned by `walk(...)` method, this method may be more efficient by avoiding redundant retrieval of the `BasicFileAttributes`. If an `IOException` is thrown when accessing the directory after returned from this method, it is wrapped in an `UncheckedIOException` which will be thrown from the method that caused the access to take place.
+
+The returned stream encapsulates one or more `DirectoryStreams`. If timely disposal of file system resources is required, the "try-with-resources" construct should be used to ensure that the stream's `close()` method is invoked after the stream operations are completed. Operating on a closed stream will result in an `IllegalStateException`.
+
+````
+public static Stream<Path> find(Path start, // The directory path start is the initial starting point
+                                int maxDepth, // The maxDepth defines the maximum folder depth to be searched
+                                BiPredicate<Path,BasicFileAttributes> matcher, // A matching predicate defines the search logic
+                                FileVisitOption... options)
+                         throws IOException
+````
 
 A `BiPredicate` is an interface that takes two generic objects and returns a boolean value of the form `(T, U) -> boolean`. In this case, the two object types are `Path` and `BasicFileAttributes`. In this manner, the NIO.2 automatically loads the `BasicFileAttributes` object for you, allowing you to write complex lambda expressions that have direct access to this object.
 
@@ -1252,6 +1308,24 @@ try {
 ````
 
 This example is similar to our previous `Files.walk()` example in that it will search a directory for files that end with the `.java` extension. It is more advanced, though, in that it applies a last-modified-time filter using the `BasicFileAttributes` object. Finally, it sets the directory depth limit for search to 10, as opposed to relying on the default `Integer.MAX_VALUE` value that the `Files.walk()` method uses.
+
+Here's another example (assume `C:\temp\LibPathFinder.java` exists):
+
+````
+public static void main(String[] args) throws IOException {
+    Path start = Paths.get("C:\\temp");
+    int maxDepth = 5;
+    try (Stream<Path> stream = Files.find(start, maxDepth, (path, attr) -> String.valueOf(path).endsWith(".java"))) {
+        String joined = stream
+                .sorted()
+                .map(String::valueOf)
+                .collect(Collectors.joining("; "));
+        System.out.println("Found: " + joined); // Found: C:\temp\LibPathFinder.java
+    }
+}
+````
+
+In the above example we search for all Java files (filename ends with `.java`) under `C:\temp` directory (limited depth is `5` sub-directories).
 
 ### Listing Directory Contents
 
@@ -1282,7 +1356,11 @@ Contrast this method with the `Files.walk()` method, which traverses all subdire
 
 ## Printing file contents
 
-Earlier in the chapter, we presented `Files.readAllLines()` and commented that using it to read a very large file could result in an `OutOfMemoryError` problem. Luckily, the NIO.2 API in Java 8 includes a `Files.lines(Path)` method that returns a `Stream<String>` object and does not suffer from this same issue. The contents of the file are read and processed lazily, which means that only a small portion of the file is stored in memory at any given time. We now present `Files.lines()`, which is equivalent to the previous `Files.readAllLines()` sample code:
+Earlier in the chapter, we presented `Files.readAllLines()` and commented that using it to read a very large file could result in an `OutOfMemoryError` problem. Luckily, the NIO.2 API in Java 8 includes a `Files.lines(Path)` method that returns a `Stream<String>` object and does not suffer from this same issue. The contents of the file are read and processed lazily, which means that only a small portion of the file is stored in memory at any given time. We now present `Files.lines()`:
+
+`public static Stream<String> lines(Path path)  throws IOException`
+
+The following is equivalent to the previous `Files.readAllLines()` sample code:
 
 ````
 Path path = Paths.get("/fish/sharks.log");
