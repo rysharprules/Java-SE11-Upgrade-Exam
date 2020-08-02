@@ -551,6 +551,8 @@ MOD -> greeter.lib
 MOD -> java.base
 ````
 
+`-s` or `-summary` prints a dependency summary.
+
 ##### Automatic module name derivation
 
 If the JAR file does not have the attribute "Automatic-Module-Name" in its main manifest (`META-INF/MANIFEST.MF`) then the module name is derived from the name of the JAR file as follows:

@@ -333,7 +333,7 @@ redundancy and simply write this:
 
 The `::` operator tells Java to pass the parameters automatically into `compareByWeight`.
 
-_Note: `DuckHelper::compareByWeight` returns a functional interface and not an
+_<img src="../img/note.png" alt="Note" width="20"/> _Note: `DuckHelper::compareByWeight` returns a functional interface and not an
 `int`. Remember that `::` is like lambdas, and it is typically used for deferred
 execution._
 
@@ -416,7 +416,7 @@ valid interface name and contain a single abstract method. Table 8.1 is signific
 interfaces are often used in streams and other classes that come with Java, which is why you need to
 memorize them for the exam.
 
-_Note: There’s an interface called `Runnable` used for concurrency the majority of the time. 
+_<img src="../img/note.png" alt="Note" width="20"/> _Note: There’s an interface called `Runnable` used for concurrency the majority of the time. 
 However, it may show up on the exam when you are asked to recognize which functional interface to use.
 All you need to know is that `Runnable` doesn’t take any parameters, return any data, or use generics._
 
@@ -951,7 +951,7 @@ type you started with is just called `map()`. When returning an object stream, t
 
 For the second table, you can start by thinking about the source and target types. When the target type is an object, you drop the `To` from the name. When the mapping is to the same type you started with, you use a unary operator instead of a function for the primitive streams.
 
-_Note: You can also create a primitive stream from a Stream using `flatMapToInt()`, `flatMapToDouble()`, or `flatMapToLong()`. For example,_ 
+_<img src="../img/note.png" alt="Note" width="20"/> _Note: You can also create a primitive stream from a Stream using `flatMapToInt()`, `flatMapToDouble()`, or `flatMapToLong()`. For example,_ 
 
 `IntStream ints = list.stream().flatMapToInt(x -> IntStream.of(x));`
 

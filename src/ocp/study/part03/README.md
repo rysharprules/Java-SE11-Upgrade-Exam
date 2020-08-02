@@ -75,16 +75,9 @@ public class Eagle implements Fly {
 }
 ````
 
-In this example, the first method of the interface, `getWingSpan()`, declares an exception
-in the interface. Due to the rules of method overriding, this does not require the exception
-to be declared in the overridden method in the `Eagle` class. The second declaration,
-`MAX_SPEED`, is a constant static variable available anywhere within our application.
-The next method, `land()`, is a default method that has been optionally overridden in
-the `Eagle` class. Finally, the method `calculateSpeed()` is a static member and, like
-`MAX_SPEED`, it is available without an instance of the interface.
+In this example, the first method of the interface, `getWingSpan()`, declares an exception in the interface. Due to the rules of method overriding, this does not require the exception to be declared in the overridden method in the `Eagle` class. The second declaration, `MAX_SPEED`, is a constant static variable available anywhere within our application. The next method, `land()`, is a default method that has been optionally overridden in the `Eagle` class. Finally, the method `calculateSpeed()` is a static member and, like `MAX_SPEED`, it is available without an instance of the interface.
 
-An interface may extend another interface, and in doing so it inherits all of the abstract
-methods. The following is an example of an interface that extends another interface:
+An interface may extend another interface, and in doing so it inherits all of the abstract methods. The following is an example of an interface that extends another interface:
 
 ````
 public interface Walk {
@@ -108,35 +101,20 @@ public class Lion implements Run {
 }
 ````
 
-In this example, the interface `Run` extends `Walk` and inherits all of the abstract methods
-of the parent interface. Notice that modifiers used in the methods `isQuadruped()`,
-`getMaxSpeed()`, and `canHuntWhileRunning()` are different between the class and
-interface definitions, such as public and abstract. The compiler automatically adds
-public to all interface methods and abstract to all non‐static and non‐default
-methods, if the developer does not provide them. By contrast, the class implementing the
-interface must provide the proper modifiers. For example, the code would not compile if
-`getMaxSpeed()` was not marked public in the `Lion` class.
+In this example, the interface `Run` extends `Walk` and inherits all of the abstract methods of the parent interface. Notice that modifiers used in the methods `isQuadruped()`, `getMaxSpeed()`, and `canHuntWhileRunning()` are different between the class and interface definitions, such as public and abstract. The compiler automatically adds public to all interface methods and abstract to all non‐static and non‐default methods, if the developer does not provide them. By contrast, the class implementing the interface must provide the proper modifiers. For example, the code would not compile if `getMaxSpeed()` was not marked public in the `Lion` class.
 
-Since the `Lion` class implements `Run`, and `Run` extends `Walk`, the `Lion` class must provide
-concrete implementations of all inherited abstract methods. As shown in this example
-with `getMaxSpeed()`, interface method definitions may be duplicated in a child interface
-without issue.
+Since the `Lion` class implements `Run`, and `Run` extends `Walk`, the `Lion` class must provide concrete implementations of all inherited abstract methods. As shown in this example with `getMaxSpeed()`, interface method definitions may be duplicated in a child interface without issue.
 
-Remember that an interface cannot extend a class, nor can a class extend an interface.
-For these reasons, none of the following definitions using our previous Walk interface and
-`Lion` class will compile:
+Remember that an interface cannot extend a class, nor can a class extend an interface. For these reasons, none of the following definitions using our previous `Walk` interface and `Lion` class will compile:
 
 ````
 public interface Sleep extends Lion {} // DOES NOT COMPILE
 public class Tiger extends Walk {} // DOES NOT COMPILE
 ````
 
-In the first definition, the interface `Sleep` cannot extend `Lion`, since `Lion` is a class.
-Likewise, the class `Tiger` cannot extend the interface Walk.
+In the first definition, the interface `Sleep` cannot extend `Lion`, since `Lion` is a class. Likewise, the class `Tiger` cannot extend the interface Walk.
 
-Interfaces also serve to provide limited support for multiple inheritance within the
-Java language, as a class may implement multiple interfaces, such as in the following
-example:
+Interfaces also serve to provide limited support for multiple inheritance within the Java language, as a class may implement multiple interfaces, such as in the following example:
 
 ````
 public interface Swim {
@@ -147,11 +125,7 @@ public class Frog implements Swim, Hop {
 }
 ````
 
-In this example, the `Frog` class implements both the `Swim` and `Hop` interfaces.
-An instance of `Frog` may be passed to any method that accepts `Swim`, `Hop`, `Frog`, or
-`java.lang.Object` as an input parameter. As shown in this example, you can also
-construct interfaces that have neither methods nor class members, traditionally referred
-to as marker interfaces. The `java.io.Serializable` interface, which contains no methods, is an example of a marker interface.
+In this example, the `Frog` class implements both the `Swim` and `Hop` interfaces. An instance of `Frog` may be passed to any method that accepts `Swim`, `Hop`, `Frog`, or `java.lang.Object` as an input parameter. As shown in this example, you can also construct interfaces that have neither methods nor class members, traditionally referred to as marker interfaces. The `java.io.Serializable` interface, which contains no methods, is an example of a marker interface.
 
 ## `static` methods in interfaces
 
@@ -254,8 +228,7 @@ public class RestrictedChecking implements Accessible {
 
 ### Java SE 8 Interfaces with `default`
 
-In Java SE 8, you're allowed to implement special types of methods within interfaces: `static` 
-methods and `default` methods.
+In Java SE 8, you're allowed to implement special types of methods within interfaces: `static` methods and `default` methods.
 
 `default` methods help minimize code duplication. They provide a single location to write and edit. They can be overridden later if necessary. They're overridden with per-class precision.
 
@@ -354,9 +327,7 @@ public interface Accessible {
 }
 ````
 
-The problem with this approach is `default` methods must be `public`. They can be called from 
-almost anywhere. The returned values may not mean anything outside the context of the methods. 
-It's dangerous if the method returns information you don't want exposed. 
+The problem with this approach is `default` methods must be `public`. They can be called from almost anywhere. The returned values may not mean anything outside the context of the methods. It's dangerous if the method returns information you don't want exposed. 
 
 They can also be overridden at any time. The result of the calling method may not be predictable.
 
@@ -436,11 +407,9 @@ public class Tiger implements Sprint {
 }
 ```
 
-In this example, the `Sprint` class is a functional interface, because it contains exactly
-one `abstract` method, and the `Tiger` class is a valid class that implements the interface.
+In this example, the `Sprint` class is a functional interface, because it contains exactly one `abstract` method, and the `Tiger` class is a valid class that implements the interface.
 
-Consider the following three interfaces. Assuming `Sprint` is our previously defined
-functional interface, which ones would also be functional interfaces?
+Consider the following three interfaces. Assuming `Sprint` is our previously defined functional interface, which ones would also be functional interfaces?
 
 ```
 public interface Run extends Sprint {}
@@ -453,11 +422,7 @@ public interface Skip extends Sprint {
 }
 ```
 
-The answer? All three are valid functional interfaces! The first interface, `Run`, defines no
-new methods, but since it extends `Sprint`, which defines a single `abstract` method, it is also
-a functional interface. The second interface, `SprintFaster`, extends `Sprint` and defines
-an `abstract` method, but this is an override of the parent `sprint()` method; therefore, the
-resulting interface has only one `abstract` method, and it is considered a functional interface. The third interface, `Skip`, extends `Sprint` and defines a static method and a default method, each with an implementation. Since neither of these methods is `abstract`, the resulting interface has only one `abstract` method and is a functional interface.
+The answer? All three are valid functional interfaces! The first interface, `Run`, defines no new methods, but since it extends `Sprint`, which defines a single `abstract` method, it is also a functional interface. The second interface, `SprintFaster`, extends `Sprint` and defines an `abstract` method, but this is an override of the parent `sprint()` method; therefore, the resulting interface has only one `abstract` method, and it is considered a functional interface. The third interface, `Skip`, extends `Sprint` and defines a static method and a default method, each with an implementation. Since neither of these methods is `abstract`, the resulting interface has only one `abstract` method and is a functional interface.
 
 Now that you’ve seen some variations of valid functional interfaces, let’s look at some
 invalid ones using our previous `Sprint` functional interface definition:
@@ -479,22 +444,12 @@ In these examples, applying the `@FunctionalInterface` annotation to any of thes
 
 ## Applying the `@FunctionalInterface` Annotation
 
-While it is a good practice to mark a functional interface with the `@FunctionalInterface`
-annotation for clarity, it is not required with functional programming. The Java compiler
-implicitly assumes that any interface that contains exactly one `abstract` method is
-a functional interface. Conversely, if a class marked with the `@FunctionalInterface`
-annotation contains more than one `abstract` method, or no `abstract` methods at all, then
-the compiler will detect this error and not compile.
+While it is a good practice to mark a functional interface with the `@FunctionalInterface` annotation for clarity, it is not required with functional programming. The Java compiler implicitly assumes that any interface that contains exactly one `abstract` method is a functional interface. Conversely, if a class marked with the `@FunctionalInterface` annotation contains more than one `abstract` method, or no `abstract` methods at all, then the compiler will detect this error and not compile.
 
-One problem with not always marking your functional interfaces with this annotation is
-that another developer may treat any interface you create that has only one method as
-a functional interface. If you later modify the interface to have other `abstract` methods,
-suddenly their code will break since it will no longer be a functional interface.
+One problem with not always marking your functional interfaces with this annotation is that another developer may treat any interface you create that has only one method as a functional interface. If you later modify the interface to have other `abstract` methods, suddenly their code will break since it will no longer be a functional interface.
 
-Therefore, it is recommend that you explicitly mark the interface with the
-`@FunctionalInterface` annotation so that other developers know which interfaces they
-can safely apply lambdas to without the possibility that they may stop being functional
-interfaces down the road.
+Therefore, it is recommend that you explicitly mark the interface with the `@FunctionalInterface` annotation so that other developers know which interfaces they
+can safely apply lambdas to without the possibility that they may stop being functional interfaces down the road.
 
 We've established the `@FunctionalInterface` annotation is optional; it is a "hint" for Java compiler and a statement of intent to other developers. If it is added, the compiler will raise an error if there is no abstract method. It says that "MyInterface is not a functional interface" as "no abstract method was found". It will also error if we try and add a second method.
 
@@ -817,59 +772,23 @@ public class Object {
     
 # Quiz Answers
 
-1. <a name="qa1"></a>[Jump to question](#q1) - **C.** Duplicate code makes your program lengthy and bulky, 
-and decreases your code quality
+1. <a name="qa1"></a>[Jump to question](#q1) - **C.** Duplicate code makes your program lengthy and bulky, and decreases your code quality
 2. <a name="qa2"></a>[Jump to question](#q2) - **A.** Using private methods in interfaces have four rules:
-    1. Private interface methods cannot be abstract.
+    1. Private interface methods cannot be `abstract`.
     1. Private methods can be used only inside the interface.
     1. Private `static` methods can be used inside other `static` and non-`static` interface methods.
     1. Private non-static methods cannot be used inside private `static` methods.
-3. <a name="qa3"></a>[Jump to question](#q3) - **A, D, E.** A is correct as `default` methods have an 
-implementation and are implicitly public. B is incorrect as `static` methods cannot be overridden. C is
-incorrect as `default` methods cannot be private as they can be overridden. D & E are valid methods.
-4. <a name="qa4"></a>[Jump to question](#q4) - **B** Private interface methods improve the readability 
-of the code by providing a mechanism to place reused logic, improves the security of the business logic 
-implemented and avoids inheritance complications with encapsulation
-5. <a name="qa5"></a>[Jump to question](#q5) - **D.** A superclass method takes priority over an interface 
-`default` method
-6. <a name="qa6"></a>[Jump to question](#q6) - **E.** The code does not compile because `EasternChipmunk` 
-inherits the abstract method `climb()` but does not implement it, therefore the correct answer is E. B, C, and D are
-incorrect as they compile for various reasons. Line 2 compiles, as non-`static` and non-`default`
-interface methods are assumed to have the abstract modifier. Line 4 compiles
-without issue as an interface can extend another interface. Line 5 compiles without issue as
-an abstract class can implement an interface without implementing any of the abstract
-methods. F is incorrect, as Line 8 does not compile.
-7. <a name="qa7"></a>[Jump to question](#q7) - **A, D.** A is correct as `Climb` defines an interface with 
-exactly one abstract method. B is incorrect, as abstract classes are not functional interfaces despite 
-having a single abstract method. While functional interfaces may have any number of default methods, 
-`ArcticMountainClimb` will not compile due to the `default` method `getSpeed()` missing an
-implementation body, so C is incorrect. D is correct, as the interface `MountainClimb` has
-exactly one abstract method defined in `Climb`. Finally, E is incorrect because A and D are correct.
-8. <a name="qa8"></a>[Jump to question](#q8) - **C, F.** A and B are both incorrect as interfaces can extend 
-other interfaces, although not classes. C is correct since a class may implement multiple interfaces. 
-D is incorrect as interfaces have `static` and default methods, as well as `static` `final` variables. E 
-is incorrect as interfaces are assumed to be abstract, and abstract and final can never be used
-together. F is correct as interface methods and variables are each assumed public unless explicitly set to
-private.
-9. <a name="qa9"></a>[Jump to question](#q9) - **D.** While Java supports multiple inheritance through 
-interfaces, it does not support method overriding in interfaces, since it’s not clear which parent 
-method should be used. In this example, `CanWalk` and `CanRun` both implement a default `walk()` 
-method. The definition of `CanSprint` extends these two interfaces and therefore won’t compile as 
-two `default` methods with the same signature from parent classes are detected, therefore the answer is D. 
-None of the other lines of code cause problems, so the rest of the answers are not correct.
-10. <a name="qa10"></a>[Jump to question](#q10) - **C.** The functional interface takes two `int` parameters. 
-The code on line `x1` attempts to use them as if one is an `Object`, resulting in a compiler error making 
-C the correct answer. It also tries to return `String` even though the data type for the functional 
-interface method is `boolean`. It is tricky to use types in a lambda when they are implicitly specified. 
-Remember to check the interface for the real type.
-11. <a name="qa11"></a>[Jump to question](#q11) - **F.** The interface variable amount is correctly declared,
-with `public`, `static`, and `final` being assumed and automatically inserted by the compiler, so B is 
-incorrect. The method declaration for `eatGrass()` on line 3 is incorrect because the method has been 
-marked as `static` but no method body has been provided. The method declaration for `chew()` on
-line 4 is also incorrect, since an interface method that provides a body must be marked as
-`default` or `static` explicitly. Therefore, F is the correct answer since this code contains
-two compile-time errors.
-12. <a name="qa12"></a>[Jump to question](#q12) - **A.** Although the definition of methods on lines 2 
-and 5 vary, both will be converted to `public abstract` by the compiler. Line 4 is fine, because an 
-interface can have `public` or default access. Finally, the class `Falcon` doesn’t need to implement the 
-interface methods because it is marked as `abstract`. Therefore, the code will compile without issue.
+3. <a name="qa3"></a>[Jump to question](#q3) - **A, D, E.** A is correct as `default` methods have an implementation and are implicitly public. B is incorrect as `static` methods cannot be overridden. C is incorrect as `default` methods cannot be private as they can be overridden. D & E are valid methods.
+4. <a name="qa4"></a>[Jump to question](#q4) - **B** Private interface methods improve the readability of the code by providing a mechanism to place reused logic, improves the security of the business logic implemented and avoids inheritance complications with encapsulation
+5. <a name="qa5"></a>[Jump to question](#q5) - **D.** A superclass method takes priority over an interface `default` method
+6. <a name="qa6"></a>[Jump to question](#q6) - **E.** The code does not compile because `EasternChipmunk` inherits the `abstract` method `climb()` but does not implement it, therefore the correct answer is E. B, C, and D are incorrect as they compile for various reasons. Line 2 compiles, as non-`static` and non-`default`
+interface methods are assumed to have the `abstract` modifier. Line 4 compiles without issue as an interface can extend another interface. Line 5 compiles without issue as an `abstract` class can implement an interface without implementing any of the `abstract` methods. F is incorrect, as Line 8 does not compile.
+7. <a name="qa7"></a>[Jump to question](#q7) - **A, D.** A is correct as `Climb` defines an interface with exactly one `abstract` method. B is incorrect, as `abstract` classes are not functional interfaces despite having a single `abstract` method. While functional interfaces may have any number of default methods, 
+`ArcticMountainClimb` will not compile due to the `default` method `getSpeed()` missing an implementation body, so C is incorrect. D is correct, as the interface `MountainClimb` has exactly one `abstract` method defined in `Climb`. Finally, E is incorrect because A and D are correct.
+8. <a name="qa8"></a>[Jump to question](#q8) - **C, F.** A and B are both incorrect as interfaces can extend other interfaces, although not classes. C is correct since a class may implement multiple interfaces. D is incorrect as interfaces have `static` and default methods, as well as `static` `final` variables. E is incorrect as interfaces are assumed to be `abstract`, and `abstract` and final can never be used together. F is correct as interface methods and variables are each assumed public unless explicitly set to `private`.
+9. <a name="qa9"></a>[Jump to question](#q9) - **D.** While Java supports multiple inheritance through interfaces, it does not support method overriding in interfaces, since it’s not clear which parent method should be used. In this example, `CanWalk` and `CanRun` both implement a default `walk()`  method. The definition of `CanSprint` extends these two interfaces and therefore won’t compile as two `default` methods with the same signature from parent classes are detected, therefore the answer is D. None of the other lines of code cause problems, so the rest of the answers are not correct.
+10. <a name="qa10"></a>[Jump to question](#q10) - **C.** The functional interface takes two `int` parameters. The code on line `x1` attempts to use them as if one is an `Object`, resulting in a compiler error making C the correct answer. It also tries to return `String` even though the data type for the functional 
+interface method is `boolean`. It is tricky to use types in a lambda when they are implicitly specified. Remember to check the interface for the real type.
+11. <a name="qa11"></a>[Jump to question](#q11) - **F.** The interface variable amount is correctly declared, with `public`, `static`, and `final` being assumed and automatically inserted by the compiler, so B is incorrect. The method declaration for `eatGrass()` on line 3 is incorrect because the method has been 
+marked as `static` but no method body has been provided. The method declaration for `chew()` on line 4 is also incorrect, since an interface method that provides a body must be marked as `default` or `static` explicitly. Therefore, F is the correct answer since this code contains two compile-time errors.
+12. <a name="qa12"></a>[Jump to question](#q12) - **A.** Although the definition of methods on lines 2 and 5 vary, both will be converted to `public abstract` by the compiler. Line 4 is fine, because an interface can have `public` or default access. Finally, the class `Falcon` doesn’t need to implement the interface methods because it is marked as `abstract`. Therefore, the code will compile without issue.
