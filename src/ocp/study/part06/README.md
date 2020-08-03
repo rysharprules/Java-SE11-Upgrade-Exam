@@ -1,18 +1,14 @@
 - [6.1 - Migrate the application developed using a Java version prior to SE 9 to SE 11 including top-down and bottom-up migration, splitting a Java SE 8 application into modules for migration](#61---migrate-the-application-developed-using-a-java-version-prior-to-se-9-to-se-11-including-top-down-and-bottom-up-migration-splitting-a-java-se-8-application-into-modules-for-migration)
-  - [Migrating from the top down](#migrating-from-the-top-down)
-  - [Migrating from the bottom up](#migrating-from-the-bottom-up)
+  - [Migrating top-down](#migrating-top-down)
+  - [Migrating bottom-up](#migrating-bottom-up)
 - [6.2 - Use jdeps to determine dependencies and identify way to address the cyclic dependencies](#62---use-jdeps-to-determine-dependencies-and-identify-way-to-address-the-cyclic-dependencies)
-  - [`jdeps` options:](#jdeps-options)
+  - [`jdeps` options](#jdeps-options)
   - [`jdeps` usage](#jdeps-usage)
   - [Cyclic dependencies](#cyclic-dependencies)
-- [Unsorted notes from course...](#unsorted-notes-from-course)
-  - [Top-Down Migration](#top-down-migration)
-    - [Library JAR to Module](#library-jar-to-module)
-  - [Bottom-up Migration](#bottom-up-migration)
-  - [Fully Modularized Application](#fully-modularized-application)
-  - [Module Resolution](#module-resolution)
-  - [Splitting Packages for Migration](#splitting-packages-for-migration)
-  - [Cyclic Dependencies](#cyclic-dependencies-1)
+- [Migration - Game Simulator Example](#migration---game-simulator-example)
+  - [Top-down migration](#top-down-migration)
+    - [Utility JAR to module](#utility-jar-to-module)
+  - [Bottom-up migration](#bottom-up-migration)
 - [Quiz](#quiz)
 - [Quiz Answers](#quiz-answers)
 
@@ -21,7 +17,7 @@
 Assume we have a utility library packaged as separate `info-logger.jar` JAR (Java 8, non-modular):
 
 ````
-C:\1Z0-817\INFO-LOGGER
+INFO-LOGGER
 └───by
     └───iba
         └───logging                
@@ -47,10 +43,10 @@ public class InfoLogger {
 }					
 ````
 
-`C:\1Z0-817\info-logger>javac by\iba\logging\InfoLogger.java`
+`info-logger>javac by\iba\logging\InfoLogger.java`
 
 ````
-C:\1Z0-817\info-logger>jar cvf info-logger.jar .
+info-logger>jar cvf info-logger.jar .
 added manifest
 adding: by/(in = 0) (out= 0)(stored 0%)
 adding: by/iba/(in = 0) (out= 0)(stored 0%)
@@ -62,7 +58,7 @@ adding: by/iba/logging/InfoLogger.java(in = 328) (out= 181)(deflated 44%)
 And application (Java 8, non-modular) JAR:
 
 ````
-C:\1Z0-817\APP
+APP
 └───by
     └───iba
         └───app
@@ -87,10 +83,10 @@ public class App {
 
 Application depends on `info-logger.jar` utility JAR:
 
-`C:\1Z0-817\app>javac -cp ../info-logger/info-logger.jar by\iba\app\App.java`
+`javac -cp ../info-logger/info-logger.jar by\iba\app\App.java`
 
 ````
-C:\1Z0-817\app>jar --verbose --create --file app.jar .
+jar --verbose --create --file app.jar .
 added manifest
 adding: by/(in = 0) (out= 0)(stored 0%)
 adding: by/iba/(in = 0) (out= 0)(stored 0%)
@@ -102,7 +98,6 @@ adding: by/iba/app/App.java(in = 320) (out= 176)(deflated 45%)
 We should get similar hierarchy:
 
 ````
-C:\1Z0-817
 ├───app
 │   │   app.jar
 │   │
@@ -125,7 +120,7 @@ C:\1Z0-817
 Now you can run the application in Java 8 style:
 
 ````
-C:\1Z0-817>java -classpath ./info-logger/info-logger.jar;./app/app.jar by.iba.app.App
+java -classpath ./info-logger/info-logger.jar;./app/app.jar by.iba.app.App
 Apr 20, 2019 11:56:21 PM by.iba.logging.InfoLogger log
 INFO: Application started ...
 Apr 20, 2019 11:56:21 PM by.iba.app.App main
@@ -136,14 +131,14 @@ Java application before migration:
 
 ![Figure 6.8](img/figure6-8.gif)
 
-## Migrating from the top down
+## Migrating top-down
 
 We put all JARs (application and utility) to module path rather than class path and make application JAR modular.
 
 Check dependencies for application to create proper module descriptor:
 
 ````
-C:\1Z0-817>jdeps --module-path info-logger/info-logger.jar -s app/app.jar
+jdeps --module-path info-logger/info-logger.jar -s app/app.jar
 app.jar -> info.logger
 app.jar -> java.base
 app.jar -> java.logging
@@ -174,8 +169,7 @@ module app {
 }
 ````
 
-````				
-C:\1Z0-817\APP
+````
 │   module-info.java
 │
 └───by
@@ -193,7 +187,7 @@ Recompile the application code:
 Recreate the application modular JAR file:
 
 ````
-C:\1Z0-817\app>jar --verbose --create --file app.jar .
+jar --verbose --create --file app.jar .
 added manifest
 added module-info: module-info.class
 adding: by/(in = 0) (out= 0)(stored 0%)
@@ -207,7 +201,7 @@ adding: module-info.java(in = 70) (out= 53)(deflated 24%)
 Run the application:
 
 ````
-C:\1Z0-817>java --module-path ./info-logger/info-logger.jar;./app/app.jar -m app/by.iba.app.App
+java --module-path ./info-logger/info-logger.jar;./app/app.jar -m app/by.iba.app.App
 Apr 21, 2019 12:33:03 AM by.iba.logging.InfoLogger log
 INFO: Application started ...
 Apr 21, 2019 12:33:03 AM by.iba.app.App main
@@ -220,14 +214,14 @@ Java application after top-down migration:
 
 ![Figure 6.9](img/figure6-9.gif)
 
-## Migrating from the bottom up
+## Migrating bottom-up
 
 We make all library JARs modular and put on the module path, keep application JAR non-modular and put on the class path (it will become part of the unnamed module).
 
 Revert `app.jar` back to non-modular (it will be part of unnamed module):
 
 ````
-C:\1Z0-817\app>jar -tvf app.jar
+jar -tvf app.jar
      0 Sun Apr 21 10:46:24 AST 2019 META-INF/
     94 Sun Apr 21 10:46:24 AST 2019 META-INF/MANIFEST.MF
      0 Fri Apr 19 22:29:28 AST 2019 by/
@@ -247,7 +241,7 @@ The unnamed module:
 Check dependencies for library utility JAR to create a module definition (`module-info.java`):
 
 ````
-C:\1Z0-817>jdeps -s info-logger/info-logger.jar
+jdeps -s info-logger/info-logger.jar
 info-logger.jar -> java.base
 info-logger.jar -> java.logging
 ````				
@@ -264,7 +258,7 @@ module info.logger {
 But this module definition is wrong, because the library must export packages to be used by application (or by unnamed) module. We need to use `jdeps` to generate accurate `module-info.java` for us:
 
 ````
-C:\1Z0-817\info-logger>jdeps --generate-module-info . info-logger.jar
+jdeps --generate-module-info . info-logger.jar
 writing to .\info.logger\module-info.java
 ````
 
@@ -282,10 +276,10 @@ The module name may not contain dash character, it will get replaced with period
 
 Re-compile the utility modular JAR sources:
 
-`C:\1Z0-817\info-logger>javac module-info.java by\iba\logging\InfoLogger.java`
+`info-logger>javac module-info.java by\iba\logging\InfoLogger.java`
 
 ````				
-C:\1Z0-817\INFO-LOGGER
+INFO-LOGGER
 │   module-info.class
 │   module-info.java
 │
@@ -299,7 +293,7 @@ C:\1Z0-817\INFO-LOGGER
 Re-create the modular JAR:
 
 ````
-C:\1Z0-817\info-logger>jar --verbose --create --file info-logger.jar .
+info-logger>jar --verbose --create --file info-logger.jar .
 added manifest
 added module-info: module-info.class
 adding: by/(in = 0) (out= 0)(stored 0%)
@@ -313,7 +307,7 @@ adding: module-info.java(in = 97) (out= 78)(deflated 19%)
 Now we can run the modularized application:
 
 ````
-C:\1Z0-817>java --add-modules info.logger --module-path info-logger/info-logger.jar --class-path app/app.jar  by.iba.app.App
+java --add-modules info.logger --module-path info-logger/info-logger.jar --class-path app/app.jar  by.iba.app.App
 Apr 21, 2019 11:45:06 AM by.iba.logging.InfoLogger log
 INFO: Application started ...
 Apr 21, 2019 11:45:06 AM by.iba.app.App main
@@ -347,7 +341,7 @@ Java application after bottom-up migration:
 					
 The `jdeps` command shows the package-level or class-level dependencies of Java class files. The input class can be a path name to a `.class` file, a directory, a JAR file, or it can be a fully qualified class name to analyze all class files. The options determine the output. By default, the `jdeps` command writes the dependencies to the system output. The command can generate the dependencies in [DOT](https://graphviz.org/doc/info/lang.html) language (the `-dotoutput` option).
 
-## `jdeps` options:
+## `jdeps` options
 
 `-dotoutput dir_name (or --dot-output dir_name)`
 - Specifies the destination directory for DOT file output. If this option is specified, then the `jdeps` command generates one `.dot` file for each analyzed archive named `archive-file-name.dot` that lists the dependencies, and also a summary file named `summary.dot` that lists the dependencies among the archive files.
@@ -375,58 +369,7 @@ The `jdeps` command shows the package-level or class-level dependencies of Java 
 
 ## `jdeps` usage
 
-Assume we have several JARs as follows:
-
-````
-C:\1Z0-817
-│
-├───app
-│   └───by
-│       └───iba
-│           └───app
-│                   App.java
-│
-└───info.logger
-    └───by
-        └───iba
-            └───logging
-                    InfoLogger.java
-````
-
-````
-package by.iba.app;
-
-import by.iba.logging.InfoLogger;
-import java.util.logging.Logger;
-
-public class App {
-
-    public static void main(String... args) {
-        InfoLogger.log("Application started ...");
-        Logger logger = InfoLogger.getLog();
-        logger.info("Application finished.");
-    }    
-}
-````
-
-````				
-package by.iba.logging;
-
-import java.util.logging.Logger;
-
-public class InfoLogger {
-    
-    private static final Logger LOG = Logger.getLogger(InfoLogger.class.getName());
-    
-    public static void log(String msg) {
-        LOG.info(msg);
-    }
-
-    public static Logger getLog() {
-        return LOG;
-    }
-}
-````
+Assume we have the application and utility projects used in the previous section as non-modular Java 8 JARs:
 
 ````
 javac info.logger\by\iba\logging\InfoLogger.java
@@ -439,7 +382,7 @@ jar --create --file app.jar -C app .
 Now we can check class path dependencies:
 
 ````
-C:\1Z0-817>jdeps -cp info-logger.jar -s app.jar
+jdeps -cp info-logger.jar -s app.jar
 
 app.jar -> info-logger.jar
 app.jar -> java.base
@@ -447,7 +390,7 @@ app.jar -> java.logging
 ````
 
 ````
-C:\1Z0-817>jdeps -s info-logger.jar
+jdeps -s info-logger.jar
 
 info-logger.jar -> java.base
 info-logger.jar -> java.logging
@@ -456,13 +399,13 @@ info-logger.jar -> java.logging
 We can automatically generate module definitions for the 2 JARs:
 
 ````
-C:\1Z0-817>jdeps --generate-module-info . *.jar
+jdeps --generate-module-info . *.jar
 
 writing to .\app\module-info.java
 writing to .\info.logger\module-info.java
 ````
 
-The content of generated `module-info.java` files as follows:
+The content of generated `module-info.java` files are as follows:
 
 ````
 module app {
@@ -470,41 +413,43 @@ module app {
     requires java.logging;
     exports by.iba.app;
 }
-					
+````
+
+````				
 module info.logger {
     requires transitive java.logging;
     exports by.iba.logging;
 }
 ````
 
-Re-create JARs as modular ones:
+Then re-create JARs as modular ones:
 
 ````
-C:\1Z0-817>javac info.logger\module-info.java info.logger\by\iba\logging\InfoLogger.java
-C:\1Z0-817>jar --create --verbose --file info-logger.jar -C info.logger .
+javac info.logger\module-info.java info.logger\by\iba\logging\InfoLogger.java
+jar --create --verbose --file info-logger.jar -C info.logger .
 
-C:\1Z0-817>javac -p info-logger.jar app\module-info.java app\by\iba\app\App.java
-C:\1Z0-817>jar --create --verbose --file app.jar -C app .
+javac -p info-logger.jar app\module-info.java app\by\iba\app\App.java
+jar --create --verbose --file app.jar -C app .
 ````
 
-Now we can check **module dependencies**:
+Now we can check the **module dependencies**:
 
 ````
-C:\1Z0-817>jdeps --module-path app.jar;info-logger.jar -summary --module app
+jdeps --module-path app.jar;info-logger.jar -summary --module app
 app -> info.logger
 app -> java.base
 app -> java.logging
 ````
 
 ````
-C:\1Z0-817>jdeps --module-path app.jar;info-logger.jar -summary --module info.logger
+jdeps --module-path app.jar;info-logger.jar -summary --module info.logger
 info.logger -> java.base
 info.logger -> java.logging
 ````
 
 Also, you can visualize the dependencies for all JARs:
 
-`C:\1Z0-817>jdeps --module-path app.jar;info-logger.jar --dot-output . *.jar`
+`jdeps --module-path app.jar;info-logger.jar --dot-output . *.jar`
 					
 The results are several `.dot` files in the current directory, we check the `summary.dot`:
 
@@ -529,8 +474,6 @@ Java application module dependency graph:
 Cyclic dependencies between modules can be recognized by java compiler:
 
 ````
-C:\1Z0-817
-│
 ├───modA
 │       module-info.java
 │
@@ -551,7 +494,7 @@ module modB {
 ````
 
 ````					
-C:\1Z0-817>javac --module-source-path . modA\module-info.java -d modA
+javac --module-source-path . modA\module-info.java -d modA
 .\modB\module-info.java:2: error: cyclic dependence involving modA
     requires modA;
              ^
@@ -566,7 +509,6 @@ module modA {
 Imagine we have the following application:
 
 ````
-C:\1Z0-817
 ├───modA
 │   │   module-info.java
 │   │
@@ -640,7 +582,7 @@ Let's try the second solution:
 Add third `modC` module and refactor all interfaces from class methods which create dependencies:
 
 ````
-C:\1Z0-817\modC
+modC
 │   module-info.java
 │
 └───pkgC
@@ -760,21 +702,23 @@ jar cvf modC.jar -C modC .
 
 Inspect dependency graph visually:
 
-`C:\1Z0-817>jdeps --module-path modA.jar;modB.jar;modC.jar --dot-output . *.jar`
+`jdeps --module-path modA.jar;modB.jar;modC.jar --dot-output . *.jar`
 					
 Java application without cyclic dependency:
 
 ![Figure 6.14](img/figure6-14.gif)
 
-# Unsorted notes from course...
+# Migration - Game Simulator Example
 
-## Top-Down Migration
+Refer back to the "Game Simulator Example" from part 02.
+
+## Top-down migration
 
 Migrate application JARs first (i.e. add `module-info.java` files). Consider each application module - what does it require and what does it export?
 
 ![Figure 6.1](img/figure6-1.png)
 
-Run `jdeps` to check dependencies, e.g.:
+Run `jdeps` to check dependencies:
 
 ````
 jdeps -s lib/display-ascii-0.1b.jar lib/Soccer.jar dist/League.jar
@@ -787,7 +731,7 @@ jdeps -s lib/display-ascii-0.1b.jar lib/Soccer.jar dist/League.jar
     display-ascii-0.1b.jar -> java.base
 ````
 
-The Soccer `module-info.java`:
+Therefore the `Soccer` `module-info.java` should be:
 
 ````
 module soccer {
@@ -797,7 +741,7 @@ module soccer {
 }
 ````
 
-The League `module-info.java`:
+And the `League` `module-info.java` should be:
 
 ````
 module league {
@@ -808,16 +752,16 @@ module league {
 }
 ````
 
-JAR files cannot be accessed on the classpath because **modules cannot access classes on the classpath**. We need a way to make this a module.
+JAR files cannot be accessed on the classpath because **modules cannot access classes on the classpath**. We need a way to make this a module...
 
-### Library JAR to Module
+### Utility JAR to module
 
-How can unmodularized library JARs be used in the application?
+How can unmodularized utility JARs be used in the application?
 
-- Write the `module-info.java` file for the library?
-- Convert automatically (by putting the library JAR file on the module path)? Automatic modules do not have `module-info.java`
+- Write the `module-info.java` file for the library
+- Convert automatically (by putting the library JAR file on the module path)? Remember, automatic modules do not have a `module-info.java`
 
-The League `module-info.java` will now look like this:
+The `League` `module-info.java` will now look like this:
     
 ````
 module league {
@@ -830,85 +774,25 @@ module league {
 
 ![Figure 6.2](img/figure6-2.png)
 
-## Bottom-up Migration
+Refer to our simple example earlier: Here, the `League` is the "application" and `display.ascii` is the "utility".
+
+![Figure 6.15](img/figure6-15.png)
+
+## Bottom-up migration
+
+With the bottom-up approach we'll migrate the `display-ascii` utility to a module, and the `league` and the `soccer` stay as JAR files.
 
 ![Figure 6.3](img/figure6-3.png)
 
-We can use `jdeps` to generate the module-info for us:
+We can use `jdeps` to generate the `module-info` file for us:
 
 ````
-jdeps --generate-module-info \
-module-info-files /lib/display-ascii-0.1b.jar
+jdeps --generate-module-info module-info-files /lib/display-ascii-0.1b.jar
 
 writing to module-info-files/display.ascii/module-info.java
 ````
 
-We'll end with:
-
-````
-module League {
-    exports display;
-    //exports util; // not necessary 
-}
-````
-
-`League` and `Soccer` will expose all their packages. We'll need to use `add-modules` as the `League.jar` is running as an unnamed module and the Java runtime cannot determine which modules to resolve. So we can add this manually:
-
-````
-java -cp dist/League.jar:lib/Soccer.jar -p lib/display.ascii
-main.Main
-java -cp dist/League.jar:lib/Soccer.jar -p mods/display.ascii
-    --add-modules display.ascii main.Main
-````
-
-In this instance, `league` and `soccer` are automatic modules and therefore export all their packages and require all other modules.
-
-## Fully Modularized Application
-
-Finally, this can be run with:
-
-````
-java -p dist/League.jar: \
-        lib/Soccer.jar: \
-        lib/display.ascii.jar \
-    -m League.jar/main.Main
-````
-
-## Module Resolution
-
-Use `-show-module-resolution` with `limit-modules` to limit the output:
-
-````
-java --limit-modules java.base,display.ascii,Soccer \
---show-module-resolution -p mods:lib -m league/main.Main
-````
-
-## Splitting Packages for Migration
-
-- Splitting Java 8 application into modules
-- Converting a Java 8 application that was organized for access control
-
-![Figure 6.4](img/figure6-4.png)
-
-![Figure 6.5](img/figure6-5.png)
-
-The API Interfaces provide public API, whilst the implementations use package protected and are not 
-publicly available.
-
-With the packages divided, they can be modularized.
-
-![Figure 6.6](img/figure6-6.png)
-
-Encapsulation is achieved at the modular JAR level in Java SE 9 through the use of qualified export.
-
-![Figure 6.7](img/figure6-7.png) 
-
-## Cyclic Dependencies
-
-A cyclic dependency is when two modules depend on each other.
-
-One possible approach to address this is to remove the dependency and instead create a new module 
-that both modules can depend on.
+When running, we'll have to use the `--add-modules display.ascii` option to tell the Java runtime to include the module by name to the default root set. As unnamed modules, `league` and `soccer` JARs need to be included in the `--class-path`.
 
 # Quiz
 
