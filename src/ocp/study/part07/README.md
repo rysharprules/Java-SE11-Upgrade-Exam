@@ -1,18 +1,47 @@
-- [7.1 - Use local-variable type inference](#7-1)
-- [7.2 - Create and use lambda expressions with local-variable type inferred parameters](#7-2)
+- [7.1 - Use local-variable type inference](#71---use-local-variable-type-inference)
+  - [Reserved Type Name `var`](#reserved-type-name-var)
+    - [Example of Benefits](#example-of-benefits)
+    - [Where can it be used?](#where-can-it-be-used)
+    - [Where can it not be used?](#where-can-it-not-be-used)
+      - [Why not?](#why-not)
+    - [The debate](#the-debate)
+- [7.2 - Create and use lambda expressions with local-variable type inferred parameters](#72---create-and-use-lambda-expressions-with-local-variable-type-inferred-parameters)
+  - [Benefits](#benefits)
+  - [These won't compile](#these-wont-compile)
 
-## <a name="7-1"></a>7.1 - Use local-variable type inference
+# 7.1 - Use local-variable type inference
 
 Previously, all local variable declarations required an explicit type on the left-hand side.
 
 `ByteArrayOutputStream outputStream = new ByteArrayOutputStream();`
 
-Now, the explicit type can be replaced by the reserved type name `var`. The compiler infers the 
-variable type from the initializer on the right-hand side.
+Now, the explicit type can be replaced by the reserved type name `var`. 
+
+Local variable type inference is a feature in Java 10 that allows the developer to skip the type declaration associated with local variables (those defined inside method definitions, initialization blocks, `for`-loops, and other blocks like `if`-`else`), and the type is inferred by the JDK. It will, then, be the job of the compiler to figure out the datatype of the variable.
+
+The compiler infers the variable type from the initializer on the right-hand side.
 
 `var outputStream = new ByteArrayOutputStream();`
 
-#### Example of Benefits
+## Reserved Type Name `var`
+
+Keywords cannot be used for variables names:
+
+`int else = 10; // Not valid`
+
+`var` is NOT a keyword. Instead, it is a **reserved type name**. This means that existing code that uses var as a variable, method, or package name WILL NOT be affected.
+
+`int var = 20; // Valid, but not recommended. Old code like this won't break under Java 11`
+
+`var` for type inference is only used when we know we're looking for type information
+
+`var x = 30;`
+
+Existing code that uses `var` as a class or interface name WILL be affected.
+
+Despite the introduction of `var`, Java is still a statically typed language, and there should be enough information to infer the type of local variable. If not, the compiler will throw an error.
+
+### Example of Benefits
 
 Code to read a line of text from a socket using try-with-resources:
 
@@ -36,37 +65,33 @@ try (var is = socket.getInputStream();
 
 Variable names align (more readable) and class names aren't repeated (more concise).
 
-### Reserved Type Name `var`
+### Legal type inferrence usage
 
-Keywords cannot be used for variables names:
-
-`int else = 10; // Not valid`
-
-`var` is not a keyword
-
-`int var = 20; // Valid, but not recommended. Old code like this won't break under Java 11`
-
-`var` for type inference is only used when we know we're looking for type information
-
-`var x = 30;`
-
-#### Where can it be used?
-
-- Local variables with an initial value: `var itemDescription ="Shirt"; // inferred as String`
+- Local variables with an initial value: `var itemDescription ="Shirt"; // inferred as String` including within static/instance initialization blocks, as a local variable in a method, and as a value from another method (`var x = getId();`)
+- As a resource variable in the try-with-resource block: `try (var input = new FileInputStream("file.txt")) { ...`
 - Enhanced for-loop indexes: `for (var item : itemArray) // inferred as Item object`
 - Traditional for-loop index variables `for (var i=0; i<10; i++) // inferred as int`
 - Some non-denotable types: 
-    - Intersection types
+    - [Intersection types](https://itnext.io/java-generics-intersection-types-23b2fbdddfbb)
     - Anonymous class types
     
-#### Where can it not be used?
+### Illegal type inferrence usage
 
-- Declarations without an initial value: `var price;`
-- Initialization with a null value: `var price = null;`
+- Declarations without an initial value/initialization: `var price;`
+- Initialization with a null value: `var price = null;` (can be initialized to null with **explicit cast**: `var x = (Integer) null;  // compiles OK`)
 - Compound declarations: `var price = 9.95, tax = 0.05;`
 - Array initializers: `var prices = {9.95, 5, 3.50};`
-- Fields: `public var price;`
-- Parameters: `public void setPrice(var price) {...}`
+- Class or instance fields: `static var i = 0;`, `public var price;`
+- Parameters for methods: `public void setPrice(var price) {...}`
+- Not allowed as lambda expression type (still needs an explicit target type): `var p = (String[] s) -> s.length > 0;`
+- Not allowed with method reference (still needs an explicit target type): `var unaryOp = String::toLowerCase;`
+- Rassign to a different (incompatible) type:
+    ````
+    public static void main(String[] args) {
+        var x = 0;  // inferred to be of type int
+        x = "Java"; // ERROR - String cannot be converted/assigned to int
+    }
+    ````
 - Method return type:
     ````
     public var getPrice() {
@@ -84,9 +109,7 @@ public var getSomething(var something) {
 }
 ````
 
-How should this compile? `something` could be anything. Type inference is an algorithm, not magic.
-A goal of this feature is to let developers more-quickly read and understand code. Both humans and 
-the compiler require context for understanding.
+How should this compile? `something` could be anything. **Type inference** is an algorithm, not magic. Type inference refers to the automatic detection of the datatype of a variable, done at **compile time**. A goal of this feature is to let developers more-quickly read and understand code. Both humans and the compiler require context for understanding. 
 
 Prevent "action at a distance" issues, i.e.
 
@@ -94,7 +117,7 @@ Prevent "action at a distance" issues, i.e.
     - This prevents binary incompatibilities
 - Type must be inferred where the variable is declared
 
-#### The debate
+### The debate
 
 Arguments against this feature:
 
@@ -226,7 +249,7 @@ Like all features, it must be used with judgement. Follow these guidelines to mo
    double d4 = 4.0f; // inferred as float
    ````
    
-## <a name="7-2"></a>7.2 - Create and use lambda expressions with local-variable type inferred parameters
+# 7.2 - Create and use lambda expressions with local-variable type inferred parameters
 
 Lambda expressions could be explicitly typed:
 
@@ -236,11 +259,17 @@ Lambda expressions could be implicitly typed:
 
 `(x, y) -> x.process(y)`
 
-Now, lambda expressions can also be implicitly typed with the `var` syntax:
+From Java 11 you can use the `var` reserved type name as lambda expression parameter type:
 
 `(var x, var y) -> x.process(y)`
 
-#### Benefits
+For example:
+
+`UnaryOperator<String> lc = (var s) -> s.toLowerCase();`
+
+The type of the parameter declared with the `var` above will be inferred to the type `String`, because the type declaration of the variable has its generic type set to `UnaryOperator<String>`, which means that the parameter type and return type of the `UnaryOperator` is `String`.
+
+## Benefits
 
 - Uniform syntax for local-variables type inferences:
   ````
@@ -252,7 +281,7 @@ Now, lambda expressions can also be implicitly typed with the `var` syntax:
 - `var` provides the more readable implicitly typed alternative:
   `(@Nonnull var x, final var y) -> x.process(y)`
   
-#### These won't compile
+## These won't compile
 
 You could never mix implicitly and explicitly typed lambda parameters:
 
