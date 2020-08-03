@@ -46,7 +46,7 @@ public class InfoLogger {
 `info-logger>javac by\iba\logging\InfoLogger.java`
 
 ````
-info-logger>jar cvf info-logger.jar .
+jar cvf info-logger.jar .
 added manifest
 adding: by/(in = 0) (out= 0)(stored 0%)
 adding: by/iba/(in = 0) (out= 0)(stored 0%)
@@ -276,7 +276,7 @@ The module name may not contain dash character, it will get replaced with period
 
 Re-compile the utility modular JAR sources:
 
-`info-logger>javac module-info.java by\iba\logging\InfoLogger.java`
+`javac module-info.java by\iba\logging\InfoLogger.java`
 
 ````				
 INFO-LOGGER
@@ -293,7 +293,7 @@ INFO-LOGGER
 Re-create the modular JAR:
 
 ````
-info-logger>jar --verbose --create --file info-logger.jar .
+jar --verbose --create --file info-logger.jar .
 added manifest
 added module-info: module-info.class
 adding: by/(in = 0) (out= 0)(stored 0%)
