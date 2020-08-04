@@ -10,7 +10,7 @@
     - [Utility JAR to module](#utility-jar-to-module)
   - [Bottom-up migration](#bottom-up-migration)
 - [Quiz](#quiz)
-- [Quiz Answers](#quiz-answers)
+- [Quiz answers](#quiz-answers)
 
 # 6.1 - Migrate the application developed using a Java version prior to SE 9 to SE 11 including top-down and bottom-up migration, splitting a Java SE 8 application into modules for migration
 
@@ -826,7 +826,7 @@ When running, we'll have to use the `--add-modules display.ascii` option to tell
     - D. The application path
 <br />[Jump to answer](#qa5)
     
-# Quiz Answers
+# Quiz answers
 
 1. <a name="qa1"></a>[Jump to question](#q1) - **C.** A class which is not a member of a 'named module' is considered to be a member of a special module known as the unnamed module. The unnamed module concept is similar to the unnamed package (the default package). The unnamed module is not a real module. It can be considered as the default module which does not have a name. **All classes found on the classpath will be included in what Java calls the unnamed module**. The unnamed module exports all its packages.
 2. <a name="qa2"></a>[Jump to question](#q2) - **C.** To declare an explicit module, a module declaration needs to be specified. This is done in a file called `module-info.java` which is compiled as `module-info.class`.

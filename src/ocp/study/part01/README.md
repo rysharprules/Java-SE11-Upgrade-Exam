@@ -49,7 +49,7 @@
   - [Running a Modular Application](#running-a-modular-application)
   - [Summary of Command Line Options for Modules](#summary-of-command-line-options-for-modules)
 - [Quiz](#quiz)
-- [Quiz Answers](#quiz-answers)
+- [Quiz answers](#quiz-answers)
 
 # 1.1 - Describe the Modular JDK
 
@@ -1134,7 +1134,7 @@ not at compile time?
     - E. Add directive to the module definition: `requires transitive java.sql;`
 <br />[Jump to answer](#qa25)
 
-# Quiz Answers
+# Quiz answers
 
 1. <a name="qa1"></a>[Jump to question](#q1) - **B.** `jlink` is Java's new command line tool which allows you to link sets of modules (and their transitive dependencies) to create a run-time image. Java has always had dynamic linking, but with Java 9 there is now an optional static linking step. This is called link time, and it happens between compile time and run time
 2. <a name="qa2"></a>[Jump to question](#q2) - **C.** `jlink` is a new tool in Java SE 9 that can be used to create a custom platform specific runtime image, **assemble** a set of modules from their dependencies (using a set of dependencies from `module-info.class`), and performing **optimization**.

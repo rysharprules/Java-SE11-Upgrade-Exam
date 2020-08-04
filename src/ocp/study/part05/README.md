@@ -49,13 +49,13 @@
   - [Conceptualizing Directory Walking](#conceptualizing-directory-walking)
     - [Selecting a Search Strategy](#selecting-a-search-strategy)
   - [Walking a Directory](#walking-a-directory)
-    - [Avoiding Circular `Paths`](#avoiding-circular-paths)
-  - [Searching a Directory](#searching-a-directory)
+    - [Avoiding circular `Paths`](#avoiding-circular-paths)
+  - [Searching a directory](#searching-a-directory)
     - [Listing Directory Contents](#listing-directory-contents)
   - [Printing file contents](#printing-file-contents)
       - [`Files.readAllLines()` vs. `Files.lines()`](#filesreadalllines-vs-fileslines)
 - [Quiz](#quiz)
-- [Quiz Answers 4?](#quiz-answers-4)
+- [Quiz answers 4?](#quiz-answers-4)
 
 # 5.1 - Use Path interface to operate on file and directory paths
 
@@ -1682,7 +1682,7 @@ that apply.)
     - F. The code throws a runtime exception because of line h1.
 <br />[Jump to answer](#qa18)
 
-# Quiz Answers 4?
+# Quiz answers 4?
 
 1. <a name="qa1"></a>[Jump to question](#q1) - **F.** The code snippet will not compile due to a bug on the first and second lines. The first line should use `Paths.get()`, because there is no method 
 `Path.get()`. The second line passes a `String` to `relativize()` instead of a `Path` object. If both lines were corrected to use `Paths.get()`, then the correct answer would be A. Remember that the `normalize()`

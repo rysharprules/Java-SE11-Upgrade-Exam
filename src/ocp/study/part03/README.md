@@ -21,7 +21,7 @@
     - [`static` methods](#static-methods)
   - [Public methods of `java.lang.Object` in functional interfaces](#public-methods-of-javalangobject-in-functional-interfaces)
 - [Quiz](#quiz)
-- [Quiz Answers](#quiz-answers)
+- [Quiz answers](#quiz-answers)
 
 # 3.1 - Create and use methods in interfaces
 
@@ -770,7 +770,7 @@ public class Object {
        methods.
 <br />[Jump to answer](#qa12)  
     
-# Quiz Answers
+# Quiz answers
 
 1. <a name="qa1"></a>[Jump to question](#q1) - **C.** Duplicate code makes your program lengthy and bulky, and decreases your code quality
 2. <a name="qa2"></a>[Jump to question](#q2) - **A.** Using private methods in interfaces have four rules:

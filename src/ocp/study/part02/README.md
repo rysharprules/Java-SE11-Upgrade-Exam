@@ -22,7 +22,7 @@
     - [Service provider implementations within the `competition` module](#service-provider-implementations-within-the-competition-module)
   - [Game UML Model](#game-uml-model)
 - [Quiz](#quiz)
-- [Quiz Answers](#quiz-answers)
+- [Quiz answers](#quiz-answers)
 
 # 2.1 - Describe the components of Services including directives
 
@@ -536,7 +536,7 @@ Figure 2.3 game:
     - D. Zero or one in any module in the module path
 <br />[Jump to answer](#qa4)
 
-# Quiz Answers
+# Quiz answers
 
 1. <a name="qa1"></a>[Jump to question](#q1) - **C.** A service provider must provide (via `provides`) an implementation for consumer modules to use. 
 2. <a name="qa2"></a>[Jump to question](#q2) - **A, C.** The consumer module does not need to be aware of the provider(s). In the game simulator example, `competition` is unaware of `soccer` and `basketball` (or any other providers we may choose to add) so A is correct. C is also correct. The service providers (e.g. `soccer` and `basketball`) only need to define what service they "provide" via their implementation, e.g. `provides gameapi.GameProvider with soccer.SoccerProvider;`

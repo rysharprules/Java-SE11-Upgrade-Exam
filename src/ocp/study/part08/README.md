@@ -1,38 +1,38 @@
 - [8.1 - Create and use lambda expressions](#81---create-and-use-lambda-expressions)
-  - [Implementing Functional Interfaces with Lambdas](#implementing-functional-interfaces-with-lambdas)
-  - [Understanding Lambda Syntax](#understanding-lambda-syntax)
-    - [Spotting Invalid Lambdas](#spotting-invalid-lambdas)
-  - [Using Variables in Lambdas](#using-variables-in-lambdas)
+  - [Implementing functional interfaces with lambdas](#implementing-functional-interfaces-with-lambdas)
+  - [Understanding lambda syntax](#understanding-lambda-syntax)
+    - [Spotting invalid lambdas](#spotting-invalid-lambdas)
+  - [Using variables in lambdas](#using-variables-in-lambdas)
 - [8.2 - Use lambda expressions and method references](#82---use-lambda-expressions-and-method-references)
-  - [Using Method References](#using-method-references)
+  - [Using method references](#using-method-references)
 - [8.3 - Use built-in functional interfaces including Predicate, Consumer, Function, and Supplier](#83---use-built-in-functional-interfaces-including-predicate-consumer-function-and-supplier)
-  - [Working with Built-In Functional Interfaces](#working-with-built-in-functional-interfaces)
-  - [Applying the `Predicate` Interface](#applying-the-predicate-interface)
+  - [Working with built-in functional interfaces](#working-with-built-in-functional-interfaces)
+  - [Applying the `Predicate` interface](#applying-the-predicate-interface)
     - [Implementing `Predicate` and `BiPredicate`](#implementing-predicate-and-bipredicate)
-    - [Real World Scenario - Default Methods on Functional Interfaces](#real-world-scenario---default-methods-on-functional-interfaces)
+    - [`default` methods on functional interfaces](#default-methods-on-functional-interfaces)
   - [Implementing `Supplier`](#implementing-supplier)
   - [Implementing `Consumer` and `BiConsumer`](#implementing-consumer-and-biconsumer)
   - [Implementing `Function` and `BiFunction`](#implementing-function-and-bifunction)
   - [Implementing `UnaryOperator` and `BinaryOperator`](#implementing-unaryoperator-and-binaryoperator)
-  - [Checking Functional Interfaces](#checking-functional-interfaces)
-- [8.4 - Use primitive and binary variations of base interfaces of `java.util.function package](#84---use-primitive-and-binary-variations-of-base-interfaces-of-javautilfunction-package)
-    - [Creating Primitive Streams](#creating-primitive-streams)
-      - [Using Optional with Primitive Streams](#using-optional-with-primitive-streams)
-      - [Summarizing Statistics](#summarizing-statistics)
-      - [Learning the Functional Interfaces for Primitives](#learning-the-functional-interfaces-for-primitives)
-      - [Functional Interfaces for boolean](#functional-interfaces-for-boolean)
-      - [Functional Interfaces for `double`, `int`, and `long`](#functional-interfaces-for-double-int-and-long)
-    - [Working with Advanced Stream Pipeline Concepts](#working-with-advanced-stream-pipeline-concepts)
-      - [Linking Streams to the Underlying Data](#linking-streams-to-the-underlying-data)
-      - [Chaining Optionals](#chaining-optionals)
+  - [Checking functional interfaces](#checking-functional-interfaces)
+- [8.4 - Use primitive and binary variations of base interfaces of `java.util.function package`](#84---use-primitive-and-binary-variations-of-base-interfaces-of-javautilfunction-package)
+  - [Creating primitive streams](#creating-primitive-streams)
+  - [Using `Optional` with primitive streams](#using-optional-with-primitive-streams)
+  - [Summarizing statistics](#summarizing-statistics)
+  - [Learning the functional interfaces for primitives](#learning-the-functional-interfaces-for-primitives)
+    - [Functional interfaces for `boolean`](#functional-interfaces-for-boolean)
+    - [Functional interfaces for `double`, `int`, and `long`](#functional-interfaces-for-double-int-and-long)
+  - [Working with advanced stream pipeline concepts](#working-with-advanced-stream-pipeline-concepts)
+    - [Linking streams to the underlying data](#linking-streams-to-the-underlying-data)
+    - [Chaining optionals](#chaining-optionals)
 - [Quiz](#quiz)
-- [Quiz Answers](#quiz-answers)
+- [Quiz answers](#quiz-answers)
 
 # 8.1 - Create and use lambda expressions
 
-## Implementing Functional Interfaces with Lambdas
+## Implementing functional interfaces with lambdas
 
-Now that we have defined a functional interface, we’ll show you how to implement them using lambda expressions. As we said earlier, a lambda expression is a block of code that gets passed around, like an anonymous method. Let’s start with a simple `CheckTrait` functional interface, which has a single method `test()`, which takes as input an instance of an `Animal` class.
+We defined a functional interface in part 03, we’ll now show you how to implement them using lambda expressions. As we said earlier, a lambda expression is a block of code that gets passed around, like an anonymous method. Let’s start with a simple `CheckTrait` functional interface, which has a single method `test()`, which takes as input an instance of an `Animal` class.
 
 ````
 public class Animal {
@@ -77,13 +77,15 @@ For illustrative purposes, the lambda expression chosen for this program is quit
 
 This expression means that Java should call a method with an `Animal` parameter that returns a `boolean` value that’s the result of `a.canHop()`. We know all this because we wrote the code. But how does Java know?
 
-Java relies on context when figuring out what lambda expressions mean. We are passing this lambda as the second parameter of the `print()` method. That method expects a `CheckTrait` as the second parameter. Since we are passing a lambda instead, Java treats `CheckTrait` as a functional interface and tries to map it to the single `abstract` method:
+Java relies on context when figuring out what lambda expressions mean - the Java compiler is **inferring the type of the variable `a` from its context**. We are passing this lambda as the second parameter of the `print()` method. That method expects a `CheckTrait` as the second parameter. Since we are passing a lambda instead, Java treats `CheckTrait` as a functional interface and tries to map it to the single `abstract` method:
 
 `boolean test(Animal a);`
 
 Since this interface’s method takes an `Animal`, it means the lambda parameter has to be an `Animal`. And since that interface’s method returns a `boolean`, we know that the lambda returns a `boolean`.
 
-## Understanding Lambda Syntax
+<img src="../img/note.png" alt="Note" width="20"/> _Note: In some situations where the Java compiler cannot infer types, you MUST explicitly specify values for type variables with [type witnesses](https://docs.oracle.com/javase/tutorial/java/generics/genTypeInference.html)._
+
+## Understanding lambda syntax
 
 The syntax of lambda expressions is tricky because many parts are optional. These two lines are equivalent and do the exact same thing:
 
@@ -92,14 +94,13 @@ a -> a.canHop()
 (Animal a) -> { return a.canHop(); }
 ````
 
-Let’s look at what is going on here. The left side of the arrow operator `->` indicates the input parameters for the lambda expression. It can be consumed by a functional interface whose abstract method has the same number of parameters and compatible data types. The right side is referred to as the body of the lambda expression. It can be consumed by a functional interface whose abstract method returns a compatible data
-type.
+Let’s look at what is going on here. The left side of the arrow operator `->` indicates the input parameters for the lambda expression. It can be consumed by a functional interface whose `abstract` method has the same number of parameters and compatible data types. The right side is referred to as the body of the lambda expression. It can be consumed by a functional interface whose `abstract` method returns a compatible data type.
 
 Since the syntax of these two expressions is a bit different, let’s look at them more closely. The first example, shown in Figure 8.1 , has three parts:
 
 1. We specify a single parameter with the name `a`.
 1. The arrow operator `->` separates the parameter from the body.
-1. The body calls a single method and returns the result of that method.
+1. The body calls a single method and returns the result of that method (a **single expression** or a **statement block**).
 
 FIGURE 8.1 Lambda syntax omitting optional parts
 
@@ -126,7 +127,7 @@ d -> {return d.quack();}
 
 The first lambda expression could be used by a functional interface containing a method that takes no arguments and returns a `Duck` object. The second and third lambda expressions can both be used by a functional interface that takes a `Duck` as input and returns whatever the return type of `quack()` is. The last lambda expression can be used by a functional interface that takes as input `Animal` and `Duck` objects and returns whatever the return type of `quack()` is.
 
-### Spotting Invalid Lambdas
+### Spotting invalid lambdas
 
 Can you figure out why each of the following lambda expressions is invalid and will not compile when used as an argument to a method?
 
@@ -138,9 +139,9 @@ Animal a, Duck d -> d.quack() // DOES NOT COMPILE
 
 They each require parentheses `()`! As we said, parentheses can be omitted only if there is exactly one parameter and the data type is not specified.
 
-Next, you see that Figure 8.2 has a pair of statement braces `{}` around the body of the lambda expression. This allows you to write multiple lines of code in the body of the lambda expression, as you might do when working with an if statement or while loop. What’s tricky here is that when you add braces `{}`, you must explicitly terminate each statement in the body with a semicolon;.
+Next, you see that Figure 8.2 has a pair of statement braces `{}` around the body of the lambda expression. This allows you to write multiple lines of code in the body of the lambda expression, as you might do when working with an if statement or `while` loop. What’s tricky here is that when you add braces `{}`, you must explicitly terminate each statement in the body with a semicolon;.
 
-In Figure 8.1, we were able to omit the braces `{}`, semi‐colon `;`, and `return` statement, because this is a special shortcut that Java allows for single‐line lambda bodies. This special shortcut doesn’t work when you have two or more statements. At least this is consistent with using `{}` to create blocks of code elsewhere in Java. When using `{}` in the body of the lambda expression, you must use the return statement if the functional interface method that lambda implements returns a value. Alternatively, a return statement is optional when the return type of the method is void.
+In Figure 8.1, we were able to omit the braces `{}`, semi‐colon `;`, and `return` statement, because this is a special shortcut that Java allows for single‐line lambda bodies. This special shortcut doesn’t work when you have two or more statements. At least this is consistent with using `{}` to create blocks of code elsewhere in Java. When using `{}` in the body of the lambda expression, you must use the `return` statement if the functional interface method that lambda implements returns a value. Alternatively, a `return` statement is optional when the return type of the method is `void`.
 
 Let’s look at some more examples:
 
@@ -152,7 +153,7 @@ a -> {return a.startsWith("test");} // 1 parameter
 (int y) -> {return;} // 1 parameter
 ````
 
-The first example takes no arguments and always returns true. The second and third examples both take a single `String` value, using different syntax to accomplish the samething. Notice that in the first two  examples we mixed and matched syntax between Figure 8.1 and Figure 8.2 by having the first example use parentheses `()` but no braces `{}` and reversing this in the second example. The last two examples are equivalent because they take an integer value and do not return anything.
+The first example takes no arguments and always returns `true`. The second and third examples both take a single `String` value, using different syntax to accomplish the samething. Notice that in the first two examples we mixed and matched syntax between Figure 8.1 and Figure 8.2 by having the first example use parentheses `()` but no braces `{}` and reversing this in the second example. The last two examples are equivalent because they take an integer value and do not return anything.
 
 Now let’s look at some lambda expressions that take more than one parameter:
 
@@ -171,7 +172,7 @@ c -> return 10; // DOES NOT COMPILE
 a -> { return a.startsWith("test") } // DOES NOT COMPILE
 ````
 
-The first lambda needs parentheses `()` around the parameter list. Remember that the parentheses are optional only when there is one parameter and it doesn’t have a type declared. The second line uses the return keyword without using braces `{}`. The last line is missing the semicolon after the return statement. The following rewritten lambda expressions are each valid:
+The first lambda needs parentheses `()` around the parameter list. Remember that the parentheses are optional only when there is one parameter and it doesn’t have a type declared. The second line uses the `return` keyword without using braces `{}`. The last line is missing the semicolon after the `return` statement. The following rewritten lambda expressions are each valid:
 
 ````
 (a, b) -> a.startsWith("test")
@@ -203,9 +204,9 @@ We tried to re‐declare `a`, which is not allowed. By contrast, the following l
 
 `(a, b) -> { int c = 0; return 5;}`
 
-## Using Variables in Lambdas
+## Using variables in lambdas
 
-Lambda expressions can access static variables, instance variables, effectively `final` method parameters, and effectively `final` local variables. How many of those can you find in this example?
+Lambda expressions can access `static` variables, instance variables, effectively `final` method parameters, and effectively `final` local variables. How many of those can you find in this example?
 
 ````
 1: interface Gorilla { String move(); }
@@ -225,15 +226,19 @@ Lambda expressions can access static variables, instance variables, effectively 
 15: }
 ````
 
-Line 8 uses an instance variable in the lambda. Line 9 uses a method parameter. We know it is effectively final since there are no reassignments to that variable. Line 10 uses an effectively final local variable. If we uncomment line 6, there will be a reassignment and the variable will no longer be effectively final. This would cause a compiler error on line 10 when it tries to access a non–effectively final variable.
+Line 8 uses an instance variable in the lambda. Line 9 uses a method parameter. We know it is effectively `final` since there are no reassignments to that variable. Line 10 uses an effectively `final` local variable. If we uncomment line 6, there will be a reassignment and the variable will no longer be effectively `final`. This would cause a compiler error on line 10 when it tries to access a non–effectively `final` variable.
 
-The normal rules for access control still apply. For example, a lambda can’t access private variables in another class. Remember that lambdas can access a subset of variables that are accessible, but never more than that.
+The normal rules for access control still apply. For example, a lambda can’t access `private` variables in another class. Remember that lambdas can access a subset of variables that are accessible, but never more than that.
 
 # 8.2 - Use lambda expressions and method references
 
-## Using Method References
+## Using method references
 
 Method references are a way to make the code shorter by reducing some of the code that can be inferred and simply mentioning the name of the method. Like lambdas, it takes time to get used to the new syntax.
+
+Method references can be seen as shorthand for **lambdas calling only a specific method**. The basic idea is that if a lambda represents "call this method directly". It is best to refer to the method by name rather than by a description of how to call it. A method reference lets you create a lambda expression from an existing method implementation. By referring to a method name explicitly, your code can gain better readability.
+
+<img src="../img/note.png" alt="Note" width="20"/> _Note: Lambdas created from constructors are often referred to as constructor references, which are considered for exam to be a subset of method references._
 
 Suppose that we have a `Duck` class with name and weight attributes along with this helper class:
 
@@ -248,7 +253,7 @@ public class DuckHelper {
 }
 ````
 
-Now think about how we would write a Comparator for it if we wanted to sort by weight. Using lambdas, we’d have the following:
+Now think about how we would write a `Comparator` for it if we wanted to sort by weight. Using lambdas, we’d have the following:
 
 `Comparator<Duck> byWeight = (d1, d2) -> DuckHelper.compareByWeight(d1, d2);`
 
@@ -258,28 +263,29 @@ Not bad. There’s a bit of redundancy, though. The lambda takes two parameters 
 
 The `::` operator tells Java to pass the parameters automatically into `compareByWeight`.
 
-_<img src="../img/note.png" alt="Note" width="20"/> _Note: `DuckHelper::compareByWeight` returns a functional interface and not an `int`. Remember that `::` is like lambdas, and it is typically used for deferred
-execution._
+When you need a method reference, the target reference is placed before the delimiter `::` and the name of the method is provided after it. For example, `String::toUpperCase` is a method reference to the method `toUpperCase` defined in the `String` class. The method reference is shorthand for the lambda expression `(String s) -> s.toUpperCase();`. No parentheses (round brackets) are needed in method references because you are not actually calling the method.
+
+<img src="../img/note.png" alt="Note" width="20"/> _Note: `DuckHelper::compareByWeight` returns a functional interface and not an `int`. Remember that `::` is like lambdas, and it is typically used for deferred execution._
 
 There are four formats for method references:
 
 1. Static methods
-1. Instance methods on a particular instance
-1. Instance methods on an instance to be determined at runtime
-1. Constructors
+2. Instance methods on a particular instance
+3. Instance methods on an instance to be determined at runtime
+4. Constructors
 
-Remember that `Predicate` is a functional interface that takes a single parameter of any type and returns a `boolean`. Another functional interface is `Consumer`, which takes a single parameter of any type and has a void return type. Finally, `Supplier` doesn’t take any parameters and returns any type.
+Remember that `Predicate` is a functional interface that takes a single parameter of any type and returns a `boolean`. Another functional interface is `Consumer`, which takes a single parameter of any type and has a `void` return type. Finally, `Supplier` doesn’t take any parameters and returns any type.
 
-Let’s look at some examples from the Java API. In each set, we show the lambda equivalent. Remember that none of these method references are actually called in the code that follows. They are simply available to be called in the future. Let’s start with a `static` method:
+Let’s look at some examples from the Java API. In each set, we show the lambda equivalent. Remember that none of these method references are actually called in the code that follows. They are simply available to be called in the future. Let’s start with a **reference to a `static` method**:
 
 ````
 14: Consumer<List<Integer>> methodRef1 = Collections::sort;
 15: Consumer<List<Integer>> lambda1 = l -> Collections.sort(l);
 ````
 
-On line 14, we call a method with one parameter, and Java knows that it should create a lambda with one parameter and pass it to the method. Wait a minute. We know that the sort method is overloaded. How does Java know that we want to call the version that omits the comparator? With both lambdas and method references, Java is inferring information from the context. In this case, we said that we were declaring a `Consumer`, which takes only one parameter. Java looks for a method that matches that description.
+On line 14, we call a method with one parameter, and Java knows that it should create a lambda with one parameter and pass it to the method. Wait a minute. We know that the `sort` method is overloaded. How does Java know that we want to call the version that omits the comparator? With both lambdas and method references, Java is inferring information from the context. In this case, we said that we were declaring a `Consumer`, which takes only one parameter. Java looks for a method that matches that description.
 
-Next up is calling an instance method on a specific instance:
+Next up is calling an **instance method on a specific instance**:
 
 ````
 16: String str = "abc";
@@ -287,14 +293,24 @@ Next up is calling an instance method on a specific instance:
 18: Predicate<String> lambda2 = s -> str.startsWith(s);
 ````
 
-Line 17 shows that we want to call `String.startsWith()` and pass a single parameter to be supplied at runtime. This would be a nice way of filtering the data in a list. Next, we call an instance method without knowing the instance in advance:
+Line 17 shows that we want to call `String.startsWith()` and pass a single parameter to be supplied at runtime. This would be a nice way of filtering the data in a list. 
+
+This kind of method references refers to a situation when you are calling a method in a lambda to an external object that already exists. For example, the lambda expression `() -> object.toString()` can be rewritten as `object::toString`.
+
+Next, we call an **instance method without knowing the instance in advance** (i.e. an arbitrary object of a particular type):
 
 ````
 19: Predicate<String> methodRef3 = String::isEmpty;
 20: Predicate<String> lambda3 = s -> s.isEmpty();
 ````
 
-Line 19 says the method that we want to call is declared in `String`. It looks like a `static` method, but it isn’t. Instead, Java knows that `isEmpty` is an instance method that does not take any parameters. Java uses the parameter supplied at runtime as the instance on which the method is called. Finally, we have a constructor reference:
+Line 19 says the method that we want to call is declared in `String`. It looks like a `static` method, but it isn't. Instead, Java knows that `isEmpty` is an instance method that does not take any parameters. Java uses the parameter supplied at runtime as the instance on which the method is called. 
+
+Reference to an instance method of an arbitrary object of a particular type refers to a non-`static` method that is not bound to a receiver. For example, `String::trim` is a non-`static` method reference that identifies the non-`static` `trim()` method of the `String` class. Because a non-`static` method requires a target object, which in this example is a `String` object, `trim()` will be invoked on this object.
+
+This can be a little confusing. So we are calling a non-`static` method but using a class name. Actually **the instance of the class is passed when the method is called**.
+
+Finally, we have a **constructor reference**:
 
 ````
 21: Supplier<ArrayList> methodRef4 = ArrayList::new;
@@ -303,31 +319,44 @@ Line 19 says the method that we want to call is declared in `String`. It looks l
 
 A constructor reference is a special type of method reference that uses new instead of a method, and it creates a new object.
 
+In a constructor reference expression, you do not specify the exact constructor. Instead, you simply write `::new`. When a class declares multiple constructors, the compiler will check the type of the functional interface with all of the constructors and choose the best match.
+
+````
+// Java compiler infers the right constructor to call based
+// on the context in which the constructor reference appears
+
+Function<char[], String>       f1 = String::new;
+Function<StringBuffer, String> f2 = String::new;
+
+System.out.println(f1.apply(new char[] {'H', 'i'}));
+System.out.println(f2.apply(new StringBuffer().append("Hello")));
+````
+
 # 8.3 - Use built-in functional interfaces including Predicate, Consumer, Function, and Supplier
 
-## Working with Built-In Functional Interfaces
+## Working with built-in functional interfaces
 
-As you remember, a functional interface has exactly one abstract method. All of the functional interfaces in Table 8.1 were introduced in Java 8 and are provided in the `java.util.function` package. The convention here is to use the generic type `T` for type parameter. If a second type parameter is needed, the next letter, `U`, is used. If a distinct return type is needed, `R` for return is used for the generic type.
+As you remember, a functional interface has exactly one `abstract` method. All of the functional interfaces in Table 8.1 were introduced in Java 8 and are provided in the `java.util.function` package. The convention here is to use the generic type `T` for type parameter. If a second type parameter is needed, the next letter, `U`, is used. If a distinct return type is needed, `R` for return is used for the generic type.
 
 TABLE 8.1 Common functional interfaces
 
 ![Table 8.1](img/table8-1.png)
 
-Many other functional interfaces are defined in the `java.util.function` package. They are for working with primitives, which you’ll see later in the chapter.
+Many other functional interfaces are defined in the `java.util.function` package. They are for working with primitives, which you’ll see later in section 8.4.
 
 Before you ask, most of the time we don’t actually assign the implementation of the interface to a variable. The interface name is implied, and it gets passed directly to the method that needs it. 
 
-You can name a functional interface anything you want. The only requirements are that it must be a valid interface name and contain a single abstract method. Table 8.1 is significant because these interfaces are often used in streams and other classes that come with Java, which is why you need to memorize them for the exam.
+You can name a functional interface anything you want. The only requirements are that it must be a valid interface name and contain a single `abstract` method. Table 8.1 is significant because these interfaces are often used in streams and other classes that come with Java, which is why you need to memorize them for the exam.
 
-_<img src="../img/note.png" alt="Note" width="20"/> _Note: There’s an interface called `Runnable` used for concurrency the majority of the time. However, it may show up on the exam when you are asked to recognize which functional interface to use. All you need to know is that `Runnable` doesn’t take any parameters, return any data, or use generics._
+<img src="../img/note.png" alt="Note" width="20"/> _Note: There’s an interface called `Runnable` used for concurrency the majority of the time. However, it may show up on the exam when you are asked to recognize which functional interface to use. All you need to know is that `Runnable` doesn’t take any parameters, return any data, or use generics._
 
-## Applying the `Predicate` Interface
+## Applying the `Predicate` interface
 
 In our earlier example, we created a simple functional interface to test an `Animal` trait:
 
 ````
 public interface CheckTrait {
-public boolean test(Animal a);
+    public boolean test(Animal a);
 }
 ````
 
@@ -337,7 +366,7 @@ Luckily, Java recognizes that this is a common problem and provides such an inte
 
 ````
 public interface Predicate<T> {
-public boolean test(T t);
+    public boolean test(T t);
 }
 ````
 
@@ -363,7 +392,7 @@ This is very similar to our original program, except that we wrote it with one l
 
 ### Implementing `Predicate` and `BiPredicate`
 
-`Predicate` is often used when filtering or matching. Both are very common operations. A `BiPredicate` is just like a `Predicate` except that it takes two parameters instead of one. Omitting any default or static methods, the interfaces are defined as follows:
+`Predicate` is often used when filtering or matching. Both are very common operations. A `BiPredicate` is just like a `Predicate` except that it takes two parameters instead of one. Omitting any `default` or `static` methods, the interfaces are defined as follows:
 
 ````
 @FunctionalInterface public class Predicate<T> {
@@ -394,9 +423,9 @@ System.out.println(b2.test("chicken", "chick"));
 
 The method reference combines two techniques that you’ve already seen. `startsWith()` is an instance method. This means that the first parameter in the lambda is used as the instance on which to call the method. The second parameter is passed to the `startsWith()` method itself. This is another example of how method references save a good bit of typing.
 
-### Real World Scenario - Default Methods on Functional Interfaces
+### `default` methods on functional interfaces
 
-By definition, all functional interfaces have a single abstract method. This doesn’t mean that they have only one method, though. Several of the common functional interfaces provide a number of helpful default methods. You don’t need to know these for the exam, but they are helpful when you start building your own implementations out in the real world.
+By definition, all functional interfaces have a single `abstract` method. This doesn’t mean that they have only one method, though. Several of the common functional interfaces provide a number of helpful `default` methods. You don’t need to know these for the exam, but they are helpful when you start building your own implementations out in the real world.
 
 Suppose that we have these two `Predicate`s:
 
@@ -412,17 +441,16 @@ Predicate<String> brownEggs = s -> s.contains("egg") && s.contains("brown");
 Predicate<String> otherEggs = s -> s.contains("egg") && ! s.contains("brown");
 ````
 
-This works, but it’s not great. It’s a bit long to read, and it contains duplication. What if we decide the letter e should be capitalized in eggs? We’d have to change it in three variables:
-`egg`, `brownEggs`, and `otherEggs`.
+This works, but it’s not great. It’s a bit long to read, and it contains duplication. What if we decide the letter `e` should be capitalized in eggs? We’d have to change it in three variables: `egg`, `brownEggs`, and `otherEggs`.
 
-A better way to deal with this situation is to use two of the default methods on `Predicate`:
+A better way to deal with this situation is to use two of the `default` methods on `Predicate`:
 
 ````
 Predicate<String> brownEggs = egg.and(brown);
 Predicate<String> otherEggs = egg.and(brown.negate());
 ````
 
-Neat! Now we are reusing the logic in the original `Predicate`s to build two new ones. It’s shorter and clearer what the relationship is between the `Predicate`s. We can also change the spelling of egg in one place, and the other two objects will have new logic because they reference it.
+Neat! Now we are reusing the logic in the original `Predicate`s to build two new ones. It’s shorter and clearer what the relationship is between the `Predicate`s. We can also change the spelling of `egg` in one place, and the other two objects will have new logic because they reference it.
 
 ## Implementing `Supplier`
 
@@ -434,7 +462,7 @@ public T get();
 }
 ````
 
-You can use a Supplier to call factory methods:
+You can use a `Supplier` to call factory methods:
 
 ````
 Supplier<LocalDate> s1 = LocalDate::now;
@@ -445,7 +473,7 @@ System.out.println(d1);
 System.out.println(d2);
 ````
 
-This example prints a date such as `2015–06–20` twice. It’s also a good opportunity to review static method references. The `LocalDate::now` method reference is used to create a `Supplier` to assign to an intermediate variable `s1`. A `Supplier` is often used when constructing new objects. For example, we can print two empty `StringBuilders`:
+This example prints a date such as `2015–06–20` twice. It’s also a good opportunity to review `static` method references. The `LocalDate::now` method reference is used to create a `Supplier` to assign to an intermediate variable `s1`. A `Supplier` is often used when constructing new objects. For example, we can print two empty `StringBuilders`:
 
 ````
 Supplier<StringBuilder> s1 = StringBuilder::new;
@@ -475,7 +503,7 @@ That’s the result of calling `toString()` on a lambda. Yuck. This actually doe
 
 ## Implementing `Consumer` and `BiConsumer`
 
-You use a `Consumer` when you want to do something with a parameter but not return anything. `BiConsumer` does the same thing except that it takes two parameters. Omitting the default methods, the interfaces are defined as follows:
+You use a `Consumer` when you want to do something with a parameter but not return anything. `BiConsumer` does the same thing except that it takes two parameters. Omitting the `default` methods, the interfaces are defined as follows:
 
 ````
 @FunctionalInterface public class Consumer<T> {
@@ -495,7 +523,7 @@ c1.accept("Annie");
 c2.accept("Annie");
 ````
 
-This example prints Annie twice. You might notice that the `Consumer` examples used the method reference `System.out::println`. That’s OK. Java uses the context of the lambda to determine which overloaded `println()` method it should call.
+This example prints `Annie` twice. You might notice that the `Consumer` examples used the method reference `System.out::println`. That’s OK. Java uses the context of the lambda to determine which overloaded `println()` method it should call.
 
 `BiConsumer` is called with two parameters. They don’t have to be the same type. For example, we can put a key and a value in a map using this interface:
 
@@ -525,7 +553,7 @@ The output is `{chicken=Cluck, chick=Tweep}`, which shows that a `BiConsumer` ca
 
 ## Implementing `Function` and `BiFunction`
 
-A `Function` is responsible for turning one parameter into a value of a potentially different type and returning it. Similarly, a `BiFunction` is responsible for turning two parameters into a value and returning it. Omitting any default or static methods, the interfaces are defined as the following:
+A `Function` is responsible for turning one parameter into a value of a potentially different type and returning it. Similarly, a `BiFunction` is responsible for turning two parameters into a value and returning it. Omitting any `default` or `static` methods, the interfaces are defined as the following:
 
 ````
 @FunctionalInterface public class Function<T, R> {
@@ -558,13 +586,11 @@ The first two types in the `BiFunction` are the input types. The third is the re
 
 ## Implementing `UnaryOperator` and `BinaryOperator`
 
-`UnaryOperator` and `BinaryOperator` are a special case of a function. They require all type parameters to be the same type. A `UnaryOperator` transforms its value into one of the same type. For example, incrementing by one is a unary operation. In fact, `UnaryOperator` extends `Function`. A `BinaryOperator` merges two values into one of the same type. Adding two numbers is a binary operation. Similarly, `BinaryOperator` extends `BiFunction`. Omitting any default or static methods, the interfaces are defined as follows:
+`UnaryOperator` and `BinaryOperator` are a special case of a function. They require all type parameters to be the same type. A `UnaryOperator` transforms its value into one of the same type. For example, incrementing by one is a unary operation. In fact, `UnaryOperator` extends `Function`. A `BinaryOperator` merges two values into one of the same type. Adding two numbers is a binary operation. Similarly, `BinaryOperator` extends `BiFunction`. Omitting any `default` or `static` methods, the interfaces are defined as follows:
 
 ````
-@FunctionalInterface public class UnaryOperator<T>
-    extends Function<T, T> { }
-@FunctionalInterface public class BinaryOperator<T>
-    extends BiFunction<T, T, T> { }
+@FunctionalInterface public class UnaryOperator<T> extends Function<T, T> { }
+@FunctionalInterface public class BinaryOperator<T> extends BiFunction<T, T, T> { }
 ````
 
 This means that method signatures look like this:
@@ -583,7 +609,7 @@ System.out.println(u1.apply("chirp"));
 System.out.println(u2.apply("chirp"));
 ````
 
-This prints CHIRP twice. We don’t need to specify the return type in the generics because `UnaryOperator` requires it to be the same as the parameter. And now for the binary example:
+This prints `CHIRP` twice. We don’t need to specify the return type in the generics because `UnaryOperator` requires it to be the same as the parameter. And now for the binary example:
 
 ````
 BinaryOperator<String> b1 = String::concat;
@@ -594,7 +620,7 @@ System.out.println(b2.apply("baby ", "chick")); // baby chick
 
 Notice that this does the same thing as the `BiFunction` example. The code is more succinct, which shows the importance of using the correct functional interface. It’s nice to have one generic type specified instead of three.
 
-## Checking Functional Interfaces
+## Checking functional interfaces
 
 It’s really important to know the number of parameters, types, return value, and method name for each of the functional interfaces. Now would be a good time to memorize Table 8.1 if you haven’t done so already. Let’s do some examples to practice. What functional interface would you use in these three situations?
 
@@ -628,9 +654,21 @@ Line 6 claims to be a `Function`. A `Function` needs to specify two generics—t
 
 Line 8 is missing the generic for `Predicate`. This makes the parameter that was passed an `Object` rather than a `String`. The lambda expects a `String` because it calls a method that exists on `String` rather than `Object`. Therefore, it doesn’t compile.
 
-# 8.4 - Use primitive and binary variations of base interfaces of `java.util.function package
-`
-With streams, there are also equivalents that work with the `int`, `double`, and `long` primitives. Let’s take a look at why this is needed. Suppose that we want to calculate the sum of numbers in a finite stream:
+# 8.4 - Use primitive and binary variations of base interfaces of `java.util.function package`
+
+Every Java type is either a reference type (for example, `String`, `Integer`, `Object`, `List`) or a primitive type (for example, `int`, `double`, `byte`, `char`). But generic parameters (for example, the `T` in `Consumer<T>`) can be bound only to reference types. This is due to how generics are internally implemented.
+
+As a result, in Java there is a mechanism to convert a primitive type into a corresponding reference type. This mechanism is called boxing. The opposite approach (that is, converting a reference type into a corresponding primitive type) is called unboxing. Java also has an autoboxing mechanism to facilitate the task for programmers: boxing and unboxing operations are done automatically. For example, this is why the following code is valid (a `double` gets boxed to a `Double`):
+
+````
+List<Double> list = new ArrayList<>();
+list.add(12.34);
+list.add(56.78);
+````
+					
+But this comes with a performance cost. Boxed values are essentially a wrapper around primitive types and are stored on the heap. Therefore, boxed values use more memory and require additional memory lookups to fetch the wrapped primitive value. Java 8 brings a specialized version of the functional interfaces in order to avoid autoboxing operations when the inputs or outputs are primitives.
+
+As stated, primitive streams are specialized. For example, suppose that we want to calculate the sum of numbers in a finite stream:
 
 ````
 Stream<Integer> stream = Stream.of(1, 2, 3);
@@ -654,7 +692,7 @@ OptionalDouble avg = intStream.average();
 System.out.println(avg.getAsDouble());
 ````
 
-### Creating Primitive Streams
+## Creating primitive streams
 
 Here are three types of primitive streams:
 
@@ -767,11 +805,11 @@ You do have to memorize these tables. There are patterns in the names if you rem
 
 For the second table, you can start by thinking about the source and target types. When the target type is an object, you drop the `To` from the name. When the mapping is to the same type you started with, you use a unary operator instead of a function for the primitive streams.
 
-_<img src="../img/note.png" alt="Note" width="20"/> _Note: You can also create a primitive stream from a Stream using `flatMapToInt()`, `flatMapToDouble()`, or `flatMapToLong()`. For example,_ 
+<img src="../img/note.png" alt="Note" width="20"/> _Note: You can also create a primitive stream from a Stream using `flatMapToInt()`, `flatMapToDouble()`, or `flatMapToLong()`. For example,_ 
 
 `IntStream ints = list.stream().flatMapToInt(x -> IntStream.of(x));`
 
-#### Using Optional with Primitive Streams
+## Using `Optional` with primitive streams
 
 Now that you know about primitive streams, you can calculate the average in one line:
 
@@ -780,7 +818,7 @@ IntStream stream = IntStream.rangeClosed(1,10);
 OptionalDouble optional = stream.average();
 ````
 
-The return type is not the `Optional` you have become accustomed to using. It is a new type called `OptionalDouble`. Why do we have a separate type, you might wonder? Why not just use `Optional<Double>`? The difference is that `OptionalDouble` is for a primitive and `Optional<Double>` is for the `Double` wrapper class. Working with the primitive optional class looks similar to working with the Optional class itself:
+The return type is not the `Optional` you have become accustomed to using. It is a new type called `OptionalDouble`. Why do we have a separate type, you might wonder? Why not just use `Optional<Double>`? The difference is that `OptionalDouble` is for a primitive and `Optional<Double>` is for the `Double` wrapper class. Working with the primitive optional class looks similar to working with the `Optional` class itself:
 
 ````
 optional.ifPresent(System.out::println);
@@ -790,8 +828,7 @@ System.out.println(optional.orElseGet(() -> Double.NaN));
 
 The only noticeable difference is that we called `getAsDouble()` rather than `get()`. This makes it clear that we are working with a primitive. Also, `orElseGet()` takes a `DoubleSupplier` instead of a `Supplier`.
 
-As with the primitive streams, there are three type-specific classes for primitives. Table 8.4 shows the minor differences among the three. You probably won’t be surprised that you have to memorize it as well. This is really easy to remember since the only thing that changes is the primitive name. As you should remember from the terminal operations section, a number of stream methods return an optional such as `min()` or `findAny()`. These each return the corresponding optional type. The primitive stream implementations also add two new methods that you need to know. The `sum()` method does not return an optional. If
-you try to add up an empty stream, you simply get zero. The `avg()` method always returns an `OptionalDouble`, since an average can potentially have fractional data for any type.
+As with the primitive streams, there are three type-specific classes for primitives. Table 8.4 shows the minor differences among the three. You probably won’t be surprised that you have to memorize it as well. This is really easy to remember since the only thing that changes is the primitive name. As you should remember from the terminal operations section, a number of stream methods return an optional such as `min()` or `findAny()`. These each return the corresponding optional type. The primitive stream implementations also add two new methods that you need to know. The `sum()` method does not return an optional. If you try to add up an empty stream, you simply get zero. The `avg()` method always returns an `OptionalDouble`, since an average can potentially have fractional data for any type.
 
 TABLE 8.4 Optional types for primitives
 
@@ -807,9 +844,9 @@ Let’s try an example to make sure you understand this:
 9: OptionalDouble min = doubles.min(); // runs infinitely
 ````
 
-Line 5 creates a stream of long primitives with two elements. Line 6 shows that we don’t use an optional to calculate a sum. Line 8 creates an infinite stream of double primitives. Line 9 is there to remind you that a question about code that runs infinitely can appear with primitive streams as well.
+Line 5 creates a stream of long primitives with two elements. Line 6 shows that we don’t use an optional to calculate a sum. Line 8 creates an infinite stream of `double` primitives. Line 9 is there to remind you that a question about code that runs infinitely can appear with primitive streams as well.
 
-#### Summarizing Statistics
+## Summarizing statistics
 
 You’ve learned enough to be able to get the maximum value from a stream of `int` primitives. If the stream is empty, we want to throw an exception:
 
@@ -834,13 +871,13 @@ private static int range(IntStream ints) {
 
 Here we asked Java to perform many calculations about the stream. This includes the minimum, maximum, average, size, and the number of values in the stream. If the stream were empty, we’d have a count of zero. Otherwise, we can get the minimum and maximum out of the summary.
 
-#### Learning the Functional Interfaces for Primitives
+## Learning the functional interfaces for primitives
 
 Just as there are special streams and optional classes for primitives, there are also special functional interfaces.
 
 Luckily, most of them are for the `double`, `int`, and `long` types that you saw for streams and optionals. There is one exception, which is `BooleanSupplier`. We will cover that before introducing the ones for `double`, `int`, and `long`.
 
-#### Functional Interfaces for boolean
+### Functional interfaces for `boolean`
 
 `BooleanSupplier` is a separate type. It has one method to implement:
 
@@ -857,7 +894,7 @@ It works just as you’ve come to expect from functional interfaces, for example
 
 Lines 12 and 13 each create a `BooleanSupplier`, which is the only functional interface for `boolean`. Line 14 prints true, since it is the result of `b1`. Line 15 prints out `true` or `false`, depending on the random value generated.
 
-#### Functional Interfaces for `double`, `int`, and `long`
+### Functional interfaces for `double`, `int`, and `long`
 
 Most of the functional interfaces are for `double`, `int`, and long to match the streams and optionals that we’ve been using for primitives. Table 8.5 shows the equivalent of Table 8.1 for these primitives. You probably won’t be surprised that you have to memorize it. Luckily, you’ve memorized Table 8.1 by now and can apply what you’ve learned to Table 8.5.
 
@@ -889,11 +926,11 @@ f1.applyAsInt(d);
 
 When you see a question like this, look for clues. You can see that the functional interface in question takes a `double` parameter and returns an `int`. You can also see that it has a single abstract method named `applyAsInt`. The only functional interface meeting all three of those criteria is `DoubleToIntFunction`.
 
-### Working with Advanced Stream Pipeline Concepts
+## Working with advanced stream pipeline concepts
 
 You’ve almost reached the end of learning about streams. We have only a few more topics left. You’ll see the relationship between streams and the underlying data, chaining `Optional` and grouping collectors.
 
-#### Linking Streams to the Underlying Data
+### Linking streams to the underlying data
 
 What do you think this outputs?
 
@@ -908,7 +945,7 @@ What do you think this outputs?
 
 The correct answer is 3. Lines 25–27 create a List with two elements. Line 28 requests that a stream be created from that `List`. Remember that streams are lazily evaluated. This means that the stream isn’t actually created on line 28. An object is created that knows where to look for the data when it is needed. On line 29, the `List` gets a new element. On line 30, the stream pipeline actually runs. The stream pipeline runs first, looking at the source and seeing three elements.
 
-#### Chaining Optionals
+### Chaining optionals
 
 By now, you are familiar with the benefits of chaining operations in a stream pipeline. A few of the intermediate operations for streams are available for `Optional`.
 
@@ -1115,7 +1152,7 @@ This one works because `flatMap` removes the unnecessary layer. In other words, 
     - E. The provided code does not compile.
 <br />[Jump to answer](#qa12)
 
-# Quiz Answers
+# Quiz answers
 
 1. <a name="qa1"></a>[Jump to question](#q1) - **A, D.** The first lambda expression is valid, taking no arguments and returning the empty string, so A is correct. B is incorrect, as more than one parameter requires parentheses `()`. C is incorrect, as brackets `{}` are required when using `return`. D is correct, as the expression takes one `Camel` input and returns void. E is incorrect, as parentheses are required
 when using the data type `Wolf`. F is incorrect, as it has no right-side expression. Finally, G is incorrect, as specifying the data type for one parameter in a lambda expression requires you to specify the data type for all parameters in the expression. In this case, `z` has a data type and `m` does not, therefore the expression is invalid.

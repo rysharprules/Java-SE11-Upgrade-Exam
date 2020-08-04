@@ -38,7 +38,7 @@
     - [Collecting into Maps](#collecting-into-maps)
     - [Collecting Using Grouping, Partitioning, and Mapping](#collecting-using-grouping-partitioning-and-mapping)
 - [Quiz](#quiz)
-- [Quiz Answers](#quiz-answers)
+- [Quiz answers](#quiz-answers)
 
 # Using Streams
 
@@ -1928,7 +1928,7 @@ The code does the same thing as in the previous example. This means that it is i
     - F. An exception is thrown.
 <br />[Jump to answer](#qa21)
 
-# Quiz Answers
+# Quiz answers
 
 1. <a name="qa1"></a>[Jump to question](#q1) - **B.** The `or` function from the [JavaDocs](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html#or): If a value is present, returns an `Optional` describing the value, otherwise returns an `Optional`  produced by the supplying function.
 2. <a name="qa2"></a>[Jump to question](#q2) - **C.** Due to the modulas (`%`) condition in the `Predicate`, we’re taking even numbers from the initial stream until the first odd number is encountered here. The 
