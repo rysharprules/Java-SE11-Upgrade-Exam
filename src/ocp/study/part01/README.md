@@ -93,7 +93,7 @@ module java.se {
 }
 ````
 
-In the module descriptor, a `requires transitive` clause is listed for every single module that is part of the Java SE specification. When you say requires `java.se` in a module, all these modules will be available to you.
+In the module descriptor, a `requires transitive` clause is listed for every single module that is part of the Java SE specification. When you say `requires java.se` in a module, all these modules will be available to you.
 
 These modules are classified into two categories briefly referred to previously:
 
@@ -377,6 +377,7 @@ jlink
 `jlink --module-path Hello.jar --add-modules com.greeting,java.base --output myimage`
 
 The Figure below shows the "Hello jlink" example on Unix (Netbeans compiles jars into a `dist/` folder) with the `jmods` folder included in the module path.
+
 ![Figure 1.14](img/figure1-14.png)
 
 Note the sizes of the JDK 9 compared to the custom runtime image performed with `du -sh` command 
@@ -477,11 +478,11 @@ A Java platform module consists of:
 
 There are **four** types of modules in the Java Platform Module System (JPMS):
 
-#### System Modules
+#### 1. System Modules
 
 These are the modules listed when we run the java `--list-modules` command. They include the Java SE (`java.`) and JDK (`jdk.`) modules.
 
-#### Application Modules
+#### 2. Application Modules
 
 These modules are what we usually want to build. They are named and defined in the `module-info.java` file, which compiled into `module-info.class` file and included in JAR file. 
 
@@ -489,7 +490,7 @@ These modules are what we usually want to build. They are named and defined in t
 
 See [Creating an application module](#creating-an-application-module)
 
-#### Automatic Modules
+#### 3. Automatic Modules
 
 The module system automatically creates an automatic module for plain JARs (with no module descriptor). It happens when the JAR is placed on the **module path** (as dependency) of a modular application via `--module-path` or `-p` options.
 
@@ -568,7 +569,7 @@ The contents of entries starting with `META-INF/services/` are assumed to be ser
 
 If the JAR file has a `Main-Class` attribute in its main manifest, its value is a legal class name, and its package is in the set of packages derived for the module, then the value is the module main class.
 
-#### Unnamed Module
+#### 4. Unnamed Module
 
 When a class or JAR is loaded onto the **classpath** (via using the `-classpath` (synonyms: `-cp` and `--class-path`) argument to the Java VM when running an application), but not the module path, it is automatically added to the unnamed module. It is a catch-all module to maintain backward compatibility with previously-written Java code.
 
@@ -611,7 +612,7 @@ Compile with: `javac module-info.java p1/Greeter.java`
 
 Create a modular JAR with: `jar --create --file greeter.jar -C mod .`
 
-Now, we have an [example class, Client](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/blob/master/src/ocp/study/part01/module_types/unnamed_mod_1/p2/Client.java) in an unnamed module (so does not have a `module-info.java` class and is loaded onto the classpath).
+Now, we have an [example class, Client](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/blob/master/src/ocp/study/part01/module_types/unnamed_mod_2/p2/Client.java) in an unnamed module (so does not have a `module-info.java` class and is loaded onto the classpath).
 
 Compile with: `javac -cp greeter.jar lib/p2/Client.java`
 
@@ -741,6 +742,8 @@ The `opens ... to` directive makes a package available to a list of specific mod
 | `export <package> to <module` | Declares which package is eligible to be read by a specific module |
 | `requires <module>` | Specifies another module to read from |
 | `requires transitive <module>` | Specifies another module to read from. The relationship is transitive in that indirect access is given to modules requiring the current module |
+| `opens` | Makes a package available to all other modules at run-time but not at compile time |
+| `opens <package> to <module>` | Makes a package available to a list of specific modules at run-time but not compile time |
 
 - These are restricted keywords
 - Their creation won't break existing code
@@ -776,7 +779,7 @@ javac -d mods/com.greetings \
 ````
 ## Creating a Modular JAR
 
-Use the `jar` command to crete a modular JAR:
+Use the `jar` command to create a modular JAR:
 
 `jar --create -f <path and name of JAR file> --main-class <package name>.<main class name> -C <path to compiled module code> .`
 
@@ -1045,10 +1048,10 @@ code still compile if the `requires` statement is commented out?
     ````
     [Jump to answer](#qa19)
 20.   <a name="q20"></a>Which statement is true about a module descriptor?
-    - A. A module descriptor can contain details of required module dependencies
-    - B. A module descriptor file must be named module-descriptor.java
-    - C. A module descriptor must be stored in the classpath
-    - D. A module descriptor does not contain details of services offered by the module owned by it
+      - A. A module descriptor can contain details of required module dependencies
+      - B. A module descriptor file must be named module-descriptor.java
+      - C. A module descriptor must be stored in the classpath
+      - D. A module descriptor does not contain details of services offered by the module owned by it
 <br />[Jump to answer](#qa20)
 21.  <a name="q21"></a>Given "order" module contains "Order.java" and "product" module contains 
 "`Product.java`", which is valid module descriptor file content?
