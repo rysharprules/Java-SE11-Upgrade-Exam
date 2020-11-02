@@ -30,7 +30,7 @@
 An interface is an abstract data type, similar to a class that defines a list of public abstract methods that any class implementing the interface must provide. An interface can have seven different things:
 
 1. Constant variables (since Java 1.0) - Every field declaration in the body of an interface is implicitly `public`, `static`, and `final`. It is permitted to redundantly specify any or all of these modifiers for such fields.
-2. `abstract` methods (since Java 1.0) - Every method declaration in an interface with body represented by a semicolon (`;`) is implicitly `public` and `abstract`. See [Basics](#basics)
+2. `abstract` methods (since Java 1.0) - Every method declaration in an interface with a body represented by a semicolon (`;`) is implicitly `public` and `abstract`. See [Basics](#interface-basics)
 3. Nested types (classes and interfaces) (since Java 2.0) - Interfaces may contain member type declarations. A member type declaration in an interface is implicitly static and public. It is permitted to redundantly specify either or both of these modifiers.
 4. `default` methods (since Java 8.0) - The default methods are implicitly public — there's no need to specify the public modifier. See [Java SE 8 Interfaces with `default`](#java-se-8-interfaces-with-default)
 5. `static` methods (since Java 8.0) - See [`static` methods in interfaces](#static-methods-in-interfaces)
@@ -232,7 +232,7 @@ In Java SE 8, you're allowed to implement special types of methods within interf
 
 `default` methods help minimize code duplication. They provide a single location to write and edit. They can be overridden later if necessary. They're overridden with per-class precision.
 
-Default methods enable you to add new functionality to the interfaces of your libraries and ensure binary backward compatibility with code written for older versions of those interfaces.
+`default` methods enable you to add new functionality to the interfaces of your libraries and ensure binary backward compatibility with code written for older versions of those interfaces.
 
 Previously duplicated logic can be written once in `Accessible`:
 
@@ -276,9 +276,9 @@ public class RestrictedChecking implements Accessible {
     - The superclass method may be concrete or abstract
     - Only consider the interface `default` if no method exists from the superclass
 1. A subtype interface's `default` method takes priority over a super-type interface `default` 
-method - See [Example](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/blob/master/src/ocp/study/part03/defaultRule1/)<br />
+method - See [Example](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/blob/master/src/ocp/study/part03/defaultRule2/)<br />
 ![Figure 3.3](img/figure3-3.png)<br />
-1. If there is a conflict, treat the `default` method as abstract - See [Example](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/blob/master/src/ocp/study/part03/defaultRule1/)
+1. If there is a conflict, treat the `default` method as abstract - See [Example](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/blob/master/src/ocp/study/part03/defaultRule3/)
     - The concrete class must provide its own implementation. This may include a call to a specific 
     interface's implementation
 
@@ -613,16 +613,15 @@ public class Object {
    - E. m5
 <br />[Jump to answer](#qa3)
 4. <a name="q4"></a>The private methods in interfaces feature helps you:
-   A) Improve the readability of the code
-   B) Improve the security of the business logic implemented
-   C) Avoid inheritance complications
-   Select the correct answer:
-   - A. only option B
-   - B. all the listed features
-   - C. only options A and C
-   - D. only option C
+   - A) Improve the readability of the code
+   - B) Improve the security of the business logic implemented
+   - C) Avoid inheritance complications
+     - A. only option B
+     - B. all the listed features
+     - C. only options A and C
+     - D. only option C
 <br />[Jump to answer](#qa4)
-5. <a name="q5"></a>Given the following, what is the result?
+1. <a name="q5"></a>Given the following, what is the result?
     ````
     class C1 {
         public void m() { System.out.println
