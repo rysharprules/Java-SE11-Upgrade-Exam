@@ -1,4 +1,4 @@
-package ocp.study.part00;
+// package ocp.study.part00;
 
 import java.util.stream.Stream;
 
