@@ -145,6 +145,8 @@ public class PathInterface {
         // If both paths include a root element, the capability to construct a relative path is system dependent.
         System.out.println("relativize(): " + path.relativize(pathWithRedundancies));
         System.out.println("relativize(): " + pathWithRedundancies.relativize(path));
+
+        
     }
 
     private static void seperator() {

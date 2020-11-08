@@ -183,6 +183,7 @@ public class FilesClass {
         }
         System.out.println();
 
+        // createTempFile, BasicFileAttributeView (Files.getFileAttributeView) & BasicFileAttributes (BasicFileAttributeView.readAttributes())
         Path tempFile = Files.createTempFile("test-file", ".txt");
         BasicFileAttributeView fileAttributeView = Files.getFileAttributeView(tempFile, BasicFileAttributeView.class);
         System.out.println("getFileAttributeView(): " + fileAttributeView);
@@ -191,5 +192,25 @@ public class FilesClass {
         FileTime from = FileTime.from(400, TimeUnit.HOURS);
         fileAttributeView.setTimes(from, from, from);
         System.out.println("getLastModifiedTime(): " + Files.getLastModifiedTime(tempFile));
+
+        // createTempDirectory & createDirectory
+        System.out.println("Files.createTempDirectory");
+        Path tempPath2 = Files.createTempDirectory("test");
+        Path dirToCreate = tempPath2.resolve("test1");
+        System.out.println("dir to create: " + dirToCreate);
+        System.out.println("dir exists: " + Files.exists(dirToCreate));
+        Path directory = Files.createDirectory(dirToCreate);
+        System.out.println("directory created: " + directory);
+        System.out.println("dir created exits: " + Files.exists(directory));
+
+        // create directories
+        System.out.println("Files.createDirectories");
+        Path tempPath3 = Files.createTempDirectory("test");
+        Path dirToCreate2 = tempPath3.resolve("test2").resolve("test3");
+        System.out.println("dir to create: " + dirToCreate2);
+        System.out.println("dir exits: " + Files.exists(dirToCreate2));
+        Path directories = Files.createDirectories(dirToCreate2);
+        System.out.println("directories created: " + directories);
+        System.out.println("dir created exits: " + Files.exists(directories));
     }
 }
