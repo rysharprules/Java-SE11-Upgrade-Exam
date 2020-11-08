@@ -1,4 +1,4 @@
-package ocp.study.part00;
+// package ocp.study.part00;
 
 public class SavingsAccount {
 
