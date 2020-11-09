@@ -76,10 +76,17 @@ java -p feeding
 java -p mods
    -d zoo.animal.feeding
 ````
- 
+
 ````
 java -p mods
    --describe-module zoo.animal.feeding
+````
+
+Output:
+````
+zoo.animal.feeding file:///absolutePath/mods/zoo.animal.feeding.jar
+exports zoo.animal.feeding
+requires java.base mandated
 ````
 
 #### List modules
@@ -138,6 +145,18 @@ All fed!
 
 ### Examples
 
+````
+jar -cvf myNewFile.jar .
+````
+
+````
+jar --create --verbose --file myNewFile.jar .
+````
+
+````
+jar -cvf myNewFile.jar -C dir .
+````
+
 #### Describe modular application
 
 ````
@@ -156,6 +175,19 @@ requires java.base mandated
 ````
 
 ## jdeps
+
+`jdeps [options] path ...`
+
+| Option                                           | Description                                              |
+|--------------------------------------------------|----------------------------------------------------------|
+| -dotoutput <dir> --dot-output <dir>              | Specifies the destination directory for DOT file output  |
+| -s -summary                                      | Prints a dependency summary only                         |
+| -jdkinternals  --jdk-internals                   | Finds class-level dependencies in the JDK internal APIs  |
+| --module-path <module-path>                      | Specifies the module path. Note: -p is used for pkg name |
+| -m <moduel name>                                 | Specifies the root module for analysis                   |
+| -cp <path> -classpath <path> --class-path <path> | Files on the classpath                                   |
+| --list-deps                                      | Lists the module dependencies                            |
+<br>
 
 ### Examples
 
@@ -208,6 +240,8 @@ zoo.animal.care -> zoo.animal.feeding
 ````
 
 ## jmod
+
+`jmod (create|extract|list|describe|hash) [options] jmod-file`
 
 | Operation | Description                                             |
 |-----------|---------------------------------------------------------|
