@@ -62,6 +62,7 @@ _This documentation is an aggregation of multiple sources and is intended as a s
 
 ## [Extra Reading](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/tree/master/src/ocp/study/part00)
 
+- [Command Line Cheat Sheet](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/tree/master/commandCheatSheet.md)
 - 0.1 - Multi-Release JAR Files
 - 0.2 - Enhancements to the Stream API
 - 0.3 - JShell
