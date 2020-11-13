@@ -17,14 +17,14 @@ public class ComparingArrays {
         Plane[][] planes4 = new Plane[][] { new Plane[] { new Plane("Plane 1", "A320") },
                 new Plane[] { new Plane("Plane 2", "B738") } };
 
-        System.out.println("equals " + Arrays.deepEquals(planes3, planes4)); // true
+        System.out.println("deepEquals " + Arrays.deepEquals(planes3, planes4)); // true
 
         Plane[][] planes5 = new Plane[][] { new Plane[] { new Plane("Plane 1", "A320") },
                 new Plane[] { new Plane("Plane 2", "B738") } };
         Plane[][] planes6 = new Plane[][] { new Plane[] { new Plane("Plane 2", "B738") },
                 new Plane[] { new Plane("Plane 1", "A320") } };
 
-        System.out.println("equals " + Arrays.deepEquals(planes5, planes6)); // false
+        System.out.println("deepEquals " + Arrays.deepEquals(planes5, planes6)); // false
 
         // compare
         int[] i1 = {2, 4, 6, 8, 10};
