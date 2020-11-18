@@ -10,6 +10,8 @@ Examples and notes to aid revision for the Oracle Certified Professional (OCP) U
 
 _This documentation is an aggregation of multiple sources and is intended as a study guide for my personal use and such, wording and examples may jump between perspectives or may appear incomplete. I make no personal gain from this other than learning._
 
+See my [blog](https://rysharp.blogspot.com/2020/11/1z0-817-exam-review.html) for my review of the exam!
+
 ## Exam Topics
 
 ### 1. [Understanding Modules](https://github.com/rysharprules/Java-SE11-Upgrade-Exam/tree/master/src/ocp/study/part01)
